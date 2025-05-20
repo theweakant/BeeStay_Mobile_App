@@ -1,89 +1,74 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, StatusBar } from 'react-native';
-import { styled } from 'nativewind';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledImage = styled(Image);
-const StyledScrollView = styled(ScrollView);
-const StyledSafeAreaView = styled(SafeAreaView);
 
 export default function LandingScreen({ navigation }) {
   return (
-    <StyledSafeAreaView className="flex-1 bg-amber-50">
+    <SafeAreaView className="flex-1 bg-amber-50">
       <StatusBar barStyle="dark-content" backgroundColor="#fffbeb" />
-      <StyledScrollView className="flex-1">
+      <ScrollView className="flex-1">
         {/* Header with Logo */}
-        <StyledView className="pt-6 px-6 flex-row items-center justify-center">
-          <StyledView className="flex-row items-center">
-            <StyledImage 
+        <View className="pt-6 px-6 flex-row items-center justify-center">
+          <View className="flex-row items-center">
+            {/* <Image 
               source={require('../assets/bee-logo.png')} 
               className="w-10 h-10 mr-2"
               defaultSource={require('../assets/bee-logo.png')}
-            />
-            <StyledText className="text-2xl font-bold text-amber-600">BeeStay</StyledText>
-          </StyledView>
-        </StyledView>
+            /> */}
+            <Text className="text-2xl font-bold text-amber-600">BeeStay</Text>
+          </View>
+        </View>
 
         {/* Hero Section */}
-        <StyledView className="px-6 pt-8 items-center">
-          {/* <StyledImage
-            source={require('../assets/house-hero.jpg')}
-            className="w-full h-64 rounded-xl"
-            resizeMode="cover"
-            defaultSource={require('../assets/house-hero.jpg')}
-          /> */}
-          
-          <StyledText className="text-3xl font-bold text-center mt-8 text-gray-800">
+        <View className="px-6 pt-8 items-center">
+          <Text className="text-3xl font-bold text-center mt-8 text-gray-800">
             Find Your Perfect Home Away From Home
-          </StyledText>
+          </Text>
           
-          <StyledText className="text-base text-center mt-4 text-gray-600 px-4">
+          <Text className="text-base text-center mt-4 text-gray-600 px-4">
             Discover beautiful homes, apartments, and unique stays around the world with BeeStay's curated selection.
-          </StyledText>
-        </StyledView>
+          </Text>
+        </View>
 
         {/* Features Section */}
-        <StyledView className="px-6 py-8">
-          <StyledView className="flex-row justify-between mb-6">
-            <StyledView className="items-center w-[30%]">
-              <StyledView className="w-14 h-14 bg-amber-100 rounded-full items-center justify-center mb-2">
-                <StyledText className="text-2xl">🔍</StyledText>
-              </StyledView>
-              <StyledText className="text-center text-sm font-medium text-gray-700">Easy Search</StyledText>
-            </StyledView>
+        <View className="px-6 py-8">
+          <View className="flex-row justify-between mb-6">
+            <View className="items-center w-[30%]">
+              <View className="w-14 h-14 bg-amber-100 rounded-full items-center justify-center mb-2">
+                <Text className="text-2xl">🔍</Text>
+              </View>
+              <Text className="text-center text-sm font-medium text-gray-700">Easy Search</Text>
+            </View>
             
-            <StyledView className="items-center w-[30%]">
-              <StyledView className="w-14 h-14 bg-amber-100 rounded-full items-center justify-center mb-2">
-                <StyledText className="text-2xl">💰</StyledText>
-              </StyledView>
-              <StyledText className="text-center text-sm font-medium text-gray-700">Best Prices</StyledText>
-            </StyledView>
+            <View className="items-center w-[30%]">
+              <View className="w-14 h-14 bg-amber-100 rounded-full items-center justify-center mb-2">
+                <Text className="text-2xl">💰</Text>
+              </View>
+              <Text className="text-center text-sm font-medium text-gray-700">Best Prices</Text>
+            </View>
             
-            <StyledView className="items-center w-[30%]">
-              <StyledView className="w-14 h-14 bg-amber-100 rounded-full items-center justify-center mb-2">
-                <StyledText className="text-2xl">⭐</StyledText>
-              </StyledView>
-              <StyledText className="text-center text-sm font-medium text-gray-700">Top Rated</StyledText>
-            </StyledView>
-          </StyledView>
-        </StyledView>
+            <View className="items-center w-[30%]">
+              <View className="w-14 h-14 bg-amber-100 rounded-full items-center justify-center mb-2">
+                <Text className="text-2xl">⭐</Text>
+              </View>
+              <Text className="text-center text-sm font-medium text-gray-700">Top Rated</Text>
+            </View>
+          </View>
+        </View>
 
         {/* CTA Section */}
-        <StyledView className="px-6 pb-12 items-center">
-          <StyledTouchableOpacity 
+        <View className="px-6 pb-12 items-center">
+          <TouchableOpacity 
             className="bg-amber-500 w-full py-4 rounded-xl items-center shadow-md"
             onPress={() => navigation.replace('Login')}
           >
-            <StyledText className="text-white font-bold text-lg">Get Started</StyledText>
-          </StyledTouchableOpacity>
+            <Text className="text-white font-bold text-lg">Get Started</Text>
+          </TouchableOpacity>
           
-          <StyledText className="text-gray-500 mt-4 text-center">
+          <Text className="text-gray-500 mt-4 text-center">
             Join thousands of happy travelers finding their perfect stay
-          </StyledText>
-        </StyledView>
-      </StyledScrollView>
-    </StyledSafeAreaView>
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
