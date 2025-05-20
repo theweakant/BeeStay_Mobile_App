@@ -4,17 +4,31 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useAuth } from '../redux/hooks/useAuth';
 import AdminTabNavigator from './AdminTabNavigator';
 import HostTabNavigator from './HostTabNavigator';
-import UserTabNavigator from './UserTabNavigator';
-import LoginScreen from '../screens/LoginScreen'; 
+import UserTabNavigator from './UserTabNavigator'; 
+import LandingScreen from '../screens/LandingScreen';
+import AuthStack from './AuthStack';
 
 const AppNavigator = () => {
-  const { user, role } = useAuth();
+  const { user, role } = useAuth(); // Giả sử role là 'user', 'host', 'admin' hoặc null
 
-  if (!user) return <LoginScreen />;
+  // Trường hợp chưa đăng nhập → hiển thị Landing Screen
+  if (!user) {
+    return <AuthStack />;
+  }
 
-  if (role === 'admin') return <AdminTabNavigator />;
-  if (role === 'host') return <HostTabNavigator />;
-  return <UserTabNavigator />;
+  if (role === 'admin') {
+    return <AdminTabNavigator />;
+  }
+
+  if (role === 'host') {
+    return <HostTabNavigator />;
+  }
+
+  if (role === 'user') {
+    return <UserTabNavigator />;
+  }
+
+  return <AuthStack />;
 };
 
 export default function RootNavigation() {
