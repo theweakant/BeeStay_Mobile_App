@@ -25,38 +25,45 @@ export default function UserTabNavigator() {
       <Tab.Screen 
         name="Trang chủ" 
         component={HomeScreen} 
-        options={{
-          tabBarIcon: ({ color }) => <Home size={22} color={color} />,
-        }}
+        // options={{
+        //   tabBarIcon: ({ color }) => <Home size={22} color={color} />,
+        // }}
       />
       <Tab.Screen 
         name="Tìm kiếm" 
         component={SearchScreen} 
-        options={{
-          tabBarIcon: ({ color }) => <Search size={22} color={color} />,
-        }}
+        // options={{
+        //   tabBarIcon: ({ color }) => <Search size={22} color={color} />,
+        // }}
       />
       <Tab.Screen 
         name="Phòng đã đặt" 
         component={BookingScreen} 
-        options={{
-          tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
-        }}
+        // options={{
+        //   tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
+        // }}
       />
       <Tab.Screen 
         name="Ưu đãi" 
         component={DealScreen} 
-        options={{
-          tabBarIcon: ({ color }) => <Gift size={22} color={color} />,
-        }}
+        // options={{
+        //   tabBarIcon: ({ color }) => <Gift size={22} color={color} />,
+        // }}
       />
       <Tab.Screen 
         name="Tài khoản" 
         component={ProfileScreen} 
-        options={{
-          tabBarIcon: ({ color }) => <User size={22} color={color} />,
-        }}
+        // options={{
+        //   tabBarIcon: ({ color }) => <User size={22} color={color} />,
+        // }}
       />
     </Tab.Navigator>
+
+
+
+      //  <Tab.Navigator>    
+      //     <Tab.Screen name="Home" component={HomeScreen} />
+      // <Tab.Screen name="Profile" component={ProfileScreen} />
+      // </Tab.Navigator>
   );
 }

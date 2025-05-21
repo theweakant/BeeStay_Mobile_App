@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AdminDashboard from '../screens/AdminScreen/AdminDashboard'; // tạo thêm
+import AdminDashboard from '../screens/AdminScreen/AdminDashboard'; 
 import ManageUsers from '../screens/AdminScreen/ManageUsers';
 
 const Tab = createBottomTabNavigator();
