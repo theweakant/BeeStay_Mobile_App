@@ -5,7 +5,6 @@ import { useAuth } from '../redux/hooks/useAuth';
 import AdminTabNavigator from './AdminTabNavigator';
 import HostTabNavigator from './HostTabNavigator';
 import UserTabNavigator from './UserTabNavigator'; 
-import LandingScreen from '../screens/LandingScreen';
 import AuthStack from './AuthStack';
 
 const AppNavigator = () => {

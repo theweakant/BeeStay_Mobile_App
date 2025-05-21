@@ -1,7 +1,7 @@
 import React from 'react';
 import AppNavigator from './src/navigation/AppNavigator'; 
 import { Provider } from 'react-redux';
-import store from './src/redux/store'; // import store bạn đã tạo
+import store from './src/redux/store'; 
 
 export default function App() {
   return (
