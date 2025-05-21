@@ -10,9 +10,7 @@ export default {
     "resizeMode": "contain",
     "backgroundColor": "#ffffff"
   },
-  "plugins": [
-    "nativewind/babel"
-  ],
+
   "assetBundlePatterns": [
     "**/*"
   ],
@@ -28,5 +26,5 @@ export default {
   "web": {
     "favicon": "./assets/favicon.png"
   },
-  "sdkVersion": "53.0.9"
+  "sdkVersion": "53.0.0"
 };
