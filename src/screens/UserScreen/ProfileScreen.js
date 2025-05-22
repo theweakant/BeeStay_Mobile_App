@@ -1,132 +1,240 @@
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from "react-native"
-import { Feather, AntDesign, Ionicons, FontAwesome, MaterialIcons, FontAwesome5 } from "@expo/vector-icons"
+import React from "react"
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+  StyleSheet,
+} from "react-native"
+import {
+  Feather,
+  AntDesign,
+  Ionicons,
+  FontAwesome,
+  MaterialIcons,
+  FontAwesome5,
+} from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
 
 const ProfileScreen = () => {
-  return (
-    <SafeAreaView className="flex-1 bg-white">
-      {/* Header */}
-      <View className="bg-gray-800 py-3 px-4">
-        <Text className="text-gray-400 text-base">Account Information</Text>
-      </View>
+  const navigation = useNavigation();
 
-      <ScrollView className="flex-1">
+  return (
+    <SafeAreaView style={styles.container}>
+
+      <ScrollView style={styles.scrollContainer}>
         {/* Profile Section */}
-        <View className="p-4 bg-white">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-2xl font-bold">Palm Thanh Toàn</Text>
-            <TouchableOpacity>
+        <View style={styles.section}>
+          <View style={styles.profileHeader}>
+            <Text style={styles.profileName}>Palm Thanh Toàn</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
               <Ionicons name="settings" size={24} color="#F5B041" />
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row items-center mb-4">
-            <Text className="text-gray-600 mr-3">+84 123456789</Text>
-            <View className="bg-yellow-100 rounded-full px-2 py-1">
-              <Text className="text-xs text-yellow-700">Xác minh điện thoại đã đầy đủ</Text>
+          <View style={styles.phoneRow}>
+            <Text style={styles.phoneNumber}>+84 123456789</Text>
+            <View style={styles.verificationTag}>
+              <Text style={styles.verificationText}>
+                Xác minh điện thoại đã đầy đủ
+              </Text>
             </View>
           </View>
 
-          <View className="h-[1px] bg-gray-200 my-2" />
+          <View style={styles.divider} />
         </View>
 
         {/* My Page Section */}
-        <View className="px-4 mb-4">
-          <Text className="text-base font-medium mb-2">Trang của tôi</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Trang của tôi</Text>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <AntDesign name="clockcircleo" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Homestay đã đặt</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <AntDesign name="clockcircleo" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Homestay đã đặt</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <AntDesign name="heart" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Homestay yêu thích</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <AntDesign name="heart" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Homestay yêu thích</Text>
           </TouchableOpacity>
         </View>
 
         {/* Settings Section */}
-        <View className="px-4 mb-4">
-          <Text className="text-base font-medium mb-2">Cài đặt</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Cài đặt</Text>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <Ionicons name="notifications-outline" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Thông báo</Text>
-            <Text className="text-yellow-500">Tiếng Việt</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <Ionicons name="notifications-outline" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Thông báo</Text>
+            <Text style={styles.highlight}>Tiếng Việt</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <Ionicons name="language" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Ngôn ngữ</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <Ionicons name="language" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Ngôn ngữ</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <Feather name="send" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Khu vực</Text>
-            <Text className="text-yellow-500">Nha Trang</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <Feather name="send" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Khu vực</Text>
+            <Text style={styles.highlight}>Nha Trang</Text>
           </TouchableOpacity>
         </View>
 
         {/* Information Section */}
-        <View className="px-4 mb-4">
-          <Text className="text-base font-medium mb-2">Thông tin</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Thông tin</Text>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <FontAwesome name="question-circle-o" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Hỏi đáp</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <FontAwesome name="question-circle-o" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Hỏi đáp</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <MaterialIcons name="policy" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Điều khoản & chính sách</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <MaterialIcons name="policy" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Điều khoản & chính sách</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <FontAwesome5 name="square" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Phiên bản</Text>
-            <Text className="text-gray-500">19.5.3</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <FontAwesome5 name="square" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Phiên bản</Text>
+            <Text style={styles.grayText}>19.5.3</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <Ionicons name="information-circle-outline" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Liên hệ</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <Ionicons name="information-circle-outline" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Liên hệ</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-3 border-b border-gray-100">
-            <MaterialIcons name="logout" size={20} color="#F5B041" className="mr-4" />
-            <Text className="text-base flex-1 ml-3">Đăng xuất</Text>
+          <TouchableOpacity style={styles.itemRow}>
+            <MaterialIcons name="logout" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Đăng xuất</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View className="flex-row bg-white border-t border-gray-200 py-2">
-        <TouchableOpacity className="flex-1 items-center">
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navItem}>
           <Ionicons name="home-outline" size={22} color="gray" />
-          <Text className="text-xs text-gray-500">Trang chủ</Text>
+          <Text style={styles.navText}>Trang chủ</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-1 items-center">
+        <TouchableOpacity style={styles.navItem}>
           <MaterialIcons name="history" size={22} color="gray" />
-          <Text className="text-xs text-gray-500">Đã xuất</Text>
+          <Text style={styles.navText}>Đã xuất</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-1 items-center">
+        <TouchableOpacity style={styles.navItem}>
           <MaterialIcons name="room" size={22} color="gray" />
-          <Text className="text-xs text-gray-500">Phòng đã đặt</Text>
+          <Text style={styles.navText}>Phòng đã đặt</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-1 items-center">
+        <TouchableOpacity style={styles.navItem}>
           <MaterialIcons name="local-offer" size={22} color="gray" />
-          <Text className="text-xs text-gray-500">Ưu đãi</Text>
+          <Text style={styles.navText}>Ưu đãi</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-1 items-center">
+        <TouchableOpacity style={styles.navItem}>
           <FontAwesome name="user" size={22} color="#F5B041" />
-          <Text className="text-xs text-yellow-500">Tài khoản</Text>
+          <Text style={styles.navActiveText}>Tài khoản</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+
+  scrollContainer: {
+    flex: 1,
+  },
+  section: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    backgroundColor: "#fff",
+  },
+  profileHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  phoneRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  phoneNumber: {
+    color: "#666",
+    marginRight: 12,
+  },
+  verificationTag: {
+    backgroundColor: "#fff9db",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+  },
+  verificationText: {
+    fontSize: 12,
+    color: "#f1c40f",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#ddd",
+    marginVertical: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 8,
+  },
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  itemText: {
+    fontSize: 16,
+    marginLeft: 12,
+    flex: 1,
+  },
+  highlight: {
+    color: "#F5B041",
+  },
+  grayText: {
+    color: "#888",
+  },
+  bottomNav: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "#ddd",
+    paddingVertical: 8,
+    backgroundColor: "#fff",
+  },
+  navItem: {
+    flex: 1,
+    alignItems: "center",
+  },
+  navText: {
+    fontSize: 12,
+    color: "gray",
+  },
+  navActiveText: {
+    fontSize: 12,
+    color: "#F5B041",
+  },
+})
 
 export default ProfileScreen
