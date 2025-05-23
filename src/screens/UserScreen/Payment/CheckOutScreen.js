@@ -78,7 +78,8 @@ export default function CheckOutScreen() {
         <View style={styles.bookingDetailsContainer}>
           <View style={styles.bookingHeader}>
             <Text style={styles.bookingType}>Theo giờ | 03 giờ</Text>
-            <TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('PickTime')}>
               <Text style={styles.changeButton}>Thay đổi</Text>
             </TouchableOpacity>
           </View>

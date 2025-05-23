@@ -10,30 +10,6 @@ export default function DetailScreen() {
       <StatusBar barStyle="dark-content" />
       
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Date Selection */}
-        <View style={styles.dateContainer}>
-          <View style={styles.dateInfo}>
-            <Text style={styles.dateType}>Theo giờ | 03 giờ</Text>
-          </View>
-          <TouchableOpacity>
-            <Text style={styles.changeButton}>Thay đổi</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {/* Check-in/Check-out Times */}
-        <View style={styles.timeContainer}>
-          <View style={styles.timeBlock}>
-            <Text style={styles.timeLabel}>Nhận phòng</Text>
-            <Text style={styles.timeValue}>14:00, 20/03</Text>
-          </View>
-          <View style={styles.timeSeparator}>
-            <Ionicons name="arrow-forward" size={16} color="#999" />
-          </View>
-          <View style={styles.timeBlock}>
-            <Text style={styles.timeLabel}>Trả phòng</Text>
-            <Text style={styles.timeValue}>17:00, 20/03</Text>
-          </View>
-        </View>
         
         {/* Room Image */}
         <View style={styles.imageContainer}>

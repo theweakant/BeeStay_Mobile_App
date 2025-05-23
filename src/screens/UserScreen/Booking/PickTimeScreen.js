@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 export default function PickTimeScreen() {
@@ -18,6 +18,7 @@ export default function PickTimeScreen() {
     <TouchableOpacity
       style={[styles.option, selectedTime === item && styles.selectedOption]}
       onPress={() => setSelectedTime(item)}
+      key={item}
     >
       <Text style={styles.optionText}>{item}</Text>
     </TouchableOpacity>
@@ -27,6 +28,7 @@ export default function PickTimeScreen() {
     <TouchableOpacity
       style={[styles.option, selectedDuration === item && styles.selectedOption]}
       onPress={() => setSelectedDuration(item)}
+      key={item}
     >
       <Text style={styles.optionText}>{item} giờ</Text>
     </TouchableOpacity>
@@ -67,21 +69,89 @@ export default function PickTimeScreen() {
         {durationOptions.map((item) => renderDurationOption(item))}
       </View>
 
-      {/* Summary + Apply */}
+      {/* Summary */}
       {selectedDate && selectedTime && (
         <View style={styles.summary}>
           <Text>
             Nhận phòng: {selectedTime}, {selectedDate.split('-').reverse().join('/')}
           </Text>
           <Text>
-            Trả phòng: {/* tính giờ trả phòng sau nếu cần */}
+            Trả phòng: {/* TODO: Tính giờ trả phòng */}
           </Text>
         </View>
       )}
 
+      {/* Apply Button */}
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Áp dụng</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 40,
+  },
+  tabs: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  tab: {
+    fontSize: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    color: '#999',
+  },
+  tabActive: {
+    color: '#FF6600',
+    fontWeight: 'bold',
+    borderBottomWidth: 2,
+    borderBottomColor: '#FF6600',
+  },
+  label: {
+    fontWeight: 'bold',
+    marginTop: 16,
+    marginBottom: 8,
+    fontSize: 16,
+  },
+  optionGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  option: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#eee',
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  selectedOption: {
+    backgroundColor: '#FF6600',
+  },
+  optionText: {
+    color: '#000',
+  },
+  summary: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  button: {
+    backgroundColor: '#FF6600',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});

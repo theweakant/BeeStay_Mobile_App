@@ -3,13 +3,20 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import UserTab from './UserTab';
 import SettingScreen from '../../screens/UserScreen/SettingScreen';
-import EditProfileScreen from '../../screens/UserScreen/EditProfileScreen';
-import NotificationScreen from '../../screens/UserScreen/NotificationScreen';
+
+//User
+import EditProfileScreen from '../../screens/UserScreen/User/EditProfileScreen';
+import NotificationScreen from '../../screens/UserScreen/User/NotificationScreen';
+
 import DetailScreen from '../../screens/UserScreen/DetailScreen';
-import BookingScreen from '../../screens/UserScreen/BookingScreen';
+
+//Booking
+import BookingScreen from '../../screens/UserScreen/Booking/BookingScreen';
+import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
+
+//Payment
 import CheckOutScreen from '../../screens/UserScreen/Payment/CheckOutScreen';
 import PaymentMethodScreen from '../../screens/UserScreen/Payment/PaymentMethodScreen';
-import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
 import { Check } from 'lucide-react-native';
 
 const Stack = createNativeStackNavigator();

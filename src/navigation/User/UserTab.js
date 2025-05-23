@@ -3,8 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 
 import HomeScreen from '../../screens/UserScreen/HomeScreen';
-import ProfileScreen from '../../screens/UserScreen/ProfileScreen';
-import OrderBookingScreen from '../../screens/UserScreen/OrderBookingScreen';
+import ProfileScreen from '../../screens/UserScreen/User/ProfileScreen';
+import OrderBookingScreen from '../../screens/UserScreen/Booking/OrderBookingScreen';
 import DealScreen from '../../screens/UserScreen/DealScreen';
 import SearchScreen from '../../screens/UserScreen/SearchScreen';
 
