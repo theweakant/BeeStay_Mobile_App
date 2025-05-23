@@ -7,6 +7,10 @@ import EditProfileScreen from '../../screens/UserScreen/EditProfileScreen';
 import NotificationScreen from '../../screens/UserScreen/NotificationScreen';
 import DetailScreen from '../../screens/UserScreen/DetailScreen';
 import BookingScreen from '../../screens/UserScreen/BookingScreen';
+import CheckOutScreen from '../../screens/UserScreen/Payment/CheckOutScreen';
+import PaymentMethodScreen from '../../screens/UserScreen/Payment/PaymentMethodScreen';
+import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
+import { Check } from 'lucide-react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +70,31 @@ export default function UserStackNavigator() {
         component={BookingScreen}
         options={{
           title: 'Đặt phòng',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="PickTime"
+        component={PickTimeScreen}
+        options={{
+          title: 'Chọn thời gian',
+          headerBackTitleVisible: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="CheckOut"
+        component={CheckOutScreen}
+        options={{
+          title: 'Thanh toán',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="PaymentMethod"
+        component={PaymentMethodScreen}
+        options={{
+          title: 'Phương thức thanh toán',
           headerBackTitleVisible: false,
         }}
       />

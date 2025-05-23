@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, ScrollView, StatusBar, FlatList } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function BookingScreen() {
+  const navigation = useNavigation();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
-  // Sample hotel images
+
   const hotelImages = [
     { id: '1', uri: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
     { id: '2', uri: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80' },
@@ -13,7 +15,6 @@ export default function BookingScreen() {
     { id: '4', uri: 'https://images.unsplash.com/photo-1584132905271-512c958d674a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
   ];
 
-  // Amenities data
   const amenities = [
     { id: '1', name: 'Wifi', icon: 'wifi', type: 'font-awesome' },
     { id: '2', name: 'Nước nóng', icon: 'hot-tub', type: 'material' },
@@ -23,7 +24,7 @@ export default function BookingScreen() {
     { id: '6', name: 'Thang máy', icon: 'elevator', type: 'material-community' },
   ];
 
-  // Render thumbnail image
+
   const renderThumbnail = ({ item, index }) => (
     <TouchableOpacity 
       style={[styles.thumbnailContainer, selectedImageIndex === index && styles.selectedThumbnail]} 
@@ -111,7 +112,10 @@ export default function BookingScreen() {
             <Text style={styles.priceLabel}>Chỉ từ</Text>
             <Text style={styles.priceValue}>269.000đ</Text>
           </View>
-          <TouchableOpacity style={styles.bookButton}>
+          <TouchableOpacity 
+            style={styles.bookButton}
+            onPress={() => navigation.navigate('CheckOut')}
+          >
             <Text style={styles.bookButtonText}>Chọn phòng</Text>
           </TouchableOpacity>
         </View>

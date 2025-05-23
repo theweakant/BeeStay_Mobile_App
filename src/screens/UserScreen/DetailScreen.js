@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     fontWeight: '600',
-    marginRight: 28, // To center the title accounting for the back button
+    marginRight: 28, 
   },
   dateContainer: {
     flexDirection: 'row',

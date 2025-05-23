@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { truncateText } from '../utils/textUtils'; // Đường dẫn tùy theo vị trí file
+
 
 const InfoCard = ({ 
   item, 
@@ -31,7 +33,7 @@ const InfoCard = ({
         <View style={styles.ratingContainer}>
           <FontAwesome name="star" size={12} color="#F5B041" />
           <Text style={styles.ratingText}>{item.rating}</Text>
-          <Text style={styles.locationText}> • {item.location}</Text>
+          <Text style={styles.locationText}> • {truncateText(item.location)}</Text>
         </View>
         <View style={styles.priceContainer}>
           <Text style={styles.price}>{item.price}</Text>
