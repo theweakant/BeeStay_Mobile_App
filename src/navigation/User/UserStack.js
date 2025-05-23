@@ -5,7 +5,8 @@ import UserTab from './UserTab';
 import SettingScreen from '../../screens/UserScreen/SettingScreen';
 import EditProfileScreen from '../../screens/UserScreen/EditProfileScreen';
 import NotificationScreen from '../../screens/UserScreen/NotificationScreen';
-// Import thêm các màn hình khác nếu cần
+import DetailScreen from '../../screens/UserScreen/DetailScreen';
+import BookingScreen from '../../screens/UserScreen/BookingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,7 +17,7 @@ export default function UserStackNavigator() {
         headerShown: true, 
       }}
     >
-      {/* Tab Navigator làm màn hình chính */}
+
       <Stack.Screen
         name="MainTabs"
         component={UserTab}
@@ -47,6 +48,24 @@ export default function UserStackNavigator() {
         component={NotificationScreen}
         options={{
           title: 'Thông báo',
+          headerBackTitleVisible: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="Detail"
+        component={DetailScreen}
+        options={{
+          title: 'Chi tiết',
+          headerBackTitleVisible: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="Booking"
+        component={BookingScreen}
+        options={{
+          title: 'Đặt phòng',
           headerBackTitleVisible: false,
         }}
       />

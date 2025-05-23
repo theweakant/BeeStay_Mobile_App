@@ -1,41 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import InfoCard from '../../components/InfoCard';
+import { flashSaleItems, newHomestays, recommendedHomestays } from '../../data/MockData'; 
+import { useNavigation } from '@react-navigation/native';
+
 
 const HomeScreen = () => {
-  // Sample data for homestays
-  const flashSaleItems = [
-    {
-      id: 1,
-      name: 'Quy Duong Rose',
-      location: 'Vũng Tàu',
-      rating: 2.5,
-      price: '120.000đ',
-      originalPrice: '180.000đ',
-      image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80'
-    },
-    {
-      id: 2,
-      name: 'Quoc Bao Love',
-      location: 'TP.HCM',
-      rating: 3.5,
-      price: '80.000đ',
-      originalPrice: '150.000đ',
-      image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80'
-    },
-    {
-      id: 3,
-      name: 'The 5',
-      location: 'Hà Nội',
-      rating: 4.5,
-      price: '130.000đ',
-      originalPrice: '200.000đ',
-      image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80'
-    }
-  ];
+const navigation = useNavigation();
 
-  const newHomestays = [...flashSaleItems];
-  const recommendedHomestays = [...flashSaleItems];
+  // Handle card press
+const handleCardPress = (item) => {
+  navigation.navigate('Detail', { item });
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -101,21 +78,11 @@ const HomeScreen = () => {
             style={styles.horizontalScrollView}
           >
             {flashSaleItems.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.homestayCard}>
-                <Image source={{ uri: item.image }} style={styles.homestayImage} />
-                <View style={styles.cardContent}>
-                  <Text style={styles.homestayName} numberOfLines={1}>{item.name}</Text>
-                  <View style={styles.ratingContainer}>
-                    <FontAwesome name="star" size={12} color="#F5B041" />
-                    <Text style={styles.ratingText}>{item.rating}</Text>
-                    <Text style={styles.locationText}> • {item.location}</Text>
-                  </View>
-                  <View style={styles.priceContainer}>
-                    <Text style={styles.price}>{item.price}</Text>
-                    <Text style={styles.originalPrice}>{item.originalPrice}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              <InfoCard
+                key={item.id}
+                item={item}
+                onPress={handleCardPress}
+              />
             ))}
           </ScrollView>
         </View>
@@ -144,21 +111,11 @@ const HomeScreen = () => {
             style={styles.horizontalScrollView}
           >
             {flashSaleItems.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.homestayCard}>
-                <Image source={{ uri: item.image }} style={styles.homestayImage} />
-                <View style={styles.cardContent}>
-                  <Text style={styles.homestayName} numberOfLines={1}>{item.name}</Text>
-                  <View style={styles.ratingContainer}>
-                    <FontAwesome name="star" size={12} color="#F5B041" />
-                    <Text style={styles.ratingText}>{item.rating}</Text>
-                    <Text style={styles.locationText}> • {item.location}</Text>
-                  </View>
-                  <View style={styles.priceContainer}>
-                    <Text style={styles.price}>{item.price}</Text>
-                    <Text style={styles.originalPrice}>{item.originalPrice}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              <InfoCard
+                key={item.id}
+                item={item}
+                onPress={handleCardPress}
+              />
             ))}
           </ScrollView>
         </View>
@@ -178,21 +135,11 @@ const HomeScreen = () => {
             style={styles.horizontalScrollView}
           >
             {newHomestays.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.homestayCard}>
-                <Image source={{ uri: item.image }} style={styles.homestayImage} />
-                <View style={styles.cardContent}>
-                  <Text style={styles.homestayName} numberOfLines={1}>{item.name}</Text>
-                  <View style={styles.ratingContainer}>
-                    <FontAwesome name="star" size={12} color="#F5B041" />
-                    <Text style={styles.ratingText}>{item.rating}</Text>
-                    <Text style={styles.locationText}> • {item.location}</Text>
-                  </View>
-                  <View style={styles.priceContainer}>
-                    <Text style={styles.price}>{item.price}</Text>
-                    <Text style={styles.originalPrice}>{item.originalPrice}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              <InfoCard
+                key={item.id}
+                item={item}
+                onPress={handleCardPress}
+              />
             ))}
           </ScrollView>
         </View>
@@ -243,21 +190,11 @@ const HomeScreen = () => {
             style={styles.horizontalScrollView}
           >
             {recommendedHomestays.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.homestayCard}>
-                <Image source={{ uri: item.image }} style={styles.homestayImage} />
-                <View style={styles.cardContent}>
-                  <Text style={styles.homestayName} numberOfLines={1}>{item.name}</Text>
-                  <View style={styles.ratingContainer}>
-                    <FontAwesome name="star" size={12} color="#F5B041" />
-                    <Text style={styles.ratingText}>{item.rating}</Text>
-                    <Text style={styles.locationText}> • {item.location}</Text>
-                  </View>
-                  <View style={styles.priceContainer}>
-                    <Text style={styles.price}>{item.price}</Text>
-                    <Text style={styles.originalPrice}>{item.originalPrice}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              <InfoCard
+                key={item.id}
+                item={item}
+                onPress={handleCardPress}
+              />
             ))}
           </ScrollView>
         </View>
@@ -276,42 +213,47 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
   },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: '#f8f8f8',
   },
   headerText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
   },
   locationText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#FF6B00',
+    color: '#333',
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   searchBar: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginRight: 12,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    marginRight: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: 10,
   },
   searchInput: {
     flex: 1,
@@ -319,133 +261,93 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   logo: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   promotionBanner: {
-    marginHorizontal: 16,
-    marginBottom: 16,
+    marginHorizontal: 20,
+    marginBottom: 25,
     borderRadius: 12,
     overflow: 'hidden',
-    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   bannerImage: {
     width: '100%',
     height: 120,
   },
   sectionContainer: {
-    marginBottom: 20,
+    marginBottom: 25,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    paddingHorizontal: 20,
+    marginBottom: 15,
   },
   sectionTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 6,
+    color: '#333',
+    marginLeft: 8,
   },
   viewAllText: {
     fontSize: 14,
-    color: '#999',
+    color: '#FF6B00',
+    fontWeight: '500',
   },
   tabContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    paddingHorizontal: 20,
+    marginBottom: 15,
   },
   tab: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginRight: 8,
-    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
     backgroundColor: '#f0f0f0',
+    marginRight: 10,
   },
   activeTab: {
-    backgroundColor: '#FFE9D6',
+    backgroundColor: '#FF6B00',
   },
   tabText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#666',
+    fontWeight: '500',
   },
   horizontalScrollView: {
-    paddingLeft: 16,
-  },
-  homestayCard: {
-    width: 150,
-    marginRight: 12,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  homestayImage: {
-    width: '100%',
-    height: 100,
-  },
-  cardContent: {
-    padding: 8,
-  },
-  homestayName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  ratingText: {
-    fontSize: 12,
-    color: '#666',
-    marginLeft: 4,
-  },
-  priceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  price: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#FF6B00',
-    marginRight: 6,
-  },
-  originalPrice: {
-    fontSize: 12,
-    color: '#999',
-    textDecorationLine: 'line-through',
+    paddingLeft: 20,
   },
   programCard: {
-    width: 240,
-    height: 120,
-    marginRight: 12,
-    borderRadius: 8,
+    width: 250,
+    marginRight: 15,
+    borderRadius: 12,
     overflow: 'hidden',
-    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   programImage: {
     width: '100%',
-    height: '100%',
+    height: 120,
   },
   bottomPadding: {
     height: 20,

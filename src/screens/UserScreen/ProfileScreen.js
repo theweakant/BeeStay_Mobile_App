@@ -114,33 +114,6 @@ const ProfileScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home-outline" size={22} color="gray" />
-          <Text style={styles.navText}>Trang chủ</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialIcons name="history" size={22} color="gray" />
-          <Text style={styles.navText}>Đã xuất</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialIcons name="room" size={22} color="gray" />
-          <Text style={styles.navText}>Phòng đã đặt</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialIcons name="local-offer" size={22} color="gray" />
-          <Text style={styles.navText}>Ưu đãi</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome name="user" size={22} color="#F5B041" />
-          <Text style={styles.navActiveText}>Tài khoản</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   )
 }
