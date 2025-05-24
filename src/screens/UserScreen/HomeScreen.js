@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import InfoCard from '../../components/InfoCard';
-import { flashSaleItems, newHomestays, recommendedHomestays } from '../../data/MockData'; 
+import { HomestayData, newHomestays, recommendedHomestays } from '../../data/MockData'; 
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -77,7 +77,7 @@ const handleCardPress = (item) => {
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {flashSaleItems.map((item) => (
+            {HomestayData.map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
@@ -110,7 +110,7 @@ const handleCardPress = (item) => {
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {flashSaleItems.map((item) => (
+            {HomestayData.map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
