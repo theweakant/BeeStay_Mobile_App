@@ -1,32 +1,35 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { HomestayData } from '../../data/MockData'; // Đường dẫn tùy vào vị trí file
 
 export default function DetailScreen() {
   const navigation = useNavigation();
+  const homestay = HomestayData[0]; 
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         
         {/* Room Image */}
         <View style={styles.imageContainer}>
           <Image 
-            source={{ uri: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' }} 
+            source={{ uri: homestay.image }} 
             style={styles.roomImage}
             resizeMode="cover"
           />
         </View>
-        
+
         {/* Room Details */}
         <View style={styles.detailsContainer}>
-          <Text style={styles.roomType}>PHÒNG CƠ BẢN</Text>
-          <Text style={styles.amenities}>Giường đôi + cửa sổ + tivi + điều hòa + quạt trần</Text>
-          
+          <Text style={styles.roomType}>{homestay.name}</Text>
+          <Text style={styles.amenities}>
+            {homestay.features.join(' + ')}
+          </Text>
+
           <View style={styles.priceContainer}>
-            <Text style={styles.price}>129.000đ</Text>
+            <Text style={styles.price}>{homestay.pricePerNight.toLocaleString()}đ</Text>
             <TouchableOpacity 
               style={styles.bookButton}
               onPress={() => navigation.navigate('Booking')} 
@@ -34,7 +37,7 @@ export default function DetailScreen() {
               <Text style={styles.bookButtonText}>Đặt homestay</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.policyContainer}>
             <Text style={styles.policyText}>
               Đã có những thứ thiết yếu như: Dầu gội, sữa tắm, khăn tắm, nước uống, giấy vệ sinh, homestay đi kèm.

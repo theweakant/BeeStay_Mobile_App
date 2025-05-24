@@ -2,28 +2,35 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, ScrollView, StatusBar, FlatList } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { 
+  convertToHotelImages, 
+  getAmenitiesArray, 
+  formatPrice, 
+  getStarRating,
+  getPolicyTexts 
+} from '../../../utils/bookingUtils';
+import {HomestayData} from '../../../data/MockData';
+
+
 
 export default function BookingScreen() {
   const navigation = useNavigation();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
+  // Use the first homestay from mock data
+  const homestayData = HomestayData[0];
 
-  const hotelImages = [
-    { id: '1', uri: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
-    { id: '2', uri: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80' },
-    { id: '3', uri: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
-    { id: '4', uri: 'https://images.unsplash.com/photo-1584132905271-512c958d674a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
-  ];
+  // Convert imageList to the format expected by the component
+  const hotelImages = convertToHotelImages(homestayData.imageList);
 
-  const amenities = [
-    { id: '1', name: 'Wifi', icon: 'wifi', type: 'font-awesome' },
-    { id: '2', name: 'Nước nóng', icon: 'hot-tub', type: 'material' },
-    { id: '3', name: 'Máy lạnh', icon: 'air-conditioner', type: 'material-community' },
-    { id: '4', name: 'Hồ bơi', icon: 'pool', type: 'material' },
-    { id: '5', name: 'Bãi đỗ xe', icon: 'local-parking', type: 'material' },
-    { id: '6', name: 'Thang máy', icon: 'elevator', type: 'material-community' },
-  ];
+  // Create amenities array from homestayData.amenities
+  const amenities = getAmenitiesArray(homestayData.amenities);
 
+  // Get policy texts
+  const policyTexts = getPolicyTexts(homestayData.policies);
+
+  // Get star rating array
+  const starRating = getStarRating(homestayData.averageRating);
 
   const renderThumbnail = ({ item, index }) => (
     <TouchableOpacity 
@@ -34,7 +41,7 @@ export default function BookingScreen() {
     </TouchableOpacity>
   );
 
-  // Render amenity item
+  // Updated render amenity item
   const renderAmenity = ({ item }) => (
     <View style={styles.amenityItem}>
       {item.type === 'font-awesome' && <FontAwesome name={item.icon} size={20} color="#666" />}
@@ -43,6 +50,8 @@ export default function BookingScreen() {
       <Text style={styles.amenityText}>{item.name}</Text>
     </View>
   );
+
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -73,32 +82,33 @@ export default function BookingScreen() {
         {/* Hotel Rating and Name */}
         <View style={styles.hotelInfoContainer}>
           <View style={styles.ratingContainer}>
-            <Text style={styles.ratingValue}>4.9</Text>
+            <Text style={styles.ratingValue}>{homestayData.averageRating}</Text>
             <View style={styles.starsContainer}>
-              {[1, 2, 3, 4, 5].map(star => (
+              {starRating.map(star => (
                 <FontAwesome 
-                  key={star} 
-                  name={star <= 4 ? "star" : "star-half-empty"} 
+                  key={star.key} 
+                  name={star.type === 'full' ? "star" : star.type === 'half' ? "star-half-empty" : "star-o"} 
                   size={14} 
                   color="#FFD700" 
                   style={styles.starIcon}
                 />
               ))}
             </View>
+            <Text style={styles.reviewCount}>({homestayData.reviewCount} đánh giá)</Text>
           </View>
           
-          <Text style={styles.hotelName}>BEESTAY HOLTEL</Text>
-          <Text style={styles.hotelAddress}>123A Nguyễn Lương Bằng, P. Tân Phong, Quận 7, TP.HCM</Text>
+          <Text style={styles.hotelName}>{homestayData.name}</Text>
+          <Text style={styles.hotelAddress}>{homestayData.location.address}</Text>
           
           <View style={styles.distanceContainer}>
             <Ionicons name="location-outline" size={14} color="#666" />
-            <Text style={styles.distanceText}>Cách trung tâm 1.7km</Text>
+            <Text style={styles.distanceText}>{homestayData.location.city}, {homestayData.location.province}</Text>
           </View>
           
           {/* Promotion Badge */}
           <View style={styles.promotionContainer}>
             <View style={styles.promotionBadge}>
-              <Text style={styles.promotionText}>Giảm 5% khi đặt phòng trực tuyến</Text>
+              <Text style={styles.promotionText}>Giảm {homestayData.discountPercentage}% khi đặt phòng trực tuyến</Text>
             </View>
             <TouchableOpacity style={styles.registrationButton}>
               <Text style={styles.registrationButtonText}>Đang nhận đăng ký</Text>
@@ -110,7 +120,10 @@ export default function BookingScreen() {
         <View style={styles.priceContainer}>
           <View>
             <Text style={styles.priceLabel}>Chỉ từ</Text>
-            <Text style={styles.priceValue}>269.000đ</Text>
+            <View style={styles.priceRow}>
+              <Text style={styles.originalPrice}>{formatPrice(homestayData.originalPricePerNight)}</Text>
+              <Text style={styles.priceValue}>{formatPrice(homestayData.pricePerNight)}</Text>
+            </View>
           </View>
           <TouchableOpacity 
             style={styles.bookButton}
@@ -140,6 +153,14 @@ export default function BookingScreen() {
           </TouchableOpacity>
         </View>
         
+        {/* Features Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Đặc điểm phòng</Text>
+          {homestayData.features.map((feature, index) => (
+            <Text key={index} style={styles.featureText}>• {feature}</Text>
+          ))}
+        </View>
+        
         {/* Policies Section */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Quy định</Text>
@@ -152,9 +173,9 @@ export default function BookingScreen() {
           
           <View style={styles.policyItem}>
             <Text style={styles.policyTitle}>Chính sách hủy phòng</Text>
-            <Text style={styles.policyText}>• Đặt phòng này không thể hủy hoặc thay đổi</Text>
-            <Text style={styles.policyText}>• Không hoàn tiền nếu hủy hoặc không đến</Text>
-            <Text style={styles.policyText}>• Có thể thay đổi ngày đặt phòng trước 1 ngày với phí 0đ (tùy vào tình trạng phòng trống)</Text>
+            <Text style={styles.policyText}>• {policyTexts.refund}</Text>
+            <Text style={styles.policyText}>• {policyTexts.pet}</Text>
+            <Text style={styles.policyText}>• {policyTexts.smoking}</Text>
           </View>
         </View>
         
@@ -172,194 +193,207 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
   },
   mainImageContainer: {
+    height: 250,
     width: '100%',
-    height: 220,
   },
   mainImage: {
     width: '100%',
     height: '100%',
   },
   thumbnailsContainer: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   thumbnailsList: {
-    paddingHorizontal: 16,
+    gap: 10,
   },
   thumbnailContainer: {
-    width: 80,
+    width: 60,
     height: 60,
-    marginRight: 8,
-    borderRadius: 4,
+    borderRadius: 8,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: 'transparent',
   },
   selectedThumbnail: {
-    borderColor: '#FF9800',
+    borderColor: '#007AFF',
   },
   thumbnailImage: {
     width: '100%',
     height: '100%',
   },
   hotelInfoContainer: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    padding: 15,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   ratingValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FF9800',
     marginRight: 8,
   },
   starsContainer: {
     flexDirection: 'row',
+    marginRight: 8,
   },
   starIcon: {
     marginRight: 2,
   },
+  reviewCount: {
+    fontSize: 14,
+    color: '#666',
+  },
   hotelName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 5,
   },
   hotelAddress: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 8,
+    marginBottom: 5,
   },
   distanceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 15,
   },
   distanceText: {
     fontSize: 14,
     color: '#666',
-    marginLeft: 4,
+    marginLeft: 5,
   },
   promotionContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
+    justifyContent: 'space-between',
   },
   promotionBadge: {
-    backgroundColor: '#FFE8E8',
+    backgroundColor: '#FFE4E1',
     paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 4,
-    borderLeftWidth: 3,
-    borderLeftColor: '#FF5252',
+    paddingVertical: 5,
+    borderRadius: 15,
+    flex: 1,
+    marginRight: 10,
   },
   promotionText: {
     fontSize: 12,
-    color: '#FF5252',
+    color: '#FF6B6B',
+    fontWeight: '500',
   },
   registrationButton: {
-    backgroundColor: '#E8F5E9',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 4,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 15,
   },
   registrationButtonText: {
+    color: '#fff',
     fontSize: 12,
-    color: '#4CAF50',
+    fontWeight: '500',
   },
   priceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginTop: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
   },
   priceLabel: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#666',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  originalPrice: {
+    fontSize: 14,
+    color: '#999',
+    textDecorationLine: 'line-through',
+    marginRight: 8,
   },
   priceValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#FF6B6B',
   },
   bookButton: {
-    backgroundColor: '#FF9800',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    backgroundColor: '#FF6B6B',
+    paddingHorizontal: 30,
+    paddingVertical: 12,
+    borderRadius: 25,
   },
   bookButtonText: {
     color: '#fff',
-    fontWeight: '500',
-    fontSize: 14,
-  },
-  separator: {
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  separatorText: {
-    fontSize: 14,
-    color: '#999',
-  },
-  sectionContainer: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    marginTop: 8,
-  },
-  sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 16,
+  },
+  separator: {
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  separatorText: {
+    color: '#007AFF',
+    fontSize: 14,
+  },
+  sectionContainer: {
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
   },
   amenitiesList: {
-    paddingBottom: 8,
+    gap: 15,
   },
   amenityItem: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
+    marginBottom: 10,
   },
   amenityText: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-    textAlign: 'center',
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
   },
   viewAllText: {
+    color: '#007AFF',
     fontSize: 14,
-    color: '#999',
-    textAlign: 'center',
-    marginTop: 8,
+    marginTop: 10,
+  },
+  featureText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
   },
   policyItem: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   policyTitle: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '600',
     marginBottom: 8,
   },
   policyText: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#666',
     lineHeight: 20,
+    marginBottom: 3,
   },
   bottomPadding: {
-    height: 20,
+    height: 50,
   },
 });

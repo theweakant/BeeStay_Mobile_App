@@ -33,7 +33,7 @@ const InfoCard = ({
         <View style={styles.ratingContainer}>
           <FontAwesome name="star" size={12} color="#F5B041" />
           <Text style={styles.ratingText}>{item.rating}</Text>
-          <Text style={styles.locationText}> • {truncateText(item.location)}</Text>
+          <Text style={styles.locationText}> • {truncateText(item.location.city)}</Text>
         </View>
         <View style={styles.priceContainer}>
           <Text style={styles.price}>{item.price}</Text>
