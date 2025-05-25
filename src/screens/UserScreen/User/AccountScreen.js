@@ -85,25 +85,29 @@ const AccountScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Thông tin</Text>
 
-          <TouchableOpacity style={styles.itemRow}>
+          <TouchableOpacity 
+            style={styles.itemRow}
+            onPress={() => navigation.navigate('QA')}
+          >
             <FontAwesome name="question-circle-o" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Hỏi đáp</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.itemRow}>
+          <TouchableOpacity 
+            style={styles.itemRow}
+            onPress={() => navigation.navigate('Policy')}
+          >
             <MaterialIcons name="policy" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Điều khoản & chính sách</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.itemRow}>
-            <FontAwesome5 name="square" size={20} color="#F5B041" />
-            <Text style={styles.itemText}>Phiên bản</Text>
-            <Text style={styles.grayText}>19.5.3</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.itemRow}>
+          <TouchableOpacity 
+            style={styles.itemRow}
+            onPress={() => navigation.navigate('Contact')}
+          >
             <Ionicons name="information-circle-outline" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Liên hệ</Text>
+            
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.itemRow}>

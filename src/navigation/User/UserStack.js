@@ -18,6 +18,11 @@ import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
 //Payment
 import CheckOutScreen from '../../screens/UserScreen/Payment/CheckOutScreen';
 import PaymentMethodScreen from '../../screens/UserScreen/Payment/PaymentMethodScreen';
+
+//Information
+import ContactScreen from '../../screens/UserScreen/Infomation/ContactScreen';
+import PolicyScreen from '../../screens/UserScreen/Infomation/PolicyScreen';
+import QAScreen from '../../screens/UserScreen/Infomation/QAScreen';
 import { Check } from 'lucide-react-native';
 
 const Stack = createNativeStackNavigator();
@@ -97,7 +102,7 @@ export default function UserStackNavigator() {
           headerBackTitleVisible: false,
         }}
       />
-
+      
       <Stack.Screen
         name="CheckOut"
         component={CheckOutScreen}
@@ -111,6 +116,32 @@ export default function UserStackNavigator() {
         component={PaymentMethodScreen}
         options={{
           title: 'Phương thức thanh toán',
+          headerBackTitleVisible: false,
+        }}
+      />
+
+
+      <Stack.Screen
+        name="QA"
+        component={QAScreen}
+        options={{
+          title: 'Hỏi đáp',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="Policy"
+        component={PolicyScreen}
+        options={{
+          title: 'Chính sách',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="Contact"
+        component={ContactScreen}
+        options={{
+          title: 'Liên hệ',
           headerBackTitleVisible: false,
         }}
       />
