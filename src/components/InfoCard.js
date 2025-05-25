@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { truncateText } from '../utils/textUtils'; // Đường dẫn tùy theo vị trí file
+import { truncateText } from '../utils/textUtils'; 
 
 
 const InfoCard = ({ 
@@ -23,7 +23,7 @@ const InfoCard = ({
       onPress={handlePress}
     >
       <Image 
-        source={{ uri: item.image }} 
+        source={{ uri: item.imageURL }} 
         style={[styles.homestayImage, imageStyle]} 
       />
       <View style={[styles.cardContent, contentStyle]}>
@@ -32,13 +32,13 @@ const InfoCard = ({
         </Text>
         <View style={styles.ratingContainer}>
           <FontAwesome name="star" size={12} color="#F5B041" />
-          <Text style={styles.ratingText}>{item.rating}</Text>
+          <Text style={styles.ratingText}>{item.averageRating}</Text>
           <Text style={styles.locationText}> • {truncateText(item.location.city)}</Text>
         </View>
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>{item.price}</Text>
-          {item.originalPrice && (
-            <Text style={styles.originalPrice}>{item.originalPrice}</Text>
+          <Text style={styles.price}>{item.pricePerNight}</Text>
+          {item.priceOriginalPerNight && (
+            <Text style={styles.originalPrice}>{item.priceOriginalPerNight}</Text>
           )}
         </View>
       </View>

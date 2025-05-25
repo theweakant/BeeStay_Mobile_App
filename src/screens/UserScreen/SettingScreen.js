@@ -11,13 +11,6 @@ const SettingScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Thiết lập tài khoản</Text>
-      </View>
 
       {/* Linked Accounts Section */}
       <View style={styles.section}>

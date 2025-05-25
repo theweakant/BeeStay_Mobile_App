@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 
 import HomeScreen from '../../screens/UserScreen/HomeScreen';
-import ProfileScreen from '../../screens/UserScreen/User/ProfileScreen';
+import AccountScreen from '../../screens/UserScreen/User/AccountScreen';
 import OrderBookingScreen from '../../screens/UserScreen/Booking/OrderBookingScreen';
 import DealScreen from '../../screens/UserScreen/DealScreen';
 import SearchScreen from '../../screens/UserScreen/SearchScreen';
@@ -51,8 +51,8 @@ export default function UserTabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Account"
+        component={AccountScreen}
         options={{
           tabBarIcon: ({ color }) => <User size={22} color={color} />,
         }}

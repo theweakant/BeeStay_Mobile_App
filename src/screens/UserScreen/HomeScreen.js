@@ -1,18 +1,84 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import InfoCard from '../../components/InfoCard';
-import { HomestayData, newHomestays, recommendedHomestays } from '../../data/MockData'; 
+import SearchBar from '../../components/SearchBar';
+import Banner from '../../components/Banner';
+import TabSelector from '../../components/TabSelector';
+import { HomestayData} from '../../data/MockData'; 
 import { useNavigation } from '@react-navigation/native';
 
-
 const HomeScreen = () => {
-const navigation = useNavigation();
+  const navigation = useNavigation();
+  const [flashSaleActiveTab, setFlashSaleActiveTab] = useState(0);
+  const [availableActiveTab, setAvailableActiveTab] = useState(0);
+
+  // Tab data
+  const tabOptions = ['On Sale', 'Book Now'];
+
+  // Filter homestays based on properties
+  const getFilteredHomestays = (filterType, tabIndex = 0) => {
+    switch (filterType) {
+      case 'flashSale':
+        if (tabIndex === 0) {
+          // "On Sale" tab - show homestays that are on sale
+          return HomestayData.filter(item => item.isOnSale);
+        } else {
+          // "Book Now" tab - show homestays that are instant book
+          return HomestayData.filter(item => item.isInstantBook);
+        }
+      
+      case 'available':
+        if (tabIndex === 0) {
+          // "On Sale" tab - show available homestays that are on sale
+          return HomestayData.filter(item => item.isAvailable && item.isOnSale);
+        } else {
+          // "Book Now" tab - show available homestays for instant booking
+          return HomestayData.filter(item => item.isAvailable && item.isInstantBook);
+        }
+      
+      case 'new':
+        // Show newest homestays (you can add a createdDate field and sort by it)
+        // For now, just show available homestays
+        return HomestayData.filter(item => item.isAvailable);
+      
+      case 'recommended':
+        // Show recommended homestays
+        return HomestayData.filter(item => item.isRecommended);
+      
+      default:
+        return HomestayData;
+    }
+  };
 
   // Handle card press
-const handleCardPress = (item) => {
-  navigation.navigate('Detail', { item });
-};
+  const handleCardPress = (item) => {
+    navigation.navigate('Detail', { item });
+  };
+
+  // Handle search
+  const handleSearch = (text) => {
+    console.log('Search text:', text);
+    // Implement search logic here
+  };
+
+  // Handle promotion banner press
+  const handlePromotionPress = () => {
+    console.log('Promotion banner pressed');
+    // Navigate to promotion detail or open link
+  };
+
+  // Handle tab press for Flash Sale
+  const handleFlashSaleTabPress = (index, tab) => {
+    setFlashSaleActiveTab(index);
+    console.log('Flash Sale tab pressed:', tab);
+  };
+
+  // Handle tab press for Available section
+  const handleAvailableTabPress = (index, tab) => {
+    setAvailableActiveTab(index);
+    console.log('Available tab pressed:', tab);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -27,29 +93,15 @@ const handleCardPress = (item) => {
         </View>
 
         {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <View style={styles.searchBar}>
-            <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Tên homestay, hotel, quận/huyện"
-              placeholderTextColor="#999"
-            />
-          </View>
-          <Image
-            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2038/2038854.png' }}
-            style={styles.logo}
-          />
-        </View>
+        <SearchBar 
+          onChangeText={handleSearch}
+          placeholder="Tên homestay, hotel, quận/huyện"
+        />
 
         {/* Promotion Banner */}
-        <TouchableOpacity style={styles.promotionBanner}>
-          <Image
-            source={{ uri: 'https://cf.shopee.vn/file/sg-11134201-22110-7wjrxjpvgfkv5a' }}
-            style={styles.bannerImage}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
+        <Banner 
+          onPress={handlePromotionPress}
+        />
 
         {/* Flash Sale Section */}
         <View style={styles.sectionContainer}>
@@ -63,21 +115,18 @@ const handleCardPress = (item) => {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.tabContainer}>
-            <TouchableOpacity style={[styles.tab, styles.activeTab]}>
-              <Text style={styles.tabText}>Thời gian</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tab}>
-              <Text style={styles.tabText}>Qua đêm</Text>
-            </TouchableOpacity>
-          </View>
+          <TabSelector 
+            tabs={tabOptions}
+            activeTabIndex={flashSaleActiveTab}
+            onTabPress={handleFlashSaleTabPress}
+          />
 
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {HomestayData.map((item) => (
+            {getFilteredHomestays('flashSale', flashSaleActiveTab).map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
@@ -87,30 +136,27 @@ const handleCardPress = (item) => {
           </ScrollView>
         </View>
 
-        {/* Special Offers Section */}
+        {/* Available Section */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Ưu đãi đặc biệt</Text>
+            <Text style={styles.sectionTitle}>Availables</Text>
             <TouchableOpacity>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.tabContainer}>
-            <TouchableOpacity style={[styles.tab, styles.activeTab]}>
-              <Text style={styles.tabText}>Thời gian</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tab}>
-              <Text style={styles.tabText}>Qua đêm</Text>
-            </TouchableOpacity>
-          </View>
+          <TabSelector 
+            tabs={tabOptions}
+            activeTabIndex={availableActiveTab}
+            onTabPress={handleAvailableTabPress}
+          />
 
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {HomestayData.map((item) => (
+            {getFilteredHomestays('available', availableActiveTab).map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
@@ -134,7 +180,7 @@ const handleCardPress = (item) => {
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {newHomestays.map((item) => (
+            {getFilteredHomestays('new').map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
@@ -144,10 +190,10 @@ const handleCardPress = (item) => {
           </ScrollView>
         </View>
 
-        {/* Attractive Programs Section */}
+        {/* Hot Deal Section */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Chương Trình Hấp Dẫn</Text>
+            <Text style={styles.sectionTitle}>Hot Deal</Text>
             <TouchableOpacity>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
@@ -178,7 +224,7 @@ const handleCardPress = (item) => {
         {/* BeeStay Recommendations Section */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>BeeStay gợi ý</Text>
+            <Text style={styles.sectionTitle}>BeeStay Gợi Ý</Text>
             <TouchableOpacity>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
@@ -189,7 +235,7 @@ const handleCardPress = (item) => {
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {recommendedHomestays.map((item) => (
+            {getFilteredHomestays('recommended').map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
@@ -228,61 +274,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  searchBar: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginRight: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  searchIcon: {
-    marginRight: 10,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: '#333',
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-  promotionBanner: {
-    marginHorizontal: 20,
-    marginBottom: 25,
-    borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  bannerImage: {
-    width: '100%',
-    height: 120,
-  },
   sectionContainer: {
     marginBottom: 25,
   },
@@ -306,26 +297,6 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 14,
     color: '#FF6B00',
-    fontWeight: '500',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    marginBottom: 15,
-  },
-  tab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-    marginRight: 10,
-  },
-  activeTab: {
-    backgroundColor: '#FF6B00',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#666',
     fontWeight: '500',
   },
   horizontalScrollView: {

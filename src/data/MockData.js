@@ -1,5 +1,7 @@
 // data/MockData.js
 
+
+
 const HomestayData = [
   {
     id: 1,
@@ -30,11 +32,11 @@ const HomestayData = [
       }
     ],
  
-    pricePerNight: 129000,
-    originalPricePerNight: 180000,
+    priceOnSalePerNight: 129000,
+    priceOriginalPerNight: 180000,
     discountPercentage: 28,
 
-    image: '...',
+    imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
     imageList: [
       'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
       'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
@@ -74,7 +76,7 @@ const HomestayData = [
     checkIn: '2025-03-20T14:00:00+07:00',
     checkOut: '2025-03-20T17:00:00+07:00',
 
-    isFlashSale: true,
+    isOnSale: true,
     isAvailable: true,
     isInstantBook: true,
     isRecommended: true,
@@ -112,11 +114,11 @@ const HomestayData = [
       }
     ],
 
-    pricePerNight: 219000,
-    originalPricePerNight: 290000,
+    priceOnSalePerNight: 219000,
+    priceOriginalPerNight: 290000,
     discountPercentage: 25,
 
-    image: 'https://example.com/images/room2_main.jpg',
+    imageURL: 'https://khonhamaudep.com/wp-content/uploads/2024/11/mau-nha-homestay-dep-22.jpg',
     imageList: [
       'https://example.com/images/room2_1.jpg',
       'https://example.com/images/room2_2.jpg',
@@ -154,7 +156,7 @@ const HomestayData = [
     checkIn: '2025-03-20T15:00:00+07:00',
     checkOut: '2025-03-21T11:00:00+07:00',
 
-    isFlashSale: false,
+    isOnSale: false,
     isAvailable: true,
     isInstantBook: true,
     isRecommended: true,
@@ -190,11 +192,11 @@ const HomestayData = [
       }
     ],
 
-    pricePerNight: 349000,
-    originalPricePerNight: 430000,
+    priceOnSalePerNight: 349000,
+    priceOriginalPerNight: 430000,
     discountPercentage: 19,
 
-    image: 'https://example.com/images/room3_main.jpg',
+    imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
     imageList: [
       'https://example.com/images/room3_1.jpg',
       'https://example.com/images/room3_2.jpg',
@@ -232,7 +234,7 @@ const HomestayData = [
     checkIn: '2025-03-20T13:30:00+07:00',
     checkOut: '2025-03-21T12:00:00+07:00',
 
-    isFlashSale: true,
+    isOnSale: true,
     isAvailable: true,
     isInstantBook: false,
     isRecommended: true,
@@ -268,11 +270,11 @@ const HomestayData = [
       }
     ],
 
-    pricePerNight: 185000,
-    originalPricePerNight: 240000,
+    priceOnSalePerNight: 185000,
+    priceOriginalPerNight: 240000,
     discountPercentage: 23,
 
-    image: 'https://example.com/images/room4_main.jpg',
+    imageURL: 'https://khonhamaudep.com/wp-content/uploads/2024/11/mau-nha-homestay-dep-22.jpg',
     imageList: [
       'https://example.com/images/room4_1.jpg',
       'https://example.com/images/room4_2.jpg',
@@ -310,7 +312,7 @@ const HomestayData = [
     checkIn: '2025-03-20T14:00:00+07:00',
     checkOut: '2025-03-21T11:00:00+07:00',
 
-    isFlashSale: false,
+    isOnSale: false,
     isAvailable: true,
     isInstantBook: true,
     isRecommended: false,
@@ -347,11 +349,11 @@ const HomestayData = [
       }
     ],
 
-    pricePerNight: 529000,
-    originalPricePerNight: 620000,
+    priceOnSalePerNight: 529000,
+    priceOriginalPerNight: 620000,
     discountPercentage: 15,
 
-    image: 'https://example.com/images/room5_main.jpg',
+    imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
     imageList: [
       'https://example.com/images/room5_1.jpg',
       'https://example.com/images/room5_2.jpg',
@@ -389,7 +391,7 @@ const HomestayData = [
     checkIn: '2025-03-20T13:00:00+07:00',
     checkOut: '2025-03-21T12:30:00+07:00',
 
-    isFlashSale: true,
+    isOnSale: true,
     isAvailable: true,
     isInstantBook: true,
     isRecommended: false,
@@ -582,7 +584,26 @@ const UserData = [
   }
 ];
 
+const BannerData = [
+  {
+    id: 1,
+    imageUrl: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/flash-sale-banner-design-template-9349bfc8031a263ff98d40c75a97378a_screen.jpg?ts=1714269671",
+    title: "Flash Sale",
+    link: "/sale"
+  },
+  {
+    id: 2,
+    imageUrl: "https://www.shutterstock.com/image-vector/background-unusual-modern-material-design-600nw-284162744.jpg",
+    title: "Material Design",
+    link: "/design"
+  },
+  {
+    id: 3,
+    imageUrl: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/big-sale-fashion-poster-design-template-5638480f92d0eda649c3a3a511bc38ff_screen.jpg?ts=1720866669",
+    title: "Big Fashion Sale",
+    link: "/fashion"
+  }
+];
 
 
-
-export { HomestayData, newHomestays, recommendedHomestays, HostData, UserData };
+export { HomestayData, newHomestays, recommendedHomestays, HostData, UserData, BannerData };

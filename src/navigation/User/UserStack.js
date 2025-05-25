@@ -7,6 +7,7 @@ import SettingScreen from '../../screens/UserScreen/SettingScreen';
 //User
 import EditProfileScreen from '../../screens/UserScreen/User/EditProfileScreen';
 import NotificationScreen from '../../screens/UserScreen/User/NotificationScreen';
+import ProfileScreen  from '../../screens/UserScreen/User/ProfileScreen';
 
 import DetailScreen from '../../screens/UserScreen/DetailScreen';
 
@@ -50,6 +51,14 @@ export default function UserStackNavigator() {
         component={EditProfileScreen}
         options={{
           title: 'Chỉnh sửa hồ sơ',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          title: 'Hồ sơ',
           headerBackTitleVisible: false,
         }}
       />

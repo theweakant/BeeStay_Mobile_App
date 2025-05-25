@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { HomestayData } from '../../data/MockData'; // Đường dẫn tùy vào vị trí file
+import { HomestayData } from '../../data/MockData'; 
+import { formatPrice } from '../../utils/bookingUtils'; 
 
 export default function DetailScreen() {
   const navigation = useNavigation();
@@ -29,7 +30,7 @@ export default function DetailScreen() {
           </Text>
 
           <View style={styles.priceContainer}>
-            <Text style={styles.price}>{homestay.pricePerNight.toLocaleString()}đ</Text>
+            <Text style={styles.price}>{formatPrice(homestay.pricePerNight)}</Text>            
             <TouchableOpacity 
               style={styles.bookButton}
               onPress={() => navigation.navigate('Booking')} 

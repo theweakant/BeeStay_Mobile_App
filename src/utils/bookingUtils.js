@@ -98,9 +98,11 @@ export const getAmenitiesArray = (amenities) => {
  * @returns {string} Formatted price string with Vietnamese đ symbol
  */
 export const formatPrice = (price) => {
-  return price.toLocaleString('vi-VN') + 'đ';
+  if (typeof price === 'number') {
+    return price.toLocaleString('vi-VN') + 'đ';
+  }
+  return 'Giá không xác định';
 };
-
 /**
  * Get star rating array for rendering stars
  * @param {number} rating - Rating value (e.g., 4.5)
