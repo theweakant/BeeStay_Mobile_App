@@ -33,13 +33,14 @@ const InfoCard = ({
         <View style={styles.ratingContainer}>
           <FontAwesome name="star" size={12} color="#F5B041" />
           <Text style={styles.ratingText}>{item.averageRating}</Text>
+            <Text style={styles.reviewCount}>({item.reviewCount}) </Text>
           <Text style={styles.locationText}> • {truncateText(item.location.city)}</Text>
         </View>
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>{item.pricePerNight}</Text>
-          {item.priceOriginalPerNight && (
-            <Text style={styles.originalPrice}>{item.priceOriginalPerNight}</Text>
-          )}
+          <Text style={styles.price}>{item.priceOnSalePerNight}</Text>
+          <Text style={styles.priceOriginalPerNight}>
+            {item.priceOriginalPerNight}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -94,10 +95,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  price: {
+
+    price: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FF6B00',
+    color: '#FF0000', // màu đỏ theo ảnh
     marginRight: 6,
   },
   originalPrice: {

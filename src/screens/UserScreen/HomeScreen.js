@@ -267,12 +267,13 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 16,
-    color: '#666',
+    color: '#333',
   },
   locationText: {
+    marginTop: 10,
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#F4B63A',
   },
   sectionContainer: {
     marginBottom: 25,

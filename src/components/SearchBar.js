@@ -7,7 +7,7 @@ const SearchBar = ({
   onChangeText,
   value,
   showLogo = true,
-  logoSource = { uri: 'https://cdn-icons-png.flaticon.com/512/2038/2038854.png' },
+logoSource = require('../../assets/Logo/beestay-logo.png'),
   style,
   containerStyle
 }) => {
