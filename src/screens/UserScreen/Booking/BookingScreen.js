@@ -9,9 +9,8 @@ import {
   getStarRating,
   getPolicyTexts 
 } from '../../../utils/bookingUtils';
+import { openGoogleMaps } from '../../../utils/mapUtil';
 import {HomestayData} from '../../../data/MockData';
-
-
 
 export default function BookingScreen() {
   const navigation = useNavigation();
@@ -32,6 +31,15 @@ export default function BookingScreen() {
   // Get star rating array
   const starRating = getStarRating(homestayData.averageRating);
 
+  const locationRender = (location) => {
+    return `${location.address}, ${location.district}, ${location.city}, ${location.province}`;
+  };
+
+  const handleMapPress = () => {
+    const fullAddress = locationRender(homestayData.location);
+    openGoogleMaps(fullAddress);
+  };
+
   const renderThumbnail = ({ item, index }) => (
     <TouchableOpacity 
       style={[styles.thumbnailContainer, selectedImageIndex === index && styles.selectedThumbnail]} 
@@ -41,7 +49,6 @@ export default function BookingScreen() {
     </TouchableOpacity>
   );
 
-  // Updated render amenity item
   const renderAmenity = ({ item }) => (
     <View style={styles.amenityItem}>
       {item.type === 'font-awesome' && <FontAwesome name={item.icon} size={20} color="#666" />}
@@ -50,8 +57,6 @@ export default function BookingScreen() {
       <Text style={styles.amenityText}>{item.name}</Text>
     </View>
   );
-
-
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -96,47 +101,54 @@ export default function BookingScreen() {
             </View>
             <Text style={styles.reviewCount}>({homestayData.reviewCount} đánh giá)</Text>
           </View>
-          
           <Text style={styles.hotelName}>{homestayData.name}</Text>
-          <Text style={styles.hotelAddress}>{homestayData.location.address}</Text>
+          <Text style={styles.hotelAddress}>{locationRender(homestayData.location)}</Text>
           
           <View style={styles.distanceContainer}>
             <Ionicons name="location-outline" size={14} color="#666" />
-            <Text style={styles.distanceText}>{homestayData.location.city}, {homestayData.location.province}</Text>
+            <Text style={styles.distanceText}>Cách bạn {homestayData.distanceToCenter}km</Text>
+            <TouchableOpacity style={styles.mapButton} onPress={handleMapPress}>
+              <Text style={styles.mapButtonText}>Xem bản đồ</Text>
+            </TouchableOpacity>
           </View>
           
           {/* Promotion Badge */}
-          <View style={styles.promotionContainer}>
-            <View style={styles.promotionBadge}>
-              <Text style={styles.promotionText}>Giảm {homestayData.discountPercentage}% khi đặt phòng trực tuyến</Text>
+          <View style={styles.badgeContainer}>
+            <View style={styles.redBadge}>
+              <Text style={styles.badgeText}>🎁 Nhận 1 blindbox khi đặt phòng thành công</Text>
             </View>
-            <TouchableOpacity style={styles.registrationButton}>
-              <Text style={styles.registrationButtonText}>Đang nhận đăng ký</Text>
+            
+            <View style={styles.orangeBadge}>
+              <Text style={styles.badgeText}>🎫 Nhiều voucher hấp dẫn cho thành viên VIP</Text>
+            </View>
+            
+            <TouchableOpacity style={styles.nightButton}>
+              <Text style={styles.nightButtonText}>🌙 Đi đêm | 22:00, 22/05 → 12:00, 17/03</Text>
             </TouchableOpacity>
           </View>
         </View>
         
         {/* Price and Book Button */}
-        <View style={styles.priceContainer}>
+        <View style={styles.priceSection}>
           <View>
             <Text style={styles.priceLabel}>Chỉ từ</Text>
             <View style={styles.priceRow}>
-              <Text style={styles.originalPrice}>{formatPrice(homestayData.originalPricePerNight)}</Text>
-              <Text style={styles.priceValue}>{formatPrice(homestayData.pricePerNight)}</Text>
+              <Text style={styles.originalPrice}>
+                {formatPrice(homestayData.originalPricePerNight)}
+              </Text>
+              <Text style={styles.discountedPrice}>
+                {formatPrice(homestayData.pricePerNight)}
+              </Text>
             </View>
           </View>
           <TouchableOpacity 
-            style={styles.bookButton}
+            style={styles.chooseRoomButton}
             onPress={() => navigation.navigate('CheckOut')}
           >
-            <Text style={styles.bookButtonText}>Chọn phòng</Text>
+            <Text style={styles.chooseRoomButtonText}>Chọn phòng</Text>
           </TouchableOpacity>
         </View>
-        
-        <View style={styles.separator}>
-          <Text style={styles.separatorText}>Xem tất cả ›</Text>
-        </View>
-        
+
         {/* Amenities Section */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Tiện ích homestay</Text>
@@ -148,17 +160,12 @@ export default function BookingScreen() {
             scrollEnabled={false}
             contentContainerStyle={styles.amenitiesList}
           />
-          <TouchableOpacity>
-            <Text style={styles.viewAllText}>Xem tất cả ›</Text>
-          </TouchableOpacity>
         </View>
         
         {/* Features Section */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Đặc điểm phòng</Text>
-          {homestayData.features.map((feature, index) => (
-            <Text key={index} style={styles.featureText}>• {feature}</Text>
-          ))}
+          <Text style={styles.sectionTitle}>Mô tả</Text>
+          <Text style={styles.policyText}>{homestayData.description}</Text>
         </View>
         
         {/* Policies Section */}
@@ -267,83 +274,110 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginLeft: 5,
-  },
-  promotionContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  promotionBadge: {
-    backgroundColor: '#FFE4E1',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 15,
     flex: 1,
-    marginRight: 10,
   },
-  promotionText: {
+  mapButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  mapButtonText: {
+    color: '#007AFF',
     fontSize: 12,
-    color: '#FF6B6B',
     fontWeight: '500',
   },
-  registrationButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
+  badgeContainer: {
+    marginBottom: 15,
+  },
+  redBadge: {
+    backgroundColor: '#FFE4E1',
+    paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 15,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#FFB3B3',
   },
-  registrationButtonText: {
-    color: '#fff',
+  orangeBadge: {
+    backgroundColor: '#FFF4E6',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 15,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#FFD480',
+  },
+  badgeText: {
     fontSize: 12,
     fontWeight: '500',
+    color: '#333',
   },
-  priceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  nightButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#666',
     paddingHorizontal: 15,
-    paddingVertical: 15,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginTop: 5,
+  },
+  nightButtonText: {
+    fontSize: 13,
+    color: '#333',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  priceSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: '#f3f4f6',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
   },
   priceLabel: {
+    color: '#6b7280',
     fontSize: 14,
-    color: '#666',
+    marginBottom: 4,
   },
   priceRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
   originalPrice: {
-    fontSize: 14,
-    color: '#999',
+    color: '#9ca3af',
     textDecorationLine: 'line-through',
-    marginRight: 8,
+    fontSize: 14,
   },
-  priceValue: {
-    fontSize: 18,
+  discountedPrice: {
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#FF6B6B',
+    color: '#ef4444',
   },
-  bookButton: {
-    backgroundColor: '#FF6B6B',
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 25,
+  chooseRoomButton: {
+    backgroundColor: '#f97316',
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  bookButtonText: {
+  chooseRoomButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  separator: {
-    padding: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-  },
-  separatorText: {
-    color: '#007AFF',
-    fontSize: 14,
+    fontWeight: '600',
   },
   sectionContainer: {
     padding: 15,
@@ -368,16 +402,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 8,
     flex: 1,
-  },
-  viewAllText: {
-    color: '#007AFF',
-    fontSize: 14,
-    marginTop: 10,
-  },
-  featureText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
   },
   policyItem: {
     marginBottom: 20,

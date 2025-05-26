@@ -37,9 +37,9 @@ const InfoCard = ({
           <Text style={styles.locationText}> • {truncateText(item.location.city)}</Text>
         </View>
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>{item.priceOnSalePerNight}</Text>
+          <Text style={styles.price}>{item.priceOnSalePerNight}d</Text>
           <Text style={styles.priceOriginalPerNight}>
-            {item.priceOriginalPerNight}
+            {item.priceOriginalPerNight}d
           </Text>
         </View>
       </View>
@@ -92,14 +92,15 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   priceContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
+    gap: 2,
+    flexWrap: 'wrap',
   },
-
-    price: {
+  price: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FF0000', // màu đỏ theo ảnh
+    color: '#FF0000',
     marginRight: 6,
   },
   originalPrice: {

@@ -14,11 +14,12 @@ const HomestayData = [
     },
 
     location:{
-      address: '123 Wall Street, Đà Lạt, Lâm Đồng',
-      district: 'District 3',
-      city: 'Đà Lạt',
-      province: 'Lâm Đồng',
+      address: '64 Trần Khắc Chân',
+      district: 'Quận 1',
+      city: 'Thành phố Hồ Chí Minh',
+      province: 'HCM',
     },
+    distanceToCenter: 3.5,
 
     averageRating: 4.0,
     reviewCount: 10,
@@ -46,20 +47,20 @@ const HomestayData = [
     ],
     videoTourUrl: 'https://youtu.be/fh4cWB8tO7g',
 
-    description: 'bla bla bla',
+    description: 'ui a ui a',
     features: ['Giường đôi', 'Cửa sổ', 'Tivi', 'Điều hòa', 'Gương to'],
     amenities: {
       wifi: true,
       airConditioner: true,
       kitchen:true,
       privateBathroom:true, 
-      pool: false,
-      petAllowed: false,
-      parking: true,
-      balcony: true,
-      bbqArea: true,
+      pool: true,
+      petAllowed: true,
+      parking: false,
+      balcony: false,
+      bbqArea: false,
       roomService: false,
-      securityCamera: true, 
+      securityCamera: false, 
     },
     roomType: 'Phòng đôi',
     roomCount: 4,
@@ -101,6 +102,7 @@ const HomestayData = [
       city: 'Đà Lạt',
       province: 'Lâm Đồng',
     },
+    distanceToCenter: 3.5,
 
     averageRating: 4.7,
     reviewCount: 25,
@@ -179,6 +181,7 @@ const HomestayData = [
         city: 'Đà Lạt',
         province: 'Lâm Đồng',
       },
+      distanceToCenter: 3.5,
 
     averageRating: 4.3,
     reviewCount: 18,
@@ -257,6 +260,7 @@ const HomestayData = [
         city: 'Đà Lạt',
         province: 'Lâm Đồng',
       },
+      distanceToCenter: 3.5,
 
     averageRating: 4.6,
     reviewCount: 32,
@@ -336,6 +340,7 @@ const HomestayData = [
         city: 'Đà Lạt',
         province: 'Lâm Đồng',
       },
+      distanceToCenter: 3.5,
 
     averageRating: 4.8,
     reviewCount: 40,
@@ -606,4 +611,22 @@ const BannerData = [
 ];
 
 
-export { HomestayData, newHomestays, recommendedHomestays, HostData, UserData, BannerData };
+const PolicyData = [
+  {
+    policyHeader: 'Check-in và trả phòng',
+    policyContent: [
+      'Nhận phòng từ 14:00, trả phòng trước 12:00',
+      'Quý khách vui lòng xuất trình CMND/CCCD/Passport khi nhận phòng',
+    ],
+  },
+  {
+    policyHeader: 'Chính sách hủy phòng',
+    policyContent: [
+      '', // Bổ sung nội dung sau
+      '', // Bổ sung nội dung sau
+      '', // Bổ sung nội dung sau
+    ],
+  },
+];
+
+export { HomestayData, newHomestays, recommendedHomestays, HostData, UserData, BannerData, PolicyData };

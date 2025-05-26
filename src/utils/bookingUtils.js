@@ -101,7 +101,7 @@ export const formatPrice = (price) => {
   if (typeof price === 'number') {
     return price.toLocaleString('vi-VN') + 'đ';
   }
-  return 'Giá không xác định';
+  return 'N/A';
 };
 /**
  * Get star rating array for rendering stars
