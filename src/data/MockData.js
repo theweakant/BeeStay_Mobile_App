@@ -622,11 +622,20 @@ const PolicyData = [
   {
     policyHeader: 'Chính sách hủy phòng',
     policyContent: [
-      '', // Bổ sung nội dung sau
-      '', // Bổ sung nội dung sau
-      '', // Bổ sung nội dung sau
+      'Hủy miễn phí trước 3 ngày so với ngày nhận phòng',
+      'Hủy trong vòng 3 ngày sẽ bị tính phí 50% tổng tiền phòng',
+      'Không đến nhận phòng sẽ bị tính phí 100% tổng tiền phòng',
+    ],
+  },
+  {
+    policyHeader: 'Chính sách trẻ em và giường phụ',
+    policyContent: [
+      'Trẻ em dưới 6 tuổi được miễn phí khi sử dụng giường có sẵn',
+      'Trẻ em từ 6 tuổi trở lên tính như người lớn và có thể bị tính phụ phí',
+      'Giường phụ có thể được cung cấp theo yêu cầu với phụ phí',
     ],
   },
 ];
+
 
 export { HomestayData, newHomestays, recommendedHomestays, HostData, UserData, BannerData, PolicyData };

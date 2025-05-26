@@ -10,7 +10,7 @@ import {
   getPolicyTexts 
 } from '../../../utils/bookingUtils';
 import { openGoogleMaps } from '../../../utils/mapUtil';
-import {HomestayData} from '../../../data/MockData';
+import {HomestayData, PolicyData} from '../../../data/MockData';
 
 export default function BookingScreen() {
   const navigation = useNavigation();
@@ -25,8 +25,7 @@ export default function BookingScreen() {
   // Create amenities array from homestayData.amenities
   const amenities = getAmenitiesArray(homestayData.amenities);
 
-  // Get policy texts
-  const policyTexts = getPolicyTexts(homestayData.policies);
+
 
   // Get star rating array
   const starRating = getStarRating(homestayData.averageRating);
@@ -172,18 +171,14 @@ export default function BookingScreen() {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Quy định</Text>
           
-          <View style={styles.policyItem}>
-            <Text style={styles.policyTitle}>Check-in và trả phòng</Text>
-            <Text style={styles.policyText}>• Nhận phòng từ 14:00, trả phòng trước 12:00</Text>
-            <Text style={styles.policyText}>• Quý khách vui lòng xuất trình CMND/CCCD/Passport khi nhận phòng</Text>
-          </View>
-          
-          <View style={styles.policyItem}>
-            <Text style={styles.policyTitle}>Chính sách hủy phòng</Text>
-            <Text style={styles.policyText}>• {policyTexts.refund}</Text>
-            <Text style={styles.policyText}>• {policyTexts.pet}</Text>
-            <Text style={styles.policyText}>• {policyTexts.smoking}</Text>
-          </View>
+          {PolicyData.map((policy, index) => (
+            <View key={index} style={styles.policyItem}>
+              <Text style={styles.policyTitle}>{policy.policyHeader}</Text>
+              {policy.policyContent.map((content, contentIndex) => (
+                <Text key={contentIndex} style={styles.policyText}>• {content}</Text>
+              ))}
+            </View>
+          ))}
         </View>
         
         {/* Bottom padding */}
