@@ -506,13 +506,13 @@ const HostData = [
 const UserData = [
   {
     id: 1,
-    name: 'Minh Anh',
-    email: 'minhanh.user@example.com',
+    name: 'My Anh',
+    email: 'myanh.user@example.com',
     phone: '0911222333',
-    avatar: 'https://example.com/avatars/user1.jpg',
+    avatar: 'https://media.viez.vn/prod/2023/4/24/large_image_162e62d7c1.png',
 
     gender: 'female',
-    birthDate: '1996-04-15',
+    birthDate: '2000-04-02',
 
     address: {
       street: '12 Nguyễn Huệ',

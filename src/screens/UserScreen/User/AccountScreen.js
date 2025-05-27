@@ -16,9 +16,11 @@ import {
   FontAwesome5,
 } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
+import { UserData } from "../../../data/MockData" // Adjust the import path as necessary
 
 const AccountScreen = () => {
   const navigation = useNavigation();
+  const user = UserData && UserData.length > 0 ? UserData[0] : null;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,17 +29,23 @@ const AccountScreen = () => {
         {/* Profile Section */}
         <View style={styles.section}>
           <View style={styles.profileHeader}>
-            <Text style={styles.profileName}>Palm Thanh Toàn</Text>
+            <Text style={styles.profileName}>{user.name}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
               <Ionicons name="settings" size={24} color="#F5B041" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.phoneRow}>
-            <Text style={styles.phoneNumber}>+84 123456789</Text>
+            <Text style={styles.phoneNumber}>{user.phone}</Text>
             <View style={styles.verificationTag}>
+
+                                  {user.isVerified && (
+                                      <View style={styles.verifiedBadge}>
+                                          <Text style={styles.verifiedText}>✓</Text>
+                                      </View>
+                                  )}
               <Text style={styles.verificationText}>
-                Xác minh điện thoại đã đầy đủ
+                Người dùng đã xác thực
               </Text>
             </View>
           </View>
@@ -57,6 +65,11 @@ const AccountScreen = () => {
             <AntDesign name="heart" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Homestay yêu thích</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.itemRow}>
+            <AntDesign name="retweet" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Đánh giá của tôi</Text>
+          </TouchableOpacity>
+
         </View>
 
         {/* Settings Section */}
