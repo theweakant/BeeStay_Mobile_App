@@ -13,9 +13,16 @@ import {
   AntDesign, 
   Feather 
 } from '@expo/vector-icons';
+import { PolicyScreenData } from '../../../data/MockData';
+import { useNavigation } from '@react-navigation/native';
+import { formatDate } from '../../../utils/textUtils';
+
 
 export default function PolicyScreen() {
+  const navigation = useNavigation();
   const [expandedSections, setExpandedSections] = useState({});
+  const currentDate = formatDate(new Date());
+
 
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -24,89 +31,7 @@ export default function PolicyScreen() {
     }));
   };
 
-  const policyData = [
-    {
-      id: 1,
-      title: 'Chính sách hủy đặt phòng',
-      icon: 'cancel',
-      iconFamily: 'MaterialIcons',
-      summary: 'Quy định về việc hủy phòng và hoàn tiền',
-      content: [
-        'Khách có thể hủy phòng miễn phí trước 24 giờ check-in',
-        'Hủy phòng muộn có thể bị tính phí một phần',
-        'Hoàn tiền sẽ được xử lý trong 3-5 ngày làm việc',
-        'Trường hợp bất khả kháng sẽ được xem xét đặc biệt'
-      ]
-    },
-    {
-      id: 2,
-      title: 'Thời gian nhận/trả phòng',
-      icon: 'time-outline',
-      iconFamily: 'Ionicons',
-      summary: 'Quy định về giờ check-in và check-out',
-      content: [
-        'Giờ nhận phòng tiêu chuẩn: 14:00',
-        'Giờ trả phòng tiêu chuẩn: 12:00',
-        'Nhận phòng sớm hoặc trả phòng muộn có thể phát sinh phí',
-        'Vui lòng liên hệ chủ nhà để thỏa thuận thời gian phù hợp'
-      ]
-    },
-    {
-      id: 3,
-      title: 'Nội quy homestay',
-      icon: 'home-outline',
-      iconFamily: 'Ionicons',
-      summary: 'Các quy định cần tuân thủ khi lưu trú',
-      content: [
-        'Không hút thuốc trong nhà',
-        'Không tổ chức tiệc tùng mà không có sự đồng ý của chủ nhà',
-        'Chỉ cho phép thú cưng tại những homestay được phép',
-        'Giữ gìn vệ sinh và trật tự chung',
-        'Tôn trọng hàng xóm và không gây ồn ào'
-      ]
-    },
-    {
-      id: 4,
-      title: 'Trách nhiệm của khách',
-      icon: 'person-outline',
-      iconFamily: 'Ionicons',
-      summary: 'Những điều khách cần tuân thủ',
-      content: [
-        'Bảo quản tài sản homestay cẩn thận',
-        'Báo cáo ngay khi có hư hỏng xảy ra',
-        'Tuân thủ đầy đủ nội quy của homestay',
-        'Thanh toán đầy đủ các khoản phí phát sinh',
-        'Cung cấp thông tin chính xác khi đặt phòng'
-      ]
-    },
-    {
-      id: 5,
-      title: 'Trách nhiệm của chủ nhà',
-      icon: 'shield-checkmark-outline',
-      iconFamily: 'Ionicons',
-      summary: 'Cam kết của chủ nhà với khách',
-      content: [
-        'Đảm bảo homestay sạch sẽ và an toàn',
-        'Cung cấp thông tin chính xác về homestay',
-        'Hỗ trợ khách trong suốt thời gian lưu trú',
-        'Bảo mật thông tin cá nhân của khách',
-        'Xử lý khiếu nại một cách nhanh chóng và công bằng'
-      ]
-    },
-    {
-      id: 6,
-      title: 'Chính sách thanh toán',
-      icon: 'card-outline',
-      iconFamily: 'Ionicons',
-      summary: 'Quy định về thanh toán và phí dịch vụ',
-      content: [
-        'Thanh toán qua thẻ tín dụng, chuyển khoản hoặc ví điện tử',
-        'Phí dịch vụ được tính theo quy định của platform',
-        'Không hoàn tiền trong trường hợp vi phạm nội quy',
-        'Phí phát sinh sẽ được thông báo trước khi tính'
-      ]
-    }
-  ];
+
 
   const PolicyCard = ({ item }) => {
     const isExpanded = expandedSections[item.id];
@@ -178,13 +103,13 @@ export default function PolicyScreen() {
         <View style={styles.updateInfo}>
           <Feather name="clock" size={16} color="#7F8C8D" />
           <Text style={styles.updateText}>
-            Cập nhật lần cuối: 15/01/2024
+              Cập nhật lần cuối: {currentDate}
           </Text>
         </View>
 
         {/* Policy Cards */}
         <View style={styles.cardsContainer}>
-          {policyData.map((item) => (
+          {PolicyScreenData.map((item) => (
             <PolicyCard key={item.id} item={item} />
           ))}
         </View>
@@ -212,7 +137,7 @@ export default function PolicyScreen() {
             <Text style={styles.contactDescription}>
               Liên hệ với chúng tôi nếu bạn có thắc mắc về các chính sách
             </Text>
-            <TouchableOpacity style={styles.contactButton} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.contactButton} activeOpacity={0.7} onPress={() => navigation.navigate('Contact')}>
               <MaterialIcons name="support-agent" size={20} color="#fff" />
               <Text style={styles.contactButtonText}>Liên hệ hỗ trợ</Text>
             </TouchableOpacity>

@@ -13,66 +13,14 @@ import {
   AntDesign, 
   Feather 
 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { QAItems } from '../../../data/MockData';
 
 export default function QAScreen() {
   const [activeCard, setActiveCard] = useState(null);
+  const navigation = useNavigation();
 
-  const qaItems = [
-    {
-      id: 1,
-      title: 'Làm thế nào để đặt homestay?',
-      description: 'Hướng dẫn chi tiết cách đặt phòng homestay',
-      icon: 'home-outline',
-      iconFamily: 'Ionicons',
-      category: 'Đặt phòng',
-      answer: 'Bạn có thể đặt homestay bằng cách: 1. Tìm kiếm homestay phù hợp, 2. Chọn ngày check-in/check-out, 3. Xác nhận thông tin và thanh toán.'
-    },
-    {
-      id: 2,
-      title: 'Chính sách hủy đặt phòng',
-      description: 'Thông tin về việc hủy và hoàn tiền',
-      icon: 'cancel',
-      iconFamily: 'MaterialIcons',
-      category: 'Chính sách',
-      answer: 'Chính sách hủy phòng tùy thuộc vào từng homestay. Thông thường bạn có thể hủy miễn phí trước 24-48h.'
-    },
-    {
-      id: 3,
-      title: 'Thanh toán như thế nào?',
-      description: 'Các phương thức thanh toán được hỗ trợ',
-      icon: 'creditcard',
-      iconFamily: 'AntDesign',
-      category: 'Thanh toán',
-      answer: 'Chúng tôi hỗ trợ thanh toán qua thẻ tín dụng, chuyển khoản ngân hàng, ví điện tử và thanh toán tại chỗ.'
-    },
-    {
-      id: 4,
-      title: 'Xác thực tài khoản',
-      description: 'Cách xác thực và bảo mật tài khoản',
-      icon: 'shield-checkmark-outline',
-      iconFamily: 'Ionicons',
-      category: 'Bảo mật',
-      answer: 'Để xác thực tài khoản, bạn cần cung cấp số điện thoại và email. Chúng tôi sẽ gửi mã OTP để xác nhận.'
-    },
-    {
-      id: 5,
-      title: 'Liên hệ hỗ trợ',
-      description: 'Cách liên hệ khi cần hỗ trợ',
-      icon: 'headset',
-      iconFamily: 'MaterialIcons',
-      category: 'Hỗ trợ',
-      answer: 'Bạn có thể liên hệ qua hotline 1900-xxxx, email support@homestay.vn hoặc chat trực tiếp trong app.'
-    },
-    {
-      id: 6,
-      title: 'Đánh giá homestay',
-      description: 'Cách đánh giá và nhận xét homestay',
-      icon: 'star-outline',
-      iconFamily: 'Ionicons',
-      category: 'Đánh giá',
-      answer: 'Sau khi check-out, bạn có thể đánh giá homestay từ 1-5 sao và viết nhận xét để chia sẻ trải nghiệm.'
-    }
-  ];
+
 
   const CategoryBadge = ({ category }) => (
     <View style={styles.categoryBadge}>
@@ -153,7 +101,7 @@ export default function QAScreen() {
 
         {/* QA Cards */}
         <View style={styles.cardsContainer}>
-          {qaItems.map((item) => (
+          {QAItems.map((item) => (
             <QACard key={item.id} item={item} />
           ))}
         </View>
@@ -170,7 +118,7 @@ export default function QAScreen() {
                 Liên hệ với đội ngũ hỗ trợ của chúng tôi
               </Text>
             </View>
-            <TouchableOpacity style={styles.contactButton} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.contactButton} activeOpacity={0.7} onPress={() => navigation.navigate('Contact')}>
               <Text style={styles.contactButtonText}>Liên hệ</Text>
             </TouchableOpacity>
           </View>

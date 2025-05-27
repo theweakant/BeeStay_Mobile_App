@@ -638,4 +638,149 @@ const PolicyData = [
 ];
 
 
-export { HomestayData, newHomestays, recommendedHomestays, HostData, UserData, BannerData, PolicyData };
+  const QAItems = [
+    {
+      id: 1,
+      title: 'Làm thế nào để đặt homestay?',
+      description: 'Hướng dẫn chi tiết cách đặt phòng homestay',
+      icon: 'home-outline',
+      iconFamily: 'Ionicons',
+      category: 'Đặt phòng',
+      answer: 'Bạn có thể đặt homestay bằng cách: 1. Tìm kiếm homestay phù hợp, 2. Chọn ngày check-in/check-out, 3. Xác nhận thông tin và thanh toán.'
+    },
+    {
+      id: 2,
+      title: 'Chính sách hủy đặt phòng',
+      description: 'Thông tin về việc hủy và hoàn tiền',
+      icon: 'cancel',
+      iconFamily: 'MaterialIcons',
+      category: 'Chính sách',
+      answer: 'Chính sách hủy phòng tùy thuộc vào từng homestay. Thông thường bạn có thể hủy miễn phí trước 24-48h.'
+    },
+    {
+      id: 3,
+      title: 'Thanh toán như thế nào?',
+      description: 'Các phương thức thanh toán được hỗ trợ',
+      icon: 'creditcard',
+      iconFamily: 'AntDesign',
+      category: 'Thanh toán',
+      answer: 'Chúng tôi hỗ trợ thanh toán qua thẻ tín dụng, chuyển khoản ngân hàng, ví điện tử và thanh toán tại chỗ.'
+    },
+    {
+      id: 4,
+      title: 'Xác thực tài khoản',
+      description: 'Cách xác thực và bảo mật tài khoản',
+      icon: 'shield-checkmark-outline',
+      iconFamily: 'Ionicons',
+      category: 'Bảo mật',
+      answer: 'Để xác thực tài khoản, bạn cần cung cấp số điện thoại và email. Chúng tôi sẽ gửi mã OTP để xác nhận.'
+    },
+    {
+      id: 5,
+      title: 'Liên hệ hỗ trợ',
+      description: 'Cách liên hệ khi cần hỗ trợ',
+      icon: 'headset',
+      iconFamily: 'MaterialIcons',
+      category: 'Hỗ trợ',
+      answer: 'Bạn có thể liên hệ qua hotline 1900-xxxx, email support@homestay.vn hoặc chat trực tiếp trong app.'
+    },
+    {
+      id: 6,
+      title: 'Đánh giá homestay',
+      description: 'Cách đánh giá và nhận xét homestay',
+      icon: 'star-outline',
+      iconFamily: 'Ionicons',
+      category: 'Đánh giá',
+      answer: 'Sau khi check-out, bạn có thể đánh giá homestay từ 1-5 sao và viết nhận xét để chia sẻ trải nghiệm.'
+    }
+  ];
+
+
+    const PolicyScreenData = [
+    {
+      id: 1,
+      title: 'Chính sách hủy đặt phòng',
+      icon: 'cancel',
+      iconFamily: 'MaterialIcons',
+      summary: 'Quy định về việc hủy phòng và hoàn tiền',
+      content: [
+        'Khách có thể hủy phòng miễn phí trước 24 giờ check-in',
+        'Hủy phòng muộn có thể bị tính phí một phần',
+        'Hoàn tiền sẽ được xử lý trong 3-5 ngày làm việc',
+        'Trường hợp bất khả kháng sẽ được xem xét đặc biệt'
+      ]
+    },
+    {
+      id: 2,
+      title: 'Thời gian nhận/trả phòng',
+      icon: 'time-outline',
+      iconFamily: 'Ionicons',
+      summary: 'Quy định về giờ check-in và check-out',
+      content: [
+        'Giờ nhận phòng tiêu chuẩn: 14:00',
+        'Giờ trả phòng tiêu chuẩn: 12:00',
+        'Nhận phòng sớm hoặc trả phòng muộn có thể phát sinh phí',
+        'Vui lòng liên hệ chủ nhà để thỏa thuận thời gian phù hợp'
+      ]
+    },
+    {
+      id: 3,
+      title: 'Nội quy homestay',
+      icon: 'home-outline',
+      iconFamily: 'Ionicons',
+      summary: 'Các quy định cần tuân thủ khi lưu trú',
+      content: [
+        'Không hút thuốc trong nhà',
+        'Không tổ chức tiệc tùng mà không có sự đồng ý của chủ nhà',
+        'Chỉ cho phép thú cưng tại những homestay được phép',
+        'Giữ gìn vệ sinh và trật tự chung',
+        'Tôn trọng hàng xóm và không gây ồn ào'
+      ]
+    },
+    {
+      id: 4,
+      title: 'Trách nhiệm của khách',
+      icon: 'person-outline',
+      iconFamily: 'Ionicons',
+      summary: 'Những điều khách cần tuân thủ',
+      content: [
+        'Bảo quản tài sản homestay cẩn thận',
+        'Báo cáo ngay khi có hư hỏng xảy ra',
+        'Tuân thủ đầy đủ nội quy của homestay',
+        'Thanh toán đầy đủ các khoản phí phát sinh',
+        'Cung cấp thông tin chính xác khi đặt phòng'
+      ]
+    },
+    {
+      id: 5,
+      title: 'Trách nhiệm của chủ nhà',
+      icon: 'shield-checkmark-outline',
+      iconFamily: 'Ionicons',
+      summary: 'Cam kết của chủ nhà với khách',
+      content: [
+        'Đảm bảo homestay sạch sẽ và an toàn',
+        'Cung cấp thông tin chính xác về homestay',
+        'Hỗ trợ khách trong suốt thời gian lưu trú',
+        'Bảo mật thông tin cá nhân của khách',
+        'Xử lý khiếu nại một cách nhanh chóng và công bằng'
+      ]
+    },
+    {
+      id: 6,
+      title: 'Chính sách thanh toán',
+      icon: 'card-outline',
+      iconFamily: 'Ionicons',
+      summary: 'Quy định về thanh toán và phí dịch vụ',
+      content: [
+        'Thanh toán qua thẻ tín dụng, chuyển khoản hoặc ví điện tử',
+        'Phí dịch vụ được tính theo quy định của platform',
+        'Không hoàn tiền trong trường hợp vi phạm nội quy',
+        'Phí phát sinh sẽ được thông báo trước khi tính'
+      ]
+    }
+  ];
+
+export {
+  HomestayData, newHomestays, recommendedHomestays, HostData, UserData, BannerData, PolicyData, 
+  QAItems, PolicyScreenData 
+};
