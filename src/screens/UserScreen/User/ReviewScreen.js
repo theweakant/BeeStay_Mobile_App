@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function NotificationScreen() {
+export default function ReviewScreen() {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>NotificationScreen</Text>
+            <Text style={styles.title}>ReviewScreen</Text>
             {/* Add your dashboard components here */}
         </View>
     );

@@ -8,6 +8,9 @@ import SettingScreen from '../../screens/UserScreen/SettingScreen';
 import EditProfileScreen from '../../screens/UserScreen/User/EditProfileScreen';
 import NotificationScreen from '../../screens/UserScreen/User/NotificationScreen';
 import ProfileScreen  from '../../screens/UserScreen/User/ProfileScreen';
+import ReviewScreen from '../../screens/UserScreen/User/ReviewScreen';
+import FavoriteScreen from '../../screens/UserScreen/User/FavoriteScreen';
+import MyOrderScreen from '../../screens/UserScreen/User/MyOrderScreen';
 
 import DetailScreen from '../../screens/UserScreen/DetailScreen';
 
@@ -18,6 +21,7 @@ import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
 //Payment
 import CheckOutScreen from '../../screens/UserScreen/Payment/CheckOutScreen';
 import PaymentMethodScreen from '../../screens/UserScreen/Payment/PaymentMethodScreen';
+import SuccessPaymentScreen from '../../screens/UserScreen/Payment/SuccessPaymentScreen';
 
 //Information
 import ContactScreen from '../../screens/UserScreen/Infomation/ContactScreen';
@@ -67,7 +71,31 @@ export default function UserStackNavigator() {
           headerBackTitleVisible: false,
         }}
       />
-      
+      <Stack.Screen
+        name="Favorite"
+        component={FavoriteScreen}
+        options={{
+          title: 'Yêu thích',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="Review"
+        component={ReviewScreen}
+        options={{
+          title: 'Đánh giá của tôi',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="MyOrder"
+        component={MyOrderScreen}
+        options={{
+          title: 'Đơn hàng của tôi',
+          headerBackTitleVisible: false,
+        }}
+      />
+        
       <Stack.Screen
         name="Notifications"
         component={NotificationScreen}
@@ -116,6 +144,14 @@ export default function UserStackNavigator() {
         component={PaymentMethodScreen}
         options={{
           title: 'Phương thức thanh toán',
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="SuccessPayment"
+        component={SuccessPaymentScreen}
+        options={{
+          title: 'Thanh toán thành công',
           headerBackTitleVisible: false,
         }}
       />

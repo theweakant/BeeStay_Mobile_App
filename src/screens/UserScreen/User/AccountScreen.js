@@ -39,11 +39,11 @@ const AccountScreen = () => {
             <Text style={styles.phoneNumber}>{user.phone}</Text>
             <View style={styles.verificationTag}>
 
-                                  {user.isVerified && (
-                                      <View style={styles.verifiedBadge}>
-                                          <Text style={styles.verifiedText}>✓</Text>
-                                      </View>
-                                  )}
+              {user.isVerified && (
+                <View style={styles.verifiedBadge}>
+                  <Text style={styles.verifiedText}>✓</Text>
+                </View>
+              )}
               <Text style={styles.verificationText}>
                 Người dùng đã xác thực
               </Text>
@@ -55,17 +55,19 @@ const AccountScreen = () => {
         {/* My Page Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Trang của tôi</Text>
-
-          <TouchableOpacity style={styles.itemRow}>
+          <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Notifications')}>
+            <Ionicons name="notifications-outline" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Thông báo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('MyOrder')}>
             <AntDesign name="clockcircleo" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Homestay đã đặt</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.itemRow}>
+          <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Favorite')}>
             <AntDesign name="heart" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Homestay yêu thích</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.itemRow}>
+          <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Review')}>
             <AntDesign name="retweet" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Đánh giá của tôi</Text>
           </TouchableOpacity>
@@ -75,12 +77,10 @@ const AccountScreen = () => {
         {/* Settings Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Cài đặt</Text>
-
-          <TouchableOpacity style={styles.itemRow}>
-            <Ionicons name="notifications-outline" size={20} color="#F5B041" />
-            <Text style={styles.itemText}>Thông báo</Text>
+          <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Setting')}>
+            <AntDesign name="Safety" size={20} color="#F5B041" />
+            <Text style={styles.itemText}>Tài khoản đã liên kết</Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.itemRow}>
             <Ionicons name="language" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Ngôn ngữ</Text>
