@@ -2,9 +2,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 // import { useAuth } from '../redux/hooks/useAuth';
-import AdminTabNavigator from './AdminTabNavigator';
-import HostTabNavigator from './HostTabNavigator';
+
 import UserStack  from './User/UserStack'; 
+import HostStack  from './Host/HostStack'; 
+
 
 import AuthStack from './AuthStack';
 
@@ -27,7 +28,8 @@ const AppNavigator = () => {
 
     // Tạm thời bỏ phân quyền để dễ design UI
   // return <AuthStack />; 
-  return <UserStack />; 
+  // return <UserStack />; 
+  return <HostStack />; 
   // return <HostTabNavigator />; 
   // return <AdminTabNavigator />; 
 };

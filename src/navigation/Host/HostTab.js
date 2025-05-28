@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 
 //Manage
-import HostDashboardScreen from '../../screens/HostScreen/Manage/HostDashboardScreen';
+import HostHomeScreen from '../../screens/HostScreen/Manage/HostHomeScreen';
 import EarningScreen from '../../screens/HostScreen/Manage/EarningScreen';
 import ManageReviewScreen from '../../screens/HostScreen/Manage/ManageReviewScreen';
 import MyHomestayScreen from '../../screens/HostScreen/Manage/MyHomestayScreen';
@@ -23,41 +23,47 @@ export default function HostTabNavigator() {
         headerShown: false,
       }}
     >
-      <Tab.Screen
-        name="HostDashboard"
-        component={HostDashboardScreen}
-        options={{
-          tabBarIcon: ({ color }) => <Home size={22} color={color} />,
-        }}
-      />
-      <Tab.Screen
-        name="MyHomestay"
-        component={MyHomestayScreen}
-        options={{
-          tabBarIcon: ({ color }) => <Search size={22} color={color} />,
-        }}
-      />
-      <Tab.Screen
-        name="Earning"
-        component={EarningScreen}
-        options={{
-          tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
-        }}
-      />
-      <Tab.Screen
-        name="ManageReview"
-        component={ManageReviewScreen}
-        options={{
-          tabBarIcon: ({ color }) => <Gift size={22} color={color} />,
-        }}
-      />
-      <Tab.Screen
-        name="HostProfile"
-        component={HostProfileScren}
-        options={{
-          tabBarIcon: ({ color }) => <User size={22} color={color} />,
-        }}
-      />
+    <Tab.Screen
+      name="Trang Chủ"
+      component={HostHomeScreen}
+      options={{
+        tabBarLabel: "Trang Chủ",
+        tabBarIcon: ({ color }) => <Home size={22} color={color} />,
+      }}
+    />
+    <Tab.Screen
+      name="Homestays"
+      component={MyHomestayScreen}
+      options={{
+        tabBarLabel: "Chỗ Ở",
+        tabBarIcon: ({ color }) => <Search size={22} color={color} />,
+      }}
+    />
+    <Tab.Screen
+      name="Earning"
+      component={EarningScreen}
+      options={{
+        tabBarLabel: "Thu Nhập",
+        tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
+      }}
+    />
+    <Tab.Screen
+      name="ManageReview"
+      component={ManageReviewScreen}
+      options={{
+        tabBarLabel: "Đánh Giá",
+        tabBarIcon: ({ color }) => <Gift size={22} color={color} />,
+      }}
+    />
+    <Tab.Screen
+      name="HostProfile"
+      component={HostProfileScren}
+      options={{
+        tabBarLabel: "Hồ Sơ",
+        tabBarIcon: ({ color }) => <User size={22} color={color} />,
+      }}
+    />
+
     </Tab.Navigator>
   );
 }
