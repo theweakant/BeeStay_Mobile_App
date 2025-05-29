@@ -1,22 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  Modal,
-  Alert,
-  Switch,
-  Dimensions,
 } from 'react-native';
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 45) / 2; // 45 = padding (15*2) + gap (15)
+// Import components
+import SearchFilter from '../../../components/SearchFilter';
+import ItemList from '../../../components/ItemList';
+import ItemList from '../../../components/ItemList';
 
-// Data mẫu cho homestay
+// Sample data
 const sampleHomestays = [
   {
     id: 1,
@@ -99,15 +93,17 @@ const sampleHomestays = [
 ];
 
 export default function MyHomestayScreen() {
+  // State management
   const [homestays, setHomestays] = useState(sampleHomestays);
   const [filteredHomestays, setFilteredHomestays] = useState(sampleHomestays);
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterRating, setFilterRating] = useState('all');
   const [searchText, setSearchText] = useState('');
   const [selectedHomestay, setSelectedHomestay] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
 
-  // Lọc homestay
+  // Filter logic
   const applyFilters = () => {
     let filtered = homestays;
 
@@ -130,24 +126,27 @@ export default function MyHomestayScreen() {
     setFilteredHomestays(filtered);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     applyFilters();
   }, [filterStatus, filterRating, searchText, homestays]);
 
-  // Toggle trạng thái homestay
+  // Check if filters are active
+  const hasActiveFilters = filterStatus !== 'all' || filterRating !== 'all';
+
+  // Toggle homestay status
   const toggleHomestayStatus = (id) => {
     setHomestays(prev => prev.map(h => 
       h.id === id ? { ...h, status: h.status === 'active' ? 'inactive' : 'active' } : h
     ));
   };
 
-  // Xem chi tiết
+  // View details
   const viewDetails = (homestay) => {
     setSelectedHomestay(homestay);
-    setModalVisible(true);
+    setDetailModalVisible(true);
   };
 
-  // Format tiền tệ
+  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -155,114 +154,19 @@ export default function MyHomestayScreen() {
     }).format(amount);
   };
 
-  // Render item cho FlatList
-  const renderHomestayItem = ({ item, index }) => (
-    <View style={[styles.cardContainer, { marginRight: index % 2 === 0 ? 15 : 0 }]}>
-      <View style={styles.card}>
-        <Image source={{ uri: item.image }} style={styles.cardImage} />
-        
-        {item.promotion && (
-          <View style={[styles.promotionBadge, 
-            { backgroundColor: item.promotion.type === 'discount' ? '#FF6B35' : '#4CAF50' }
-          ]}>
-            <Text style={styles.promotionText}>{item.promotion.banner}</Text>
-          </View>
-        )}
+  // Handle filter modal
+  const handleFilterPress = () => {
+    setFilterModalVisible(true);
+  };
 
-        <View style={styles.cardContent}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle} numberOfLines={2}>{item.name}</Text>
-            <Switch
-              value={item.status === 'active'}
-              onValueChange={() => toggleHomestayStatus(item.id)}
-              trackColor={{ false: '#767577', true: '#4CAF50' }}
-              thumbColor={item.status === 'active' ? '#fff' : '#f4f3f4'}
-              style={styles.switch}
-            />
-          </View>
+  const handleFilterClose = () => {
+    setFilterModalVisible(false);
+  };
 
-          <Text style={styles.cardLocation} numberOfLines={1}>📍 {item.location}</Text>
-          <Text style={styles.cardPrice}>{formatCurrency(item.price)}/đêm</Text>
-          
-          <View style={styles.cardStats}>
-            <Text style={styles.cardRating} numberOfLines={1}>⭐ {item.rating}</Text>
-            <Text style={styles.cardBookings} numberOfLines={1}>📅 {item.bookings}</Text>
-          </View>
-
-          <View style={styles.cardActions}>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.viewButton]}
-              onPress={() => viewDetails(item)}
-            >
-              <Text style={styles.actionButtonText}>👁️</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.editButton]}
-              onPress={() => Alert.alert('Sửa', `Sửa ${item.name}`)}
-            >
-              <Text style={styles.actionButtonText}>✏️</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.promotionButton]}
-              onPress={() => Alert.alert('Khuyến mãi', `Thêm KM cho ${item.name}`)}
-            >
-              <Text style={styles.actionButtonText}>➕</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-
-  // Header component cho FlatList
-  const ListHeaderComponent = () => (
-    <View style={styles.filterContainer}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Tìm kiếm homestay..."
-        value={searchText}
-        onChangeText={setSearchText}
-      />
-
-      <View style={styles.filterRow}>
-        <View style={styles.filterGroup}>
-          <Text style={styles.filterLabel}>Trạng thái:</Text>
-          <View style={styles.filterButtons}>
-            {['all', 'active', 'inactive'].map(status => (
-              <TouchableOpacity
-                key={status}
-                style={[styles.filterButton, filterStatus === status && styles.activeFilter]}
-                onPress={() => setFilterStatus(status)}
-              >
-                <Text style={[styles.filterButtonText, filterStatus === status && styles.activeFilterText]}>
-                  {status === 'all' ? 'Tất cả' : status === 'active' ? 'Hoạt động' : 'Tạm dừng'}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.filterGroup}>
-          <Text style={styles.filterLabel}>Đánh giá:</Text>
-          <View style={styles.filterButtons}>
-            {['all', '4.5', '4.0'].map(rating => (
-              <TouchableOpacity
-                key={rating}
-                style={[styles.filterButton, filterRating === rating && styles.activeFilter]}
-                onPress={() => setFilterRating(rating)}
-              >
-                <Text style={[styles.filterButtonText, filterRating === rating && styles.activeFilterText]}>
-                  {rating === 'all' ? 'Tất cả' : `${rating}+ ⭐`}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </View>
-    </View>
-  );
+  const handleDetailModalClose = () => {
+    setDetailModalVisible(false);
+    setSelectedHomestay(null);
+  };
 
   return (
     <View style={styles.container}>
@@ -272,78 +176,37 @@ export default function MyHomestayScreen() {
         <Text style={styles.subtitle}>{filteredHomestays.length} homestay</Text>
       </View>
 
-      {/* FlatList với 2 cột */}
-      <FlatList
-        data={filteredHomestays}
-        renderItem={renderHomestayItem}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
-        ListHeaderComponent={ListHeaderComponent}
-        contentContainerStyle={styles.flatListContent}
-        columnWrapperStyle={styles.row}
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+      {/* Search and Filter */}
+      <SearchFilter
+        searchValue={searchText}
+        onSearchChange={setSearchText}
+        searchPlaceholder="Tìm kiếm homestay..."
+        filterVisible={filterModalVisible}
+        onFilterClose={handleFilterClose}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        filterRating={filterRating}
+        setFilterRating={setFilterRating}
+        onFilterPress={handleFilterPress}
+        hasActiveFilters={hasActiveFilters}
+        showLogo={false}
       />
 
-      {/* Modal xem chi tiết */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            {selectedHomestay && (
-              <>
-                <Text style={styles.modalTitle}>{selectedHomestay.name}</Text>
-                <Image source={{ uri: selectedHomestay.image }} style={styles.modalImage} />
-                
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Địa điểm:</Text>
-                  <Text style={styles.detailValue}>{selectedHomestay.location}</Text>
-                </View>
-                
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Giá:</Text>
-                  <Text style={styles.detailValue}>{formatCurrency(selectedHomestay.price)}/đêm</Text>
-                </View>
-                
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Đánh giá:</Text>
-                  <Text style={styles.detailValue}>⭐ {selectedHomestay.rating} ({selectedHomestay.reviews} đánh giá)</Text>
-                </View>
-                
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Lượt đặt:</Text>
-                  <Text style={styles.detailValue}>{selectedHomestay.bookings} lượt</Text>
-                </View>
-                
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Doanh thu:</Text>
-                  <Text style={styles.detailValue}>{formatCurrency(selectedHomestay.revenue)}</Text>
-                </View>
-                
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Trạng thái:</Text>
-                  <Text style={[styles.detailValue, 
-                    { color: selectedHomestay.status === 'active' ? '#4CAF50' : '#FF5722' }
-                  ]}>
-                    {selectedHomestay.status === 'active' ? 'Đang hoạt động' : 'Tạm dừng'}
-                  </Text>
-                </View>
+      {/* Homestay List */}
+      <ItemList
+        homestays={filteredHomestays}
+        toggleHomestayStatus={toggleHomestayStatus}
+        viewDetails={viewDetails}
+        formatCurrency={formatCurrency}
+      />
 
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.closeButtonText}>Đóng</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
+      {/* Detail Modal */}
+      <ItemList
+        visible={detailModalVisible}
+        onClose={handleDetailModalClose}
+        homestay={selectedHomestay}
+        formatCurrency={formatCurrency}
+      />
     </View>
   );
 }
@@ -369,218 +232,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 5,
-  },
-  flatListContent: {
-    padding: 15,
-  },
-  row: {
-    justifyContent: 'space-between',
-  },
-  filterContainer: {
-    backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-    fontSize: 16,
-  },
-  filterRow: {
-    gap: 15,
-  },
-  filterGroup: {
-    marginBottom: 10,
-  },
-  filterLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  filterButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  filterButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: '#f0f0f0',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  activeFilter: {
-    backgroundColor: '#2196F3',
-    borderColor: '#2196F3',
-  },
-  filterButtonText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  activeFilterText: {
-    color: '#fff',
-  },
-  cardContainer: {
-    width: CARD_WIDTH,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    overflow: 'hidden',
-  },
-  cardImage: {
-    width: '100%',
-    height: 120,
-  },
-  promotionBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  promotionText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  cardContent: {
-    padding: 12,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-    flex: 1,
-    marginRight: 8,
-  },
-  switch: {
-    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
-  },
-  cardLocation: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 5,
-  },
-  cardPrice: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#2196F3',
-    marginBottom: 8,
-  },
-  cardStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  cardRating: {
-    fontSize: 11,
-    color: '#666',
-  },
-  cardBookings: {
-    fontSize: 11,
-    color: '#666',
-  },
-  cardActions: {
-    flexDirection: 'row',
-    gap: 4,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  viewButton: {
-    backgroundColor: '#4CAF50',
-  },
-  editButton: {
-    backgroundColor: '#FF9800',
-  },
-  promotionButton: {
-    backgroundColor: '#9C27B0',
-  },
-  actionButtonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    maxHeight: '80%',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  modalImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '600',
-  },
-  detailValue: {
-    fontSize: 14,
-    color: '#333',
-    flex: 1,
-    textAlign: 'right',
-  },
-  closeButton: {
-    backgroundColor: '#2196F3',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

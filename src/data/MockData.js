@@ -425,7 +425,6 @@ const HostData = [
 
   averageHomestayRating: 4.8,
   homeStay: [1, 2],
-  totalRooms: 2,
 
   joinedDate: '2022-06-15',
   isSuperHost: true,
