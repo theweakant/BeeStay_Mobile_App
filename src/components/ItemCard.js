@@ -13,21 +13,13 @@ import {
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 45) / 2;
 
-const ItemCard = ({ 
-  item, 
-  index, 
-  toggleHomestayStatus, 
-  viewDetails, 
-  formatCurrency 
-}) => (
+const ItemCard = ({ item, index, toggleHomestayStatus, viewDetails, formatCurrency }) => (
   <View style={[styles.cardContainer, { marginRight: index % 2 === 0 ? 15 : 0 }]}>
     <View style={styles.card}>
       <Image source={{ uri: item.image }} style={styles.cardImage} />
-      
+
       {item.promotion && (
-        <View style={[styles.promotionBadge, 
-          { backgroundColor: item.promotion.type === 'discount' ? '#FF6B35' : '#4CAF50' }
-        ]}>
+        <View style={[styles.promotionBadge, { backgroundColor: item.promotion.type === 'discount' ? '#FF6B35' : '#4CAF50' }]}>
           <Text style={styles.promotionText}>{item.promotion.banner}</Text>
         </View>
       )}
@@ -46,28 +38,28 @@ const ItemCard = ({
 
         <Text style={styles.cardLocation} numberOfLines={1}>📍 {item.location}</Text>
         <Text style={styles.cardPrice}>{formatCurrency(item.price)}/đêm</Text>
-        
+
         <View style={styles.cardStats}>
           <Text style={styles.cardRating} numberOfLines={1}>⭐ {item.rating}</Text>
           <Text style={styles.cardBookings} numberOfLines={1}>📅 {item.bookings}</Text>
         </View>
 
         <View style={styles.cardActions}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionButton, styles.viewButton]}
             onPress={() => viewDetails(item)}
           >
             <Text style={styles.actionButtonText}>👁️</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionButton, styles.editButton]}
             onPress={() => Alert.alert('Sửa', `Sửa ${item.name}`)}
           >
             <Text style={styles.actionButtonText}>✏️</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionButton, styles.promotionButton]}
             onPress={() => Alert.alert('Khuyến mãi', `Thêm KM cho ${item.name}`)}
           >
@@ -80,9 +72,7 @@ const ItemCard = ({
 );
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    width: CARD_WIDTH,
-  },
+  cardContainer: { width: CARD_WIDTH },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,

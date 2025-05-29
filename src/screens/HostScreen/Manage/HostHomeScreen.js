@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const HostHomeScreen = () => {
+  const navigation = useNavigation();
   const stats = [
     { label: 'Đánh giá TB', value: '4.2⭐', color: '#4CAF50' },
     { label: 'Doanh thu', value: '23M', color: '#2196F3' },
@@ -139,7 +141,7 @@ const HostHomeScreen = () => {
                 <Text style={styles.profileSubtitle}>Quản lý Homestay Premium</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.notificationButton}>
+            <TouchableOpacity style={styles.notificationButton} onPress={() => navigation.navigate('HostNotification')}>
               <Text style={styles.notificationIcon}>🔔</Text>
               <View style={styles.notificationDot} />
             </TouchableOpacity>

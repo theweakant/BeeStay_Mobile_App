@@ -3,6 +3,8 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HostTab from './HostTab';
 
+import HostNotificationScreen from '../../screens/HostScreen/HostNotificationScreen';
+
 import { Check } from 'lucide-react-native';
 
 const Stack = createNativeStackNavigator();
@@ -20,8 +22,18 @@ export default function UserStackNavigator() {
         component={HostTab}
         options={{ headerShown: false }} 
       />
+
+      <Stack.Screen
+        name="HostNotification"
+        component={HostNotificationScreen}
+        options={{
+          title: 'Thông báo',
+          headerBackTitleVisible: false,
+        }}
+      />
       
 
     </Stack.Navigator>
   );
 }
+

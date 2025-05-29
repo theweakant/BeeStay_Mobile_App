@@ -3,15 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  FlatList,
-  Image,
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import HomestayList from '../../components/SearchSreen/HomestayList';
-
+import ItemList from '../../components/ItemList';
 
 export default function SearchScreen() {
   // Sample data for homestays
@@ -48,43 +44,52 @@ export default function SearchScreen() {
     },
   ];
 
+  // Handler functions
+  const toggleHomestayStatus = (id) => {
+    console.log('Toggle homestay status for id:', id);
+    // Implement your toggle logic here
+  };
+
+  const viewDetails = (item) => {
+    console.log('View details for:', item.name);
+    // Implement navigation to details screen
+  };
+
+  const formatCurrency = (price) => {
+    // Simple currency formatting - you can customize this
+    return price;
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
 
-        {/* Header Section */}
-        <View style={styles.headerSection}>
-          <Text style={styles.headerTitle}>Đề xuất</Text>
-          <Text style={styles.headerSubtitle}>
-            Đăng ký ngay để nhận nhiều ưu đãi hấp dẫn
-          </Text>
-          <TouchableOpacity>
-            <Text style={styles.loginRegisterText}>Đăng nhập/ Đăng ký</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Header Section */}
+      <View style={styles.headerSection}>
+        <Text style={styles.headerTitle}>Đề xuất</Text>
+        <Text style={styles.headerSubtitle}>
+          Đăng ký ngay để nhận nhiều ưu đãi hấp dẫn
+        </Text>
+        <TouchableOpacity>
+          <Text style={styles.loginRegisterText}>Đăng nhập/ Đăng ký</Text>
+        </TouchableOpacity>
+      </View>
 
-        {/* Nearby Section */}
-        <View style={styles.nearbySection}>
-          <Text style={styles.sectionTitle}>Gần bạn nhất</Text>
-          <Text style={styles.sectionSubtitle}>
-            Các homestay gần bạn có đánh giá tốt nhất
-          </Text>
+      {/* Nearby Section */}
+      <View style={styles.nearbySection}>
+        <Text style={styles.sectionTitle}>Gần bạn nhất</Text>
+        <Text style={styles.sectionSubtitle}>
+          Các homestay gần bạn có đánh giá tốt nhất
+        </Text>
 
-          {/* Homestay List */}
-          <FlatList
-            data={homestays}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => <HomestayList homestay={item} />}
-            numColumns={2}
-            columnWrapperStyle={{
-              justifyContent: 'space-between',
-              marginBottom: 16,
-            }}
-            showsVerticalScrollIndicator={false}
-          />
-
-        </View>
-
+        {/* Use ItemList component correctly */}
+        <ItemList
+          homestays={homestays}
+          toggleHomestayStatus={toggleHomestayStatus}
+          viewDetails={viewDetails}
+          formatCurrency={formatCurrency}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -93,9 +98,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  container: {
-    flex: 1,
   },
   headerSection: {
     paddingHorizontal: 16,
@@ -120,6 +122,7 @@ const styles = StyleSheet.create({
   nearbySection: {
     paddingHorizontal: 16,
     paddingTop: 16,
+    flex: 1, // Add this to allow ItemList to expand
   },
   sectionTitle: {
     fontSize: 20,
