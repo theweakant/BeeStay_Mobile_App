@@ -12,6 +12,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import SearchBar from '../../../components/SearchBar'
 
 const { width } = Dimensions.get('window');
 

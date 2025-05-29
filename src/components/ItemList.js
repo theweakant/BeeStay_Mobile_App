@@ -6,7 +6,7 @@ const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 45) / 2;
 
 const ItemList = ({ homestays, toggleHomestayStatus, viewDetails, formatCurrency }) => {
-  const renderHomestayItem = ({ item, index }) => (
+  const rendeItem = ({ item, index }) => (
     <ItemCard
       item={item}
       index={index}
@@ -19,7 +19,7 @@ const ItemList = ({ homestays, toggleHomestayStatus, viewDetails, formatCurrency
   return (
     <FlatList
       data={homestays}
-      renderItem={renderHomestayItem}
+      renderItem={rendeItem}
       keyExtractor={(item) => item.id.toString()}
       numColumns={2}
       contentContainerStyle={styles.flatListContent}

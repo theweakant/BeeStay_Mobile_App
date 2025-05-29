@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Search from './Search';
-import Filter from './Filter';
+import FilterIcon from './FilterIcon';
 
 const SearchFilter = ({
   // Search props
@@ -10,7 +10,7 @@ const SearchFilter = ({
   searchPlaceholder = "Tìm kiếm homestay...",
   showLogo = false,
   
-  // Filter props
+  // FilterIcon props
   filterVisible,
   onFilterClose,
   filterStatus,
@@ -31,7 +31,7 @@ const SearchFilter = ({
         showLogo={showLogo}
       />
       
-      <Filter
+      <FilterIcon
         visible={filterVisible}
         onClose={onFilterClose}
         filterStatus={filterStatus}

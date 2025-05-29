@@ -893,3 +893,65 @@ export {
   QAItems, PolicyScreenData,
   DashboardStats, DashboardItems, DashboardSchedule
 };
+
+
+export const earningsData = {
+  totalEarnings: 125000000,
+  totalBookings: 342,
+  profitableBookings: 298,
+  monthlyData: [
+    { month: 'Jan', food: 2500000, drink: 1200000, snack: 800000, dessert: 600000 },
+    { month: 'Feb', food: 3200000, drink: 1500000, snack: 900000, dessert: 700000 },
+    { month: 'Mar', food: 4100000, drink: 1800000, snack: 1200000, dessert: 900000 },
+    { month: 'Apr', food: 1800000, drink: 800000, snack: 500000, dessert: 400000 },
+    { month: 'May', food: 3800000, drink: 1600000, snack: 1100000, dessert: 800000 },
+    { month: 'Jun', food: 3500000, drink: 1400000, snack: 1000000, dessert: 750000 },
+  ],
+  homestayEarnings: [
+    {
+      id: 1,
+      name: 'Villa Sunset Beach',
+      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300',
+      totalEarnings: 54000000,
+      bookings: 45,
+      avgPrice: 1200000,
+      occupancyRate: 85,
+    },
+    {
+      id: 2,
+      name: 'Cozy Mountain House',
+      image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=300',
+      totalEarnings: 25600000,
+      bookings: 32,
+      avgPrice: 800000,
+      occupancyRate: 72,
+    },
+    {
+      id: 3,
+      name: 'Urban Apartment',
+      image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300',
+      totalEarnings: 10800000,
+      bookings: 18,
+      avgPrice: 600000,
+      occupancyRate: 45,
+    },
+    {
+      id: 4,
+      name: 'Beachfront Bungalow',
+      image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=300',
+      totalEarnings: 117000000,
+      bookings: 78,
+      avgPrice: 1500000,
+      occupancyRate: 92,
+    },
+  ],
+};
+
+export const chartLegendData = [
+  { label: 'Villa', color: '#3B82F6' },
+  { label: 'Apartment', color: '#F59E0B' },
+  { label: 'House', color: '#EF4444' },
+  { label: 'Bungalow', color: '#10B981' },
+];
+
+export const homestayTabs = ['Tất cả', 'Villa', 'Apartment', 'House'];

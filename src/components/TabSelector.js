@@ -1,38 +1,18 @@
+// components/TabSwitcher.js
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const TabSelector = ({ 
-  tabs = [],
-  activeTabIndex = 0,
-  onTabPress,
-  containerStyle,
-  tabStyle,
-  activeTabStyle,
-  textStyle,
-  activeTextStyle
-}) => {
+const TabSwitcher = ({ activeTab, onTabChange, tabs }) => {
   return (
-    <View style={[styles.tabContainer, containerStyle]}>
-      {tabs.map((tab, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.tab,
-            tabStyle,
-            activeTabIndex === index && styles.activeTab,
-            activeTabIndex === index && activeTabStyle
-          ]}
-          onPress={() => onTabPress && onTabPress(index, tab)}
+    <View style={styles.tabContainer}>
+      {tabs.map((tab) => (
+        <TouchableOpacity 
+          key={tab.key}
+          style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+          onPress={() => onTabChange(tab.key)}
         >
-          <Text
-            style={[
-              styles.tabText,
-              textStyle,
-              activeTabIndex === index && styles.activeTabText,
-              activeTabIndex === index && activeTextStyle
-            ]}
-          >
-            {tab}
+          <Text style={[styles.tabText, activeTab === tab.key && styles.activeTabText]}>
+            {tab.label}
           </Text>
         </TouchableOpacity>
       ))}
@@ -43,27 +23,28 @@ const TabSelector = ({
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    marginBottom: 15,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 4,
   },
   tab: {
-    paddingHorizontal: 16,
+    flex: 1,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-    marginRight: 10,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: 'center',
   },
   activeTab: {
-    backgroundColor: '#FF6B00',
+    backgroundColor: '#FF6B35',
   },
   tabText: {
     fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#6c757d',
   },
   activeTabText: {
     color: '#fff',
   },
 });
 
-export default TabSelector;
+export default TabSwitcher;
