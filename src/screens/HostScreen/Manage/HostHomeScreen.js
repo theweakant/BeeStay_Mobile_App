@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import  SearchBar  from '../../../components/SearchBar';
 
 const HostHomeScreen = () => {
   const dashboardItems = [
