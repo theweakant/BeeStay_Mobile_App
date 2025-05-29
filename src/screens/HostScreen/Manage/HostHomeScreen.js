@@ -8,59 +8,16 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { DashboardStats, DashboardItems, DashboardSchedule, HostData } from '../../../data/MockData';
 
 const HostHomeScreen = () => {
   const navigation = useNavigation();
-  const stats = [
-    { label: 'Đánh giá TB', value: '4.2⭐', color: '#4CAF50' },
-    { label: 'Doanh thu', value: '23M', color: '#2196F3' },
-    { label: 'Tỉ lệ hủy', value: '4.8%', color: '#FF9800' },
-  ];  
+  const currentHost = HostData.find((host) => host.id === 1); // Hoặc lấy từ context/navigation params
 
-  const dashboardItems = [
-    { 
-      id: 1, 
-      title: 'Quản Lý Phòng', 
-      subtitle: '8 phòng đang đặt\n2 phòng cần bảo trì', 
-      color: '#E3F2FD', 
-      textColor: '#1976D2', 
-      icon: '🏠' 
-    },
-    { 
-      id: 2, 
-      title: 'Khách Sắp Tới', 
-      subtitle: '5 lượt check-in hôm nay', 
-      color: '#F3E5F5', 
-      textColor: '#7B1FA2', 
-      icon: '👥' 
-    },
-    { 
-      id: 3, 
-      title: 'Đánh Giá', 
-      subtitle: '5 đánh giá tốt\n2 đang chờ phản hồi', 
-      color: '#E8F5E8', 
-      textColor: '#388E3C', 
-      icon: '⭐' 
-    },
-    { 
-      id: 4, 
-      title: 'Đơn Chờ Xử Lý', 
-      subtitle: '2 đơn đặt chờ xác nhận', 
-      color: '#FFF3E0', 
-      textColor: '#F57C00', 
-      icon: '📋' 
-    },
-  ];
-
-  const todaySchedule = [
-    { guestName: 'Thu Hà', time: '09:00', people: '5 người', status: 'check-in' },
-    { guestName: 'Anh Thy', time: '14:30', people: '2 người', status: 'check-in' },
-    { guestName: 'Minh Tuấn', time: '11:00', people: '3 người', status: 'check-out' },
-  ];
 
   const renderStats = () => (
     <View style={styles.statsContainer}>
-      {stats.map((item, index) => (
+      {DashboardStats.map((item, index) => (
         <View key={index} style={styles.statCard}>
           <Text style={[styles.statValue, { color: item.color }]}>
             {item.value}
@@ -73,7 +30,7 @@ const HostHomeScreen = () => {
 
   const renderDashboard = () => (
     <View style={styles.dashboardGrid}>
-      {dashboardItems.map((item) => (
+      {DashboardItems.map((item) => (
         <TouchableOpacity
           key={item.id}
           style={[styles.dashboardItem, { backgroundColor: item.color }]}
@@ -93,12 +50,12 @@ const HostHomeScreen = () => {
 
   const renderTodaySchedule = () => (
     <View style={styles.scheduleContainer}>
-      {todaySchedule.map((item, index) => (
+      {DashboardSchedule.map((item, index) => (
         <View 
           key={index} 
           style={[
             styles.scheduleItem,
-            index === todaySchedule.length - 1 && styles.scheduleItemLast
+            index === DashboardSchedule.length - 1 && styles.scheduleItemLast
           ]}
         >
           <View style={styles.scheduleTime}>
@@ -130,16 +87,15 @@ const HostHomeScreen = () => {
         <View style={styles.header}>
           <View style={styles.profileSection}>
             <View style={styles.profileInfo}>
-              <Image 
-                source={{ 
-                  uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' 
-                }}
-                style={styles.profileImage}
-              />
-              <View style={styles.profileText}>
-                <Text style={styles.profileName}>Chào bạn, Nam!</Text>
-                <Text style={styles.profileSubtitle}>Quản lý Homestay Premium</Text>
-              </View>
+            <Image 
+              source={{ uri: currentHost.avatar }}
+              style={styles.profileImage}
+            />
+            <View style={styles.profileText}>
+              <Text style={styles.profileName}>Chào bạn, {currentHost.name.split(' ')[0]}!</Text>
+              <Text style={styles.profileSubtitle}>Quản lý Homestay tại {currentHost.location.city}</Text>
+            </View>
+
             </View>
             <TouchableOpacity style={styles.notificationButton} onPress={() => navigation.navigate('HostNotification')}>
               <Text style={styles.notificationIcon}>🔔</Text>

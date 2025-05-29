@@ -32,6 +32,8 @@ const HomestayData = [
         date: '2025-03-15'
       }
     ],
+
+
  
     priceOnSalePerNight: 129000,
     priceOriginalPerNight: 180000,
@@ -84,324 +86,381 @@ const HomestayData = [
 
     availableDates: ['2025-03-20', '2025-03-21'],
 
+    bookedSuccessCount: 5,
+    bookingCount: 20,
+    totalRevenue: 6500000,
+
   },
 
-  {
-    id: 2,
-    name: 'PHÒNG VIEW HỒ',
-    host: {
-      name: 'Trần Thị B',
-      phone: '0912345678',
-      email: 'tranb@example.com',
-      rating: 4.6
-    },
-
-    location:{
-      address: '123 Wall Street, Đà Lạt, Lâm Đồng',
-      district: 'District 3',
-      city: 'Đà Lạt',
-      province: 'Lâm Đồng',
-    },
-    distanceToCenter: 3.5,
-
-    averageRating: 4.7,
-    reviewCount: 25,
-    reviews: [
-      {
-        userId: 2,
-        name: 'Hoàng Nam',
-        rating: 5.0,
-        comment: 'Phòng đẹp, sát hồ Xuân Hương, rất chill!',
-        date: '2025-03-10'
-      }
-    ],
-
-    priceOnSalePerNight: 219000,
-    priceOriginalPerNight: 290000,
-    discountPercentage: 25,
-
-    imageURL: 'https://khonhamaudep.com/wp-content/uploads/2024/11/mau-nha-homestay-dep-22.jpg',
-    imageList: [
-      'https://example.com/images/room2_1.jpg',
-      'https://example.com/images/room2_2.jpg',
-      'https://example.com/images/room2_3.jpg'
-    ],
-    videoTourUrl: 'https://youtube.com/watch?v=abc123xyz',
-
-    description: 'Phòng có ban công hướng hồ, thoáng mát, phù hợp nghỉ dưỡng cặp đôi.',
-    features: ['Ban công', 'Giường lớn', 'Máy lạnh', 'TV màn hình phẳng', 'View hồ'],
-    amenities: {
-      wifi: true,
-      airConditioner: true,
-      kitchen: false,
-      privateBathroom: true,
-      pool: false,
-      petAllowed: false,
-      parking: true,
-      balcony: true,
-      bbqArea: false,
-      roomService: true,
-      securityCamera: true
-    },
-    roomType: 'Phòng đôi',
-    roomCount: 6,
-    maxGuests: 2,
-    bedCount: 1,
-    bathroomCount: 1,
-
-    policies: {
-      isRefundable: false,
-      allowPet: false,
-      allowSmoking: false
-    },
-
-    checkIn: '2025-03-20T15:00:00+07:00',
-    checkOut: '2025-03-21T11:00:00+07:00',
-
-    isOnSale: false,
-    isAvailable: true,
-    isInstantBook: true,
-    isRecommended: true,
-    availableDates: ['2025-03-20', '2025-03-21', '2025-03-22']
-  }
-  ,
-  {
-    id: 3,
-    name: 'PHÒNG GIA ĐÌNH 3 GIƯỜNG',
-    host: {
-      name: 'Lê Văn C',
-      phone: '0988112233',
-      email: 'levanc@example.com',
-      rating: 4.9
-    },
-
-      location:{
-        address: '123 Wall Street, Đà Lạt, Lâm Đồng',
-        district: 'District 3',
-        city: 'Đà Lạt',
-        province: 'Lâm Đồng',
-      },
-      distanceToCenter: 3.5,
-
-    averageRating: 4.3,
-    reviewCount: 18,
-    reviews: [
-      {
-        userId: 3,
-        name: 'Ngọc Hân',
-        rating: 4.0,
-        comment: 'Phòng rộng, phù hợp đi nhóm bạn, khu vực yên tĩnh.',
-        date: '2025-04-01'
-      }
-    ],
-
-    priceOnSalePerNight: 349000,
-    priceOriginalPerNight: 430000,
-    discountPercentage: 19,
-
-    imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
-    imageList: [
-      'https://example.com/images/room3_1.jpg',
-      'https://example.com/images/room3_2.jpg',
-      'https://example.com/images/room3_3.jpg'
-    ],
-    videoTourUrl: 'https://youtube.com/watch?v=xyz789abc',
-
-    description: 'Phòng gia đình rộng rãi, có 3 giường đơn, phù hợp nhóm 4-5 người.',
-    features: ['3 Giường đơn', 'Phòng tắm riêng', 'Có bếp nấu', 'Ban công', 'View đồi thông'],
-    amenities: {
-      wifi: true,
-      airConditioner: true,
-      kitchen: true,
-      privateBathroom: true,
-      pool: false,
-      petAllowed: false,
-      parking: true,
-      balcony: true,
-      bbqArea: true,
-      roomService: false,
-      securityCamera: true
-    },
-    roomType: 'Phòng gia đình',
-    roomCount: 4,
-    maxGuests: 5,
-    bedCount: 3,
-    bathroomCount: 1,
-
-    policies: {
-      isRefundable: true,
-      allowPet: false,
-      allowSmoking: true
-    },
-
-    checkIn: '2025-03-20T13:30:00+07:00',
-    checkOut: '2025-03-21T12:00:00+07:00',
-
-    isOnSale: true,
-    isAvailable: true,
-    isInstantBook: false,
-    isRecommended: true,
-    availableDates: ['2025-03-20', '2025-03-21', '2025-03-22', '2025-03-23']
+{
+  id: 2,
+  name: 'PHÒNG VIEW HỒ',
+  host: {
+    name: 'Trần Thị B',
+    phone: '0912345678',
+    email: 'tranb@example.com',
+    rating: 4.6
   },
+  location: {
+    address: '123 Wall Street, Đà Lạt, Lâm Đồng',
+    district: 'District 3',
+    city: 'Đà Lạt',
+    province: 'Lâm Đồng',
+  },
+  distanceToCenter: 3.5,
+  averageRating: 4.7,
+  reviewCount: 25,
+  reviews: [
+    {
+      userId: 2,
+      name: 'Hoàng Nam',
+      rating: 5.0,
+      comment: 'Phòng đẹp, sát hồ Xuân Hương, rất chill!',
+      date: '2025-03-10'
+    }
+  ],
+  priceOnSalePerNight: 219000,
+  priceOriginalPerNight: 290000,
+  discountPercentage: 25,
+  imageURL: 'https://khonhamaudep.com/wp-content/uploads/2024/11/mau-nha-homestay-dep-22.jpg',
+  imageList: [
+    'https://example.com/images/room2_1.jpg',
+    'https://example.com/images/room2_2.jpg',
+    'https://example.com/images/room2_3.jpg'
+  ],
+  videoTourUrl: 'https://youtube.com/watch?v=abc123xyz',
+  description: 'Phòng có ban công hướng hồ, thoáng mát, phù hợp nghỉ dưỡng cặp đôi.',
+  features: ['Ban công', 'Giường lớn', 'Máy lạnh', 'TV màn hình phẳng', 'View hồ'],
+  amenities: {
+    wifi: true,
+    airConditioner: true,
+    kitchen: false,
+    privateBathroom: true,
+    pool: false,
+    petAllowed: false,
+    parking: true,
+    balcony: true,
+    bbqArea: false,
+    roomService: true,
+    securityCamera: true
+  },
+  roomType: 'Phòng đôi',
+  roomCount: 6,
+  maxGuests: 2,
+  bedCount: 1,
+  bathroomCount: 1,
+  policies: {
+    isRefundable: false,
+    allowPet: false,
+    allowSmoking: false
+  },
+  checkIn: '2025-03-20T15:00:00+07:00',
+  checkOut: '2025-03-21T11:00:00+07:00',
+  isOnSale: false,
+  isAvailable: true,
+  isInstantBook: true,
+  isRecommended: true,
+  availableDates: ['2025-03-20', '2025-03-21', '2025-03-22'],
+  bookedSuccessCount: 10,
+  bookingCount: 30,
+  totalRevenue: 6570000
+}
 
-  {
-    id: 4,
-    name: 'CĂN HỘ STUDIO ẤM CÚNG',
-    host: {
-      name: 'Phạm Thị Dung',
-      phone: '0966778899',
-      email: 'dungpham@example.com',
-      rating: 4.5
-    },
+  ,
+{
+  id: 3,
+  name: 'PHÒNG GIA ĐÌNH 3 GIƯỜNG',
+  host: {
+    name: 'Lê Văn C',
+    phone: '0988112233',
+    email: 'levanc@example.com',
+    rating: 4.9
+  },
+  location: {
+    address: '123 Wall Street, Đà Lạt, Lâm Đồng',
+    district: 'District 3',
+    city: 'Đà Lạt',
+    province: 'Lâm Đồng',
+  },
+  distanceToCenter: 3.5,
+  averageRating: 4.3,
+  reviewCount: 18,
+  reviews: [
+    {
+      userId: 3,
+      name: 'Ngọc Hân',
+      rating: 4.0,
+      comment: 'Phòng rộng, phù hợp đi nhóm bạn, khu vực yên tĩnh.',
+      date: '2025-04-01'
+    }
+  ],
+  priceOnSalePerNight: 349000,
+  priceOriginalPerNight: 430000,
+  discountPercentage: 19,
+  imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
+  imageList: [
+    'https://example.com/images/room3_1.jpg',
+    'https://example.com/images/room3_2.jpg',
+    'https://example.com/images/room3_3.jpg'
+  ],
+  videoTourUrl: 'https://youtube.com/watch?v=xyz789abc',
+  description: 'Phòng gia đình rộng rãi, có 3 giường đơn, phù hợp nhóm 4-5 người.',
+  features: ['3 Giường đơn', 'Phòng tắm riêng', 'Có bếp nấu', 'Ban công', 'View đồi thông'],
+  amenities: {
+    wifi: true,
+    airConditioner: true,
+    kitchen: true,
+    privateBathroom: true,
+    pool: false,
+    petAllowed: false,
+    parking: true,
+    balcony: true,
+    bbqArea: true,
+    roomService: false,
+    securityCamera: true
+  },
+  roomType: 'Phòng gia đình',
+  roomCount: 4,
+  maxGuests: 5,
+  bedCount: 3,
+  bathroomCount: 1,
+  policies: {
+    isRefundable: true,
+    allowPet: false,
+    allowSmoking: true
+  },
+  checkIn: '2025-03-20T13:30:00+07:00',
+  checkOut: '2025-03-21T12:00:00+07:00',
+  isOnSale: true,
+  isAvailable: true,
+  isInstantBook: false,
+  isRecommended: true,
+  availableDates: ['2025-03-20', '2025-03-21', '2025-03-22', '2025-03-23'],
+  bookedSuccessCount: 8,
+  bookingCount: 22,
+  totalRevenue: 7850000
+}
 
-      location:{
-        address: '123 Wall Street, Đà Lạt, Lâm Đồng',
-        district: 'District 3',
-        city: 'Đà Lạt',
-        province: 'Lâm Đồng',
-      },
-      distanceToCenter: 3.5,
-
-    averageRating: 4.6,
-    reviewCount: 32,
-    reviews: [
-      {
-        userId: 4,
-        name: 'Thanh Tùng',
-        rating: 4.8,
-        comment: 'Không gian ấm cúng, chủ nhà thân thiện.',
-        date: '2025-03-05'
-      }
-    ],
-
-    priceOnSalePerNight: 185000,
-    priceOriginalPerNight: 240000,
-    discountPercentage: 23,
-
-    imageURL: 'https://khonhamaudep.com/wp-content/uploads/2024/11/mau-nha-homestay-dep-22.jpg',
-    imageList: [
-      'https://example.com/images/room4_1.jpg',
-      'https://example.com/images/room4_2.jpg',
-      'https://example.com/images/room4_3.jpg'
-    ],
-    videoTourUrl: 'https://youtube.com/watch?v=studio-tour123',
-
-    description: 'Studio đầy đủ tiện nghi, gần chợ đêm, yên tĩnh và sạch sẽ.',
-    features: ['Bếp nhỏ', 'Giường đôi', 'Cửa sổ lớn', 'Wifi tốc độ cao', 'Máy sưởi'],
-    amenities: {
-      wifi: true,
-      airConditioner: true,
-      kitchen: true,
-      privateBathroom: true,
-      pool: false,
-      petAllowed: false,
-      parking: false,
-      balcony: false,
-      bbqArea: false,
-      roomService: false,
-      securityCamera: true
-    },
-    roomType: 'Studio',
-    roomCount: 5,
-    maxGuests: 2,
-    bedCount: 1,
-    bathroomCount: 1,
-
-    policies: {
-      isRefundable: true,
-      allowPet: false,
-      allowSmoking: false
-    },
-
-    checkIn: '2025-03-20T14:00:00+07:00',
-    checkOut: '2025-03-21T11:00:00+07:00',
-
-    isOnSale: false,
-    isAvailable: true,
-    isInstantBook: true,
-    isRecommended: false,
-    availableDates: ['2025-03-20', '2025-03-21', '2025-03-22']
-  }
   ,
 
-  {
-    id: 5,
-    name: 'VILLA MINI GẦN RỪNG THÔNG',
-    host: {
-      name: 'Đỗ Minh Tuấn',
-      phone: '0977333444',
-      email: 'tuanvilla@example.com',
-      rating: 4.9
-    },
+{
+  id: 4,
+  name: 'CĂN HỘ STUDIO ẤM CÚNG',
+  host: {
+    name: 'Phạm Thị Dung',
+    phone: '0966778899',
+    email: 'dungpham@example.com',
+    rating: 4.5
+  },
+  location: {
+    address: '123 Wall Street, Đà Lạt, Lâm Đồng',
+    district: 'District 3',
+    city: 'Đà Lạt',
+    province: 'Lâm Đồng'
+  },
+  distanceToCenter: 3.5,
+  averageRating: 4.6,
+  reviewCount: 32,
+  reviews: [
+    {
+      userId: 4,
+      name: 'Thanh Tùng',
+      rating: 4.8,
+      comment: 'Không gian ấm cúng, chủ nhà thân thiện.',
+      date: '2025-03-05'
+    }
+  ],
+  priceOnSalePerNight: 185000,
+  priceOriginalPerNight: 240000,
+  discountPercentage: 23,
+  imageURL: 'https://khonhamaudep.com/wp-content/uploads/2024/11/mau-nha-homestay-dep-22.jpg',
+  imageList: [
+    'https://example.com/images/room4_1.jpg',
+    'https://example.com/images/room4_2.jpg',
+    'https://example.com/images/room4_3.jpg'
+  ],
+  videoTourUrl: 'https://youtube.com/watch?v=studio-tour123',
+  description: 'Studio đầy đủ tiện nghi, gần chợ đêm, yên tĩnh và sạch sẽ.',
+  features: ['Bếp nhỏ', 'Giường đôi', 'Cửa sổ lớn', 'Wifi tốc độ cao', 'Máy sưởi'],
+  amenities: {
+    wifi: true,
+    airConditioner: true,
+    kitchen: true,
+    privateBathroom: true,
+    pool: false,
+    petAllowed: false,
+    parking: false,
+    balcony: false,
+    bbqArea: false,
+    roomService: false,
+    securityCamera: true
+  },
+  roomType: 'Studio',
+  roomCount: 5,
+  maxGuests: 2,
+  bedCount: 1,
+  bathroomCount: 1,
+  policies: {
+    isRefundable: true,
+    allowPet: false,
+    allowSmoking: false
+  },
+  checkIn: '2025-03-20T14:00:00+07:00',
+  checkOut: '2025-03-21T11:00:00+07:00',
+  isOnSale: false,
+  isAvailable: true,
+  isInstantBook: true,
+  isRecommended: false,
+  availableDates: ['2025-03-20', '2025-03-21', '2025-03-22']
+}
+,
+{
+  id: 5,
+  name: 'VILLA MINI GẦN RỪNG THÔNG',
+  host: {
+    name: 'Đỗ Minh Tuấn',
+    phone: '0977333444',
+    email: 'tuanvilla@example.com',
+    rating: 4.9
+  },
+  location: {
+    address: '123 Wall Street, Đà Lạt, Lâm Đồng',
+    district: 'District 3',
+    city: 'Đà Lạt',
+    province: 'Lâm Đồng'
+  },
+  distanceToCenter: 3.5,
+  averageRating: 4.8,
+  reviewCount: 40,
+  reviews: [
+    {
+      userId: 5,
+      name: 'Phương Nghi',
+      rating: 5.0,
+      comment: 'Villa đẹp, sân vườn rộng, tổ chức BBQ cực đã!',
+      date: '2025-03-08'
+    }
+  ],
+  priceOnSalePerNight: 529000,
+  priceOriginalPerNight: 620000,
+  discountPercentage: 15,
+  imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
+  imageList: [
+    'https://example.com/images/room5_1.jpg',
+    'https://example.com/images/room5_2.jpg',
+    'https://example.com/images/room5_3.jpg'
+  ],
+  videoTourUrl: 'https://youtube.com/watch?v=villaview456',
+  description: 'Villa mini riêng biệt, có sân vườn, gần đồi thông, thích hợp cho nhóm bạn hoặc gia đình nhỏ.',
+  features: ['2 phòng ngủ', 'Bếp rộng', 'Ban công', 'BBQ ngoài trời', 'Ghế lười'],
+  amenities: {
+    wifi: true,
+    airConditioner: true,
+    kitchen: true,
+    privateBathroom: true,
+    pool: false,
+    petAllowed: false,
+    parking: true,
+    balcony: true,
+    bbqArea: true,
+    roomService: true,
+    securityCamera: true
+  },
+  roomType: 'Villa mini',
+  roomCount: 8,
+  maxGuests: 6,
+  bedCount: 3,
+  bathroomCount: 2,
+  policies: {
+    isRefundable: false,
+    allowPet: false,
+    allowSmoking: true
+  },
+  checkIn: '2025-03-20T13:00:00+07:00',
+  checkOut: '2025-03-21T12:30:00+07:00',
+  isOnSale: true,
+  isAvailable: true,
+  isInstantBook: true,
+  isRecommended: false,
+  availableDates: ['2025-03-20', '2025-03-21', '2025-03-22', '2025-03-23'],
 
-      location:{
-        address: '123 Wall Street, Đà Lạt, Lâm Đồng',
-        district: 'District 3',
-        city: 'Đà Lạt',
-        province: 'Lâm Đồng',
-      },
-      distanceToCenter: 3.5,
+  bookedSuccessCount: 10,
+  bookingCount: 30,
+  totalRevenue: 6570000
+}
 
-    averageRating: 4.8,
-    reviewCount: 40,
-    reviews: [
-      {
-        userId: 5,
-        name: 'Phương Nghi',
-        rating: 5.0,
-        comment: 'Villa đẹp, sân vườn rộng, tổ chức BBQ cực đã!',
-        date: '2025-03-08'
-      }
-    ],
+  ,
 
-    priceOnSalePerNight: 529000,
-    priceOriginalPerNight: 620000,
-    discountPercentage: 15,
-
-    imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
-    imageList: [
-      'https://example.com/images/room5_1.jpg',
-      'https://example.com/images/room5_2.jpg',
-      'https://example.com/images/room5_3.jpg'
-    ],
-    videoTourUrl: 'https://youtube.com/watch?v=villaview456',
-
-    description: 'Villa mini riêng biệt, có sân vườn, gần đồi thông, thích hợp cho nhóm bạn hoặc gia đình nhỏ.',
-    features: ['2 phòng ngủ', 'Bếp rộng', 'Ban công', 'BBQ ngoài trời', 'Ghế lười'],
-    amenities: {
-      wifi: true,
-      airConditioner: true,
-      kitchen: true,
-      privateBathroom: true,
-      pool: false,
-      petAllowed: false,
-      parking: true,
-      balcony: true,
-      bbqArea: true,
-      roomService: true,
-      securityCamera: true
-    },
-    roomType: 'Villa mini',
-    roomCount: 8,
-    maxGuests: 6,
-    bedCount: 3,
-    bathroomCount: 2,
-
-    policies: {
-      isRefundable: false,
-      allowPet: false,
-      allowSmoking: true
-    },
-
-    checkIn: '2025-03-20T13:00:00+07:00',
-    checkOut: '2025-03-21T12:30:00+07:00',
-
-    isOnSale: true,
-    isAvailable: true,
-    isInstantBook: true,
-    isRecommended: false,
-    availableDates: ['2025-03-20', '2025-03-21', '2025-03-22', '2025-03-23']
-  }
+{
+  id: 5,
+  name: 'VILLA MINI GẦN RỪNG THÔNG',
+  host: {
+    name: 'Đỗ Minh Tuấn',
+    phone: '0977333444',
+    email: 'tuanvilla@example.com',
+    rating: 4.9
+  },
+  location: {
+    address: '123 Wall Street, Đà Lạt, Lâm Đồng',
+    district: 'District 3',
+    city: 'Đà Lạt',
+    province: 'Lâm Đồng'
+  },
+  distanceToCenter: 3.5,
+  averageRating: 4.8,
+  reviewCount: 40,
+  reviews: [
+    {
+      userId: 5,
+      name: 'Phương Nghi',
+      rating: 5.0,
+      comment: 'Villa đẹp, sân vườn rộng, tổ chức BBQ cực đã!',
+      date: '2025-03-08'
+    }
+  ],
+  priceOnSalePerNight: 529000,
+  priceOriginalPerNight: 620000,
+  discountPercentage: 15,
+  imageURL: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/156437220.jpg?k=b93d940681e19c59e897b18dcc472126e020dc11e5ddbab1db3d06040eb0d8f2&o=&hp=1',
+  imageList: [
+    'https://example.com/images/room5_1.jpg',
+    'https://example.com/images/room5_2.jpg',
+    'https://example.com/images/room5_3.jpg'
+  ],
+  videoTourUrl: 'https://youtube.com/watch?v=villaview456',
+  description: 'Villa mini riêng biệt, có sân vườn, gần đồi thông, thích hợp cho nhóm bạn hoặc gia đình nhỏ.',
+  features: ['2 phòng ngủ', 'Bếp rộng', 'Ban công', 'BBQ ngoài trời', 'Ghế lười'],
+  amenities: {
+    wifi: true,
+    airConditioner: true,
+    kitchen: true,
+    privateBathroom: true,
+    pool: false,
+    petAllowed: false,
+    parking: true,
+    balcony: true,
+    bbqArea: true,
+    roomService: true,
+    securityCamera: true
+  },
+  roomType: 'Villa mini',
+  roomCount: 8,
+  maxGuests: 6,
+  bedCount: 3,
+  bathroomCount: 2,
+  policies: {
+    isRefundable: false,
+    allowPet: false,
+    allowSmoking: true
+  },
+  checkIn: '2025-03-20T13:00:00+07:00',
+  checkOut: '2025-03-21T12:30:00+07:00',
+  isOnSale: true,
+  isAvailable: true,
+  isInstantBook: true,
+  isRecommended: false,
+  availableDates: ['2025-03-20', '2025-03-21', '2025-03-22', '2025-03-23']
+}
 
 ];
 
@@ -425,6 +484,7 @@ const HostData = [
 
   averageHomestayRating: 4.8,
   homeStay: [1, 2],
+  
 
   joinedDate: '2022-06-15',
   isSuperHost: true,
@@ -779,7 +839,57 @@ const PolicyData = [
     }
   ];
 
+
+  const DashboardStats = [
+    { label: 'Đánh giá TB', value: '4.2⭐', color: '#4CAF50' },
+    { label: 'Doanh thu', value: '23M', color: '#2196F3' },
+    { label: 'Tỉ lệ hủy', value: '4.8%', color: '#FF9800' },
+  ];  
+
+
+    const DashboardItems = [
+      { 
+        id: 1, 
+        title: 'Quản Lý Phòng', 
+        subtitle: '8 phòng đang đặt\n2 phòng cần bảo trì', 
+        color: '#E3F2FD', 
+        textColor: '#1976D2', 
+        icon: '🏠' 
+      },
+      { 
+        id: 2, 
+        title: 'Khách Sắp Tới', 
+        subtitle: '5 lượt check-in hôm nay', 
+        color: '#F3E5F5', 
+        textColor: '#7B1FA2', 
+        icon: '👥' 
+      },
+      { 
+        id: 3, 
+        title: 'Đánh Giá', 
+        subtitle: '5 đánh giá tốt\n2 đang chờ phản hồi', 
+        color: '#E8F5E8', 
+        textColor: '#388E3C', 
+        icon: '⭐' 
+      },
+      { 
+        id: 4, 
+        title: 'Đơn Chờ Xử Lý', 
+        subtitle: '2 đơn đặt chờ xác nhận', 
+        color: '#FFF3E0', 
+        textColor: '#F57C00', 
+        icon: '📋' 
+      },
+    ];
+
+      const DashboardSchedule = [
+        { guestName: 'Thu Hà', time: '09:00', people: '5 người', status: 'check-in' },
+        { guestName: 'Anh Thy', time: '14:30', people: '2 người', status: 'check-in' },
+        { guestName: 'Minh Tuấn', time: '11:00', people: '3 người', status: 'check-out' },
+      ];
+
 export {
   HomestayData, newHomestays, recommendedHomestays, HostData, UserData, BannerData, PolicyData, 
-  QAItems, PolicyScreenData 
+  QAItems, PolicyScreenData,
+  DashboardStats, DashboardItems, DashboardSchedule
 };

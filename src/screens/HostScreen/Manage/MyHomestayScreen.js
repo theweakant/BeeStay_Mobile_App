@@ -5,96 +5,17 @@ import {
   StyleSheet,
 } from 'react-native';
 
-// Import components
+
 import SearchFilter from '../../../components/SearchFilter';
 import ItemList from '../../../components/ItemList';
+import { HomestayData } from '../../../data/MockData';
 
-// Sample data
-const sampleHomestays = [
-  {
-    id: 1,
-    name: 'Villa Sunset Beach',
-    location: 'Đà Nẵng',
-    price: 1200000,
-    rating: 4.8,
-    reviews: 156,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300',
-    promotion: { type: 'discount', value: 20, banner: 'Giảm 20%' },
-    bookings: 45,
-    revenue: 54000000,
-  },
-  {
-    id: 2,
-    name: 'Cozy Mountain House',
-    location: 'Sapa',
-    price: 800000,
-    rating: 4.5,
-    reviews: 89,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=300',
-    promotion: null,
-    bookings: 32,
-    revenue: 25600000,
-  },
-  {
-    id: 3,
-    name: 'Urban Apartment',
-    location: 'Hồ Chí Minh',
-    price: 600000,
-    rating: 4.2,
-    reviews: 67,
-    status: 'inactive',
-    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300',
-    promotion: { type: 'banner', value: 0, banner: 'Mới mở!' },
-    bookings: 18,
-    revenue: 10800000,
-  },
-  {
-    id: 4,
-    name: 'Beachfront Bungalow',
-    location: 'Phú Quốc',
-    price: 1500000,
-    rating: 4.9,
-    reviews: 203,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=300',
-    promotion: { type: 'discount', value: 15, banner: 'Ưu đãi 15%' },
-    bookings: 78,
-    revenue: 117000000,
-  },
-  {
-    id: 5,
-    name: 'Lakeside Cabin',
-    location: 'Đà Lạt',
-    price: 900000,
-    rating: 4.6,
-    reviews: 124,
-    status: 'active',
-    image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=300',
-    promotion: null,
-    bookings: 38,
-    revenue: 34200000,
-  },
-  {
-    id: 6,
-    name: 'City Center Loft',
-    location: 'Hà Nội',
-    price: 750000,
-    rating: 4.3,
-    reviews: 92,
-    status: 'inactive',
-    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=300',
-    promotion: { type: 'discount', value: 10, banner: 'Sale 10%' },
-    bookings: 25,
-    revenue: 18750000,
-  },
-];
 
 export default function MyHomestayScreen() {
   // State management
-  const [homestays, setHomestays] = useState(sampleHomestays);
-  const [filteredHomestays, setFilteredHomestays] = useState(sampleHomestays);
+const [homestays, setHomestays] = useState(HomestayData);
+const [filteredHomestays, setFilteredHomestays] = useState(HomestayData);
+
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterRating, setFilterRating] = useState('all');
   const [searchText, setSearchText] = useState('');

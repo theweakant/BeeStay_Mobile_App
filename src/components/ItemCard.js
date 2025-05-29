@@ -13,6 +13,16 @@ import {
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 45) / 2;
 
+const formatLocation = (location) => {
+  if (!location || typeof location !== 'object') return '';
+  const { address, district, city, province } = location;
+
+  return [address, district, city, province]
+    .filter(Boolean) // loại bỏ phần nào bị null hoặc undefined
+    .join(', ');
+};
+
+
 const ItemCard = ({ item, index, toggleHomestayStatus, viewDetails, formatCurrency }) => (
   <View style={[styles.cardContainer, { marginRight: index % 2 === 0 ? 15 : 0 }]}>
     <View style={styles.card}>
@@ -36,7 +46,7 @@ const ItemCard = ({ item, index, toggleHomestayStatus, viewDetails, formatCurren
           />
         </View>
 
-        <Text style={styles.cardLocation} numberOfLines={1}>📍 {item.location}</Text>
+        <Text style={styles.cardLocation} numberOfLines={1}>📍 {formatLocation(item.location)}</Text>
         <Text style={styles.cardPrice}>{formatCurrency(item.price)}/đêm</Text>
 
         <View style={styles.cardStats}>
