@@ -26,10 +26,10 @@ const AppNavigator = () => {
   // }
   // return <AuthStack />;
 
-    // Tạm thời bỏ phân quyền để dễ design UI
+
   // return <AuthStack />; 
-  return <UserStack />; 
-  // return <HostStack />; 
+  // return <UserStack />; 
+  return <HostStack />; 
   // return <HostTabNavigator />; 
   // return <AdminTabNavigator />; 
 };

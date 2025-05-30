@@ -1,9 +1,9 @@
-// components/HomestayTabs.js
+// components/TabSwitcher.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { homestayTabs } from '../../data/MockData';
 
-const HomestayTabs = ({ activeTab, onTabChange }) => {
+const TabSwitcher = ({ activeTab, onTabChange }) => {
   return (
     <View style={styles.homestayTabs}>
       {homestayTabs.map((tab, index) => (
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomestayTabs;
+export default TabSwitcher;
