@@ -24,3 +24,24 @@ export const formatCurrency = (amount) => {
     currency: 'VND',
   }).format(amount);
 };
+
+
+export const getRecentMonthlyData = (fullData) => {
+  if (!fullData || fullData.length === 0) return [];
+
+  const currentMonth = new Date().getMonth(); // 0 - 11
+
+  const mapped = fullData.map((item) => {
+    const match = item.month.match(/Tháng (\d+)/);
+    const monthNum = match ? parseInt(match[1], 10) - 1 : 0;
+    return { ...item, monthNum };
+  });
+
+  const recent = mapped
+    .filter((item) => item.monthNum <= currentMonth)
+    .sort((a, b) => b.monthNum - a.monthNum)
+    .slice(0, 4)
+    .sort((a, b) => a.monthNum - b.monthNum);
+
+  return recent;
+};

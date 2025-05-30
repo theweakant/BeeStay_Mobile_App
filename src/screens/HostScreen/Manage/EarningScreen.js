@@ -17,7 +17,10 @@ import HomestayTabs from '../../../components/Chart/TabSwitcher';
 import ScrollList from '../../../components/ScrollList';
 
 // Data
-import { earningsData } from '../../../data/MockData';
+import { earningsData, HomestayData } from '../../../data/MockData';
+
+//Utils
+import {getRecentMonthlyData} from '../../../utils/textUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -39,12 +42,10 @@ export default function EarningScreen() {
   };
 
   const handleTimeFilter = () => {
-    // Logic để hiển thị time filter dropdown
     console.log('Time filter pressed');
   };
 
   const handleHomestayFilter = () => {
-    // Logic để hiển thị homestay filter dropdown
     console.log('Homestay filter pressed');
   };
 
@@ -54,28 +55,25 @@ export default function EarningScreen() {
   };
 
   const handleHomestayPress = (homestay) => {
-    // Logic để xem chi tiết homestay
     console.log('Homestay selected:', homestay.name);
   };
 
   const handleHomestayTabChange = (tab) => {
     setActiveHomestayTab(tab);
-    // Logic để filter homestay theo tab
     console.log('Homestay tab changed:', tab);
   };
 
-  // Filtered data
   const getFilteredHomestays = () => {
     if (activeHomestayTab === 'Tất cả') {
-      return earningsData.homestayEarnings;
+      return HomestayData;
     }
-    // Logic để filter theo loại homestay
-    return earningsData.homestayEarnings;
+    // TODO: Filter by category
+    return HomestayData;
   };
 
   const getTopPerformers = () => {
-    return earningsData.homestayEarnings
-      .sort((a, b) => b.totalEarnings - a.totalEarnings)
+    return [...HomestayData]
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
       .slice(0, 3);
   };
 
@@ -84,7 +82,6 @@ export default function EarningScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Thu Nhập Chi Tiết</Text>
-        
         <TabSelector 
           activeTab={activeTab}
           onTabChange={handleTabChange}
@@ -106,10 +103,10 @@ export default function EarningScreen() {
           <>
             {/* Chart */}
             <BarChart 
-              monthlyData={earningsData.monthlyData}
-              onCategoryFilter={handleCategoryFilter}
+              monthlyData={getRecentMonthlyData(earningsData.monthlyData)} 
+              onCategoryFilter={handleCategoryFilter} 
             />
-            
+
             {/* Top performing homestays */}
             <ScrollList
               data={getTopPerformers()}
@@ -119,13 +116,10 @@ export default function EarningScreen() {
           </>
         ) : (
           <>
-            {/* Homestay filter tabs */}
             <HomestayTabs 
               activeTab={activeHomestayTab}
               onTabChange={handleHomestayTabChange}
             />
-
-            {/* All homestays list */}
             <ScrollList
               data={getFilteredHomestays()}
               onHomestayPress={handleHomestayPress}

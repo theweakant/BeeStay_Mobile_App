@@ -13,96 +13,12 @@ import {
   Dimensions,
 } from 'react-native';
 import SearchBar from '../../../components/SearchBar'
+import {sampleReviews} from '../../../data/MockData'; // Giả định bạn có dữ liệu mẫu reviews
 
 const { width } = Dimensions.get('window');
 
 // Data mẫu cho reviews
-const sampleReviews = [
-  {
-    id: 1,
-    guestName: 'Nguyễn Văn An',
-    guestAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
-    homestayName: 'Villa Sunset Beach',
-    homestayImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300',
-    rating: 5,
-    comment: 'Homestay tuyệt vời! View biển đẹp, phòng sạch sẽ, chủ nhà nhiệt tình. Chắc chắn sẽ quay lại lần sau.',
-    date: '2024-01-15',
-    status: 'published',
-    hasResponse: false,
-    helpful: 12,
-    checkInDate: '2024-01-10',
-    checkOutDate: '2024-01-14',
-    verified: true,
-  },
-  {
-    id: 2,
-    guestName: 'Trần Thị Bình',
-    guestAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100',
-    homestayName: 'Cozy Mountain House',
-    homestayImage: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=300',
-    rating: 4,
-    comment: 'Không gian yên tĩnh, phù hợp nghỉ dưỡng. Tuy nhiên wifi hơi yếu, hy vọng cải thiện.',
-    date: '2024-01-12',
-    status: 'published',
-    hasResponse: true,
-    response: 'Cảm ơn bạn đã đánh giá! Chúng tôi đã nâng cấp wifi và hy vọng lần tới sẽ tốt hơn.',
-    responseDate: '2024-01-13',
-    helpful: 8,
-    checkInDate: '2024-01-08',
-    checkOutDate: '2024-01-11',
-    verified: true,
-  },
-  {
-    id: 3,
-    guestName: 'Lê Minh Cường',
-    guestAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100',
-    homestayName: 'Urban Apartment',
-    homestayImage: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300',
-    rating: 2,
-    comment: 'Phòng không giống hình, thiết bị cũ kỹ. Dịch vụ chưa tốt.',
-    date: '2024-01-10',
-    status: 'pending',
-    hasResponse: false,
-    helpful: 3,
-    checkInDate: '2024-01-05',
-    checkOutDate: '2024-01-09',
-    verified: true,
-  },
-  {
-    id: 4,
-    guestName: 'Phạm Thu Hà',
-    guestAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100',
-    homestayName: 'Beachfront Bungalow',
-    homestayImage: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=300',
-    rating: 5,
-    comment: 'Tuyệt vời! Bãi biển riêng, phòng rộng rãi, sạch sẽ. Staff rất thân thiện và hỗ trợ tốt.',
-    date: '2024-01-08',
-    status: 'published',
-    hasResponse: true,
-    response: 'Cảm ơn bạn rất nhiều! Chúng tôi rất vui khi bạn hài lòng với dịch vụ.',
-    responseDate: '2024-01-09',
-    helpful: 15,
-    checkInDate: '2024-01-03',
-    checkOutDate: '2024-01-07',
-    verified: true,
-  },
-  {
-    id: 5,
-    guestName: 'Hoàng Văn Đức',
-    guestAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100',
-    homestayName: 'Villa Sunset Beach',
-    homestayImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300',
-    rating: 3,
-    comment: 'Vị trí tốt nhưng giá hơi cao so với chất lượng. Phòng ổn.',
-    date: '2024-01-05',
-    status: 'published',
-    hasResponse: false,
-    helpful: 5,
-    checkInDate: '2024-01-01',
-    checkOutDate: '2024-01-04',
-    verified: true,
-  },
-];
+
 
 export default function ManageReviewScreen() {
   const [reviews, setReviews] = useState(sampleReviews);
