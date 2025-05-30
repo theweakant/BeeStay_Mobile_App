@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import ItemList from '../../components/ItemList';
+import ItemList from '../../components/List/ItemList';
 
 export default function SearchScreen() {
   // Sample data for homestays

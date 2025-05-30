@@ -7,7 +7,7 @@ import {
 
 
 import SearchFilter from '../../../components/SearchFilter';
-import ItemList from '../../../components/ItemList';
+import ItemList from '../../../components/List/ItemList';
 import { HomestayData } from '../../../data/MockData';
 
 

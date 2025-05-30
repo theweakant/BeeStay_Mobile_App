@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { formatCurrency } from '../../utils/textUtils';
-import StatCard from '../StatCard'; 
+import StatCard from '../Card/StatCard'; 
 
 const SummaryCard = ({ earningsData }) => {
   return (

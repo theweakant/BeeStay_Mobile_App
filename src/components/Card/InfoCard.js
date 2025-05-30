@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { truncateText } from '../utils/textUtils'; 
+import { truncateText } from '../../utils/textUtils'; 
 
 
 const InfoCard = ({ 

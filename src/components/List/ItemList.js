@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
-import ItemCard from '../components/ItemCard'
+import ItemCard from '../Card/ItemCard'
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 45) / 2;

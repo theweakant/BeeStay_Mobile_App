@@ -1,7 +1,7 @@
 // components/ScrollList.js
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import VerticalItemCard from './Chart/VerticalItemCard';
+import VerticalItemCard from '../Chart/VerticalItemCard';
 
 const ScrollList = ({ 
   data, 

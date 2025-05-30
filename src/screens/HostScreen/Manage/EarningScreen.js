@@ -14,7 +14,7 @@ import SummaryCards from '../../../components/Chart/SummaryStatCard';
 import FilterButtons from '../../../components/Chart/FilterButtons';
 import BarChart from '../../../components/Chart/BarChart';
 import HomestayTabs from '../../../components/Chart/TabSwitcher';
-import ScrollList from '../../../components/ScrollList';
+import ScrollList from '../../../components/List/ScrollList';
 
 // Data
 import { earningsData, HomestayData } from '../../../data/MockData';

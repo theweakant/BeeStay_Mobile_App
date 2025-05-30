@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import InfoCard from '../../components/InfoCard';
+import InfoCard from '../../components/Card/InfoCard';
 import SearchBar from '../../components/SearchBar';
 import Banner from '../../components/Banner';
 import TabSelector from '../../components/TabSelector';
