@@ -13,44 +13,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+ import {hostData} from '../../data/MockData'; // Import dữ liệu mẫu
 const { width } = Dimensions.get('window');
 
 // Data mẫu cho host profile
-const hostData = {
-  id: '12345',
-  name: 'Nguyễn Minh Tuấn',
-  avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-  coverPhoto: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800',
-  email: 'minhtuan@example.com',
-  phone: '0912345678',
-  location: 'Hà Nội, Việt Nam',
-  joinDate: '2022-05-15',
-  bio: 'Xin chào! Tôi là Tuấn, một host chuyên nghiệp với hơn 2 năm kinh nghiệm. Tôi sở hữu nhiều homestay tại các địa điểm du lịch nổi tiếng và luôn đảm bảo mang đến trải nghiệm tốt nhất cho khách hàng.',
-  rating: 4.8,
-  totalReviews: 156,
-  responseRate: 98,
-  responseTime: 'Trong vòng 1 giờ',
-  totalProperties: 5,
-  totalBookings: 342,
-  verificationStatus: {
-    email: true,
-    phone: true,
-    id: true,
-    address: false,
-  },
-  paymentMethods: [
-    { id: 1, type: 'bank', name: 'Vietcombank', number: '•••• 5678', isDefault: true },
-    { id: 2, type: 'card', name: 'Visa', number: '•••• 1234', isDefault: false },
-  ],
-  notifications: {
-    bookings: true,
-    messages: true,
-    promotions: false,
-    reviews: true,
-  },
-  languages: ['Tiếng Việt', 'English'],
-};
+
 
 export default function HostProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
