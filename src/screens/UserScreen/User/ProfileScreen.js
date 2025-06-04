@@ -1,20 +1,52 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import { UserData} from '../../../data/MockData'; 
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserByAccount } from '../../../redux/slices/user.slice';
 import { formatDate, getFullAddress } from '../../../utils/textUtils';
 
 export default function ProfileScreen() {
-
-    const user = UserData && UserData.length > 0 ? UserData[0] : null;
+    const dispatch = useDispatch();
+    
+    // Get data from Redux store
+    const { profile: user, loading, error } = useSelector(state => state.user);
+    const { authUser } = useSelector(state => state.auth);
+    
+    useEffect(() => {
+        // Fetch user data when component mounts
+        if (authUser?.accountId) {
+            dispatch(fetchUserByAccount(authUser.accountId));
+        }
+    }, [dispatch, authUser?.accountId]);
     
     // Debug
-    console.log('UserData:', UserData);
-    console.log('Current user:', user);
+    console.log('User profile:', user);
+    console.log('Loading:', loading);
+    console.log('Error:', error);
     
+    // Loading state
+    if (loading) {
+        return (
+            <View style={[styles.container, styles.centerContent]}>
+                <ActivityIndicator size="large" color="#007AFF" />
+                <Text style={styles.loadingText}>Đang tải thông tin...</Text>
+            </View>
+        );
+    }
+    
+    // Error state
+    if (error) {
+        return (
+            <View style={[styles.container, styles.centerContent]}>
+                <Text style={styles.errorText}>Có lỗi xảy ra: {error}</Text>
+            </View>
+        );
+    }
+    
+    // No user data
     if (!user) {
         return (
-            <View style={styles.container}>
-                <Text>Không có dữ liệu người dùng</Text>
+            <View style={[styles.container, styles.centerContent]}>
+                <Text style={styles.errorText}>Không có dữ liệu người dùng</Text>
             </View>
         );
     }
@@ -25,11 +57,11 @@ export default function ProfileScreen() {
             <View style={styles.header}>
                 <View style={styles.avatarContainer}>
                     <Image 
-                        source={{ uri: user.avatar }} 
+                        source={{ uri: user.avatar || 'https://via.placeholder.com/100' }} 
                         style={styles.avatar}
                         defaultSource={require('../../../../assets/Avatar/default-avatar.jpg')} 
                     />
-                    {user.isVerified && (
+                    {user.verified && (
                         <View style={styles.verifiedBadge}>
                             <Text style={styles.verifiedText}>✓</Text>
                         </View>
@@ -49,58 +81,64 @@ export default function ProfileScreen() {
             {/* Stats Section */}
             <View style={styles.statsContainer}>
                 <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{user.currentBooking}</Text>
+                    <Text style={styles.statNumber}>{user.currentBooking || 0}</Text>
                     <Text style={styles.statLabel}>Đang đặt</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{user.totalBookingSuccess}</Text>
+                    <Text style={styles.statNumber}>{user.totalBookingSuccess || 0}</Text>
                     <Text style={styles.statLabel}>Đã hoàn thành</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{user.favoriteHomestays?.length || 0}</Text>
+                    <Text style={styles.statNumber}>{user.favoriteHomestay?.length || 0}</Text>
                     <Text style={styles.statLabel}>Yêu thích</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{user.reviewCount}</Text>
+                    <Text style={styles.statNumber}>{user.reviewCount || 0}</Text>
                     <Text style={styles.statLabel}>Đánh giá</Text>
                 </View>
             </View>
 
             {/* Personal Information Section */}
             <View style={styles.section}>
-                <View>
+                <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
-                    <Text>Icon Edit</Text>
+                    <Text style={styles.editIcon}>✏️</Text>
                 </View>
 
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Số điện thoại:</Text>
-                    <Text style={styles.infoValue}>{user.phone}</Text>
+                    <Text style={styles.infoValue}>{user.phone || 'Chưa cập nhật'}</Text>
                 </View>
                 
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Giới tính:</Text>
                     <Text style={styles.infoValue}>
-                        {user.gender === 'female' ? 'Nữ' : 'Nam'}
+                        {user.gender === 'Female' ? 'Nữ' : user.gender === 'Male' ? 'Nam' : 'Chưa cập nhật'}
                     </Text>
                 </View>
                 
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Ngày sinh:</Text>
-                    <Text style={styles.infoValue}>{formatDate(user.birthDate)}</Text>
+                    <Text style={styles.infoValue}>
+                        {user.birthDate ? formatDate(user.birthDate) : 'Chưa cập nhật'}
+                    </Text>
                 </View>
                 
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Địa chỉ:</Text>
-                    <Text style={styles.infoValue}>{getFullAddress(user.address)}</Text>
+                    <Text style={styles.infoValue}>
+                        {user.addressResponse ? getFullAddress(user.addressResponse) : 'Chưa cập nhật'}
+                    </Text>
                 </View>
                 
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Ngày tham gia:</Text>
-                    <Text style={styles.infoValue}>{formatDate(user.joinedDate)}</Text>
+                    <Text style={styles.infoValue}>
+                        {user.joinedDate ? formatDate(user.joinedDate) : 'Chưa cập nhật'}
+                    </Text>
                 </View>
             </View>
         </ScrollView>

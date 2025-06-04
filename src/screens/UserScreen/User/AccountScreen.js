@@ -1,4 +1,5 @@
-import React from "react"
+// screens/AccountScreen.js - Cập nhật AccountScreen để sử dụng real API data
+import React, { useEffect } from "react"
 import {
   View,
   Text,
@@ -7,6 +8,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native"
 import {
   Feather,
@@ -18,16 +20,21 @@ import {
 } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
 import { useDispatch, useSelector } from "react-redux"
-import { logout } from "../../../redux/slices/auth.slice" // Adjust path as needed
-import { UserData } from "../../../data/MockData"
+import { logout } from "../../../redux/slices/auth.slice"
+import { fetchUserByAccount, clearUserProfile } from "../../../redux/slices/user.slice"
 
 const AccountScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-  
-  // Use real user data from Redux if available, otherwise fallback to mock data
-  const userData = user || (UserData && UserData.length > 0 ? UserData[0] : null);
+  const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
+  const { profile: userProfile, loading: userLoading, error: userError } = useSelector((state) => state.user);
+
+  // Fetch user profile when component mounts
+  useEffect(() => {
+    if (isAuthenticated && authUser?.accountId) {
+      dispatch(fetchUserByAccount(authUser.accountId));
+    }
+  }, [dispatch, isAuthenticated, authUser?.accountId]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -43,10 +50,10 @@ const AccountScreen = () => {
           style: "destructive",
           onPress: () => {
             dispatch(logout());
-            // Optionally navigate to login screen or reset navigation stack
+            dispatch(clearUserProfile());
             navigation.reset({
               index: 0,
-              routes: [{ name: 'Login' }], // Adjust route name as needed
+              routes: [{ name: 'Login' }],
             });
           }
         }
@@ -54,33 +61,93 @@ const AccountScreen = () => {
     );
   };
 
+  // Show loading spinner while fetching user data
+  if (userLoading && !userProfile) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#F5B041" />
+          <Text style={styles.loadingText}>Đang tải thông tin...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
         {/* Profile Section */}
         <View style={styles.section}>
           <View style={styles.profileHeader}>
-            <Text style={styles.profileName}>{userData?.name || userData?.userName || "Guest"}</Text>
+            <Text style={styles.profileName}>
+              {userProfile?.name || authUser?.userName || "Guest"}
+            </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
               <Ionicons name="settings" size={24} color="#F5B041" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.phoneRow}>
-            <Text style={styles.phoneNumber}>{userData?.phone || "N/A"}</Text>
+            <Text style={styles.phoneNumber}>
+              {userProfile?.phone || "N/A"}
+            </Text>
             <View style={styles.verificationTag}>
-              {userData?.isVerified && (
+              {userProfile?.verified && (
                 <View style={styles.verifiedBadge}>
                   <Text style={styles.verifiedText}>✓</Text>
                 </View>
               )}
               <Text style={styles.verificationText}>
-                Người dùng đã xác thực
+                {userProfile?.verified ? "Người dùng đã xác thực" : "Chưa xác thực"}
               </Text>
             </View>
           </View>
+
+          {/* Additional user info */}
+          {userProfile?.email && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Email: </Text>
+              <Text style={styles.infoValue}>{userProfile.email}</Text>
+            </View>
+          )}
+
+          {userProfile?.addressResponse && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Địa chỉ: </Text>
+              <Text style={styles.infoValue}>
+                {`${userProfile.addressResponse.street}, ${userProfile.addressResponse.district}, ${userProfile.addressResponse.city}`}
+              </Text>
+            </View>
+          )}
+
           <View style={styles.divider} />
         </View>
+
+        {/* Stats Section */}
+        {userProfile && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Thống kê</Text>
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{userProfile.totalBookingSuccess || 0}</Text>
+                <Text style={styles.statLabel}>Đặt phòng thành công</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{userProfile.currentBooking || 0}</Text>
+                <Text style={styles.statLabel}>Đang đặt</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{userProfile.reviewCount || 0}</Text>
+                <Text style={styles.statLabel}>Đánh giá</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{userProfile.favoriteHomestay?.length || 0}</Text>
+                <Text style={styles.statLabel}>Yêu thích</Text>
+              </View>
+            </View>
+            <View style={styles.divider} />
+          </View>
+        )}
 
         {/* My Page Section */}
         <View style={styles.section}>
@@ -92,14 +159,29 @@ const AccountScreen = () => {
           <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('MyOrder')}>
             <AntDesign name="clockcircleo" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Homestay đã đặt</Text>
+            {userProfile?.currentBooking > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{userProfile.currentBooking}</Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Favorite')}>
             <AntDesign name="heart" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Homestay yêu thích</Text>
+            {userProfile?.favoriteHomestay?.length > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{userProfile.favoriteHomestay.length}</Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Review')}>
             <AntDesign name="retweet" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Đánh giá của tôi</Text>
+            {userProfile?.reviewCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{userProfile.reviewCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -115,18 +197,18 @@ const AccountScreen = () => {
             <Text style={styles.itemText}>Ngôn ngữ</Text>
             <Text style={styles.highlight}>Tiếng Việt</Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.itemRow}>
             <Feather name="send" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Khu vực</Text>
-            <Text style={styles.highlight}>Nha Trang</Text>
+            <Text style={styles.highlight}>
+              {userProfile?.addressResponse?.city || "Nha Trang"}
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Information Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Thông tin</Text>
-
           <TouchableOpacity 
             style={styles.itemRow}
             onPress={() => navigation.navigate('QA')}
@@ -134,7 +216,6 @@ const AccountScreen = () => {
             <FontAwesome name="question-circle-o" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Hỏi đáp</Text>
           </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.itemRow}
             onPress={() => navigation.navigate('Policy')}
@@ -142,7 +223,6 @@ const AccountScreen = () => {
             <MaterialIcons name="policy" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Điều khoản & chính sách</Text>
           </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.itemRow}
             onPress={() => navigation.navigate('Contact')}
@@ -150,7 +230,6 @@ const AccountScreen = () => {
             <Ionicons name="information-circle-outline" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Liên hệ</Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.itemRow} onPress={handleLogout}>
             <MaterialIcons name="logout" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Đăng xuất</Text>
@@ -165,6 +244,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: "#666",
   },
   scrollContainer: {
     flex: 1,
@@ -193,11 +282,28 @@ const styles = StyleSheet.create({
     color: "#666",
     marginRight: 12,
   },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: "#666",
+    fontWeight: "500",
+  },
+  infoValue: {
+    fontSize: 14,
+    color: "#333",
+    flex: 1,
+  },
   verificationTag: {
     backgroundColor: "#fff9db",
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 999,
+    flexDirection: "row",
+    alignItems: "center",
   },
   verifiedBadge: {
     backgroundColor: "#f1c40f",
@@ -216,6 +322,26 @@ const styles = StyleSheet.create({
   verificationText: {
     fontSize: 12,
     color: "#f1c40f",
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 16,
+  },
+  statItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  statNumber: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#F5B041",
+  },
+  statLabel: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 4,
   },
   divider: {
     height: 1,
@@ -239,31 +365,23 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
   },
+  badge: {
+    backgroundColor: "#F5B041",
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 8,
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
   highlight: {
     color: "#F5B041",
   },
-  grayText: {
-    color: "#888",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
-    paddingVertical: 8,
-    backgroundColor: "#fff",
-  },
-  navItem: {
-    flex: 1,
-    alignItems: "center",
-  },
-  navText: {
-    fontSize: 12,
-    color: "gray",
-  },
-  navActiveText: {
-    fontSize: 12,
-    color: "#F5B041",
-  },
-})
+});
 
 export default AccountScreen
