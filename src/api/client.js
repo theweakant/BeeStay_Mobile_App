@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseURL = process.env.API_BASE;
+const baseURL = process.env.REACT_APP_API_BASE;
 
 const apiClient = axios.create({
   baseURL,

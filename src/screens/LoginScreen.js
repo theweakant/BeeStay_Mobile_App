@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   View,
   Text,
@@ -9,18 +9,86 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
+  Alert,
+  ActivityIndicator,
 } from "react-native"
-import { useNavigation } from "@react-navigation/native";
-
+import { useNavigation } from "@react-navigation/native"
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUser, clearError } from '../redux/slices/auth.slice'
 
 const LoginScreen = () => {
-  const navigation = useNavigation();
-  const [phoneNumber, setPhoneNumber] = useState("")
+  const navigation = useNavigation()
+  const dispatch = useDispatch()
+  
+  // Redux state
+  const { loading, error, isAuthenticated } = useSelector(state => state.auth)
+  
+  // Local state
+  const [userName, setUserName] = useState("")
+  const [password, setPassword] = useState("")
+
+  // Navigate to Home when login successful
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigation.navigate("Home")
+    }
+  }, [isAuthenticated, navigation])
+
+  // Show error alert
+  useEffect(() => {
+    if (error) {
+      Alert.alert(
+        "Đăng nhập thất bại",
+        typeof error === 'string' ? error : "Có lỗi xảy ra, vui lòng thử lại",
+        [
+          {
+            text: "OK",
+            onPress: () => dispatch(clearError())
+          }
+        ]
+      )
+    }
+  }, [error, dispatch])
+
+  const handleLogin = async () => {
+    // Validate input
+    if (!userName.trim()) {
+      Alert.alert("Lỗi", "Vui lòng nhập tên đăng nhập")
+      return
+    }
+    
+    if (!password.trim()) {
+      Alert.alert("Lỗi", "Vui lòng nhập mật khẩu")
+      return
+    }
+
+    // Prepare credentials
+    const credentials = {
+      userName: userName.trim(),
+      password: password.trim()
+    }
+
+    try {
+      await dispatch(loginUser(credentials)).unwrap()
+      // Login successful - useEffect will handle navigation
+    } catch (error) {
+      // Error handled by useEffect
+      console.error('Login failed:', error)
+    }
+  }
+
+  const handleClose = () => {
+    // Clear any errors when closing
+    if (error) {
+      dispatch(clearError())
+    }
+    navigation.goBack()
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Close Button */}
-      <TouchableOpacity style={styles.closeButton}>
+      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
         <Text style={styles.closeButtonText}>✕</Text>
       </TouchableOpacity>
 
@@ -32,45 +100,59 @@ const LoginScreen = () => {
         </Text>
       </View>
 
-      {/* Phone Input */}
-      <View style={styles.phoneInputContainer}>
-        <TouchableOpacity style={styles.countryCodeContainer}>
-          <Image
-            source={{
-              uri: "https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg",
-            }}
-            style={styles.flagIcon}
-          />
-          <Text style={styles.countryCodeText}>+84</Text>
-        </TouchableOpacity>
+      {/* Username Input */}
+      <View style={styles.inputContainer}>
         <TextInput
           style={styles.textInput}
-          placeholder="Số điện thoại"
-          keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
+          placeholder="Tên đăng nhập"
+          value={userName}
+          onChangeText={setUserName}
+          editable={!loading}
+          autoCapitalize="none"
+        />
+      </View>
+
+      {/* Password Input */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Mật khẩu"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          editable={!loading}
         />
       </View>
 
       {/* Login Button */}
       <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("Home")} // hoặc bất kỳ screen nào bạn đã đăng ký
+        style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+        onPress={handleLogin}
+        disabled={loading}
       >
-        <Text style={styles.loginButtonText}>Đăng nhập & đặt homestay ngay</Text>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator color="#ffffff" size="small" />
+            <Text style={[styles.loginButtonText, { marginLeft: 8 }]}>
+              Đang đăng nhập...
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.loginButtonText}>Đăng nhập & đặt homestay ngay</Text>
+        )}
       </TouchableOpacity>
 
       {/* Social Login */}
       <View style={styles.socialContainer}>
         <Text style={styles.socialLabel}>Hoặc đăng nhập bằng</Text>
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity style={styles.socialButton} disabled={loading}>
             <Text style={[styles.socialIcon, { color: "#3b5998" }]}>f</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity style={styles.socialButton} disabled={loading}>
             <Text style={[styles.socialIcon, { color: "#db4437" }]}>G</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity style={styles.socialButton} disabled={loading}>
             <Text style={styles.socialIcon}>🍎</Text>
           </TouchableOpacity>
         </View>
@@ -114,9 +196,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 16,
     height: 50,
     alignItems: "center",
+  },
+  inputContainer: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    marginBottom: 16,
+    height: 50,
   },
   countryCodeContainer: {
     flexDirection: "row",
@@ -137,6 +226,18 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     height: "100%",
+    paddingHorizontal: 12,
+  },
+  passwordInputContainer: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    marginBottom: 20,
+    height: 50,
+  },
+  passwordInput: {
+    flex: 1,
+    height: "100%",
     paddingHorizontal: 10,
   },
   loginButton: {
@@ -146,11 +247,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 32,
+    marginTop: 4,
+  },
+  loginButtonDisabled: {
+    backgroundColor: "#D1D5DB",
   },
   loginButtonText: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   socialContainer: {
     alignItems: "center",
