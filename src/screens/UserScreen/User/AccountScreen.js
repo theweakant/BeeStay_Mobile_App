@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   StyleSheet,
+  Alert,
 } from "react-native"
 import {
   Feather,
@@ -16,30 +17,59 @@ import {
   FontAwesome5,
 } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
-import { UserData } from "../../../data/MockData" // Adjust the import path as necessary
+import { useDispatch, useSelector } from "react-redux"
+import { logout } from "../../../redux/slices/auth.slice" // Adjust path as needed
+import { UserData } from "../../../data/MockData"
 
 const AccountScreen = () => {
   const navigation = useNavigation();
-  const user = UserData && UserData.length > 0 ? UserData[0] : null;
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  
+  // Use real user data from Redux if available, otherwise fallback to mock data
+  const userData = user || (UserData && UserData.length > 0 ? UserData[0] : null);
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Đăng xuất",
+      "Bạn có chắc chắn muốn đăng xuất?",
+      [
+        {
+          text: "Hủy",
+          style: "cancel"
+        },
+        {
+          text: "Đăng xuất",
+          style: "destructive",
+          onPress: () => {
+            dispatch(logout());
+            // Optionally navigate to login screen or reset navigation stack
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }], // Adjust route name as needed
+            });
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-
       <ScrollView style={styles.scrollContainer}>
         {/* Profile Section */}
         <View style={styles.section}>
           <View style={styles.profileHeader}>
-            <Text style={styles.profileName}>{user.name}</Text>
+            <Text style={styles.profileName}>{userData?.name || userData?.userName || "Guest"}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
               <Ionicons name="settings" size={24} color="#F5B041" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.phoneRow}>
-            <Text style={styles.phoneNumber}>{user.phone}</Text>
+            <Text style={styles.phoneNumber}>{userData?.phone || "N/A"}</Text>
             <View style={styles.verificationTag}>
-
-              {user.isVerified && (
+              {userData?.isVerified && (
                 <View style={styles.verifiedBadge}>
                   <Text style={styles.verifiedText}>✓</Text>
                 </View>
@@ -71,7 +101,6 @@ const AccountScreen = () => {
             <AntDesign name="retweet" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Đánh giá của tôi</Text>
           </TouchableOpacity>
-
         </View>
 
         {/* Settings Section */}
@@ -120,16 +149,14 @@ const AccountScreen = () => {
           >
             <Ionicons name="information-circle-outline" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Liên hệ</Text>
-            
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.itemRow}>
+          <TouchableOpacity style={styles.itemRow} onPress={handleLogout}>
             <MaterialIcons name="logout" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Đăng xuất</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-
     </SafeAreaView>
   )
 }
@@ -139,7 +166,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-
   scrollContainer: {
     flex: 1,
   },
@@ -172,6 +198,20 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 999,
+  },
+  verifiedBadge: {
+    backgroundColor: "#f1c40f",
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 4,
+  },
+  verifiedText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   verificationText: {
     fontSize: 12,

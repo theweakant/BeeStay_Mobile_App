@@ -6,7 +6,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Image,
   SafeAreaView,
   StyleSheet,
   Alert,
@@ -27,12 +26,14 @@ const LoginScreen = () => {
   const [userName, setUserName] = useState("")
   const [password, setPassword] = useState("")
 
-  // Navigate to Home when login successful
+  // Handle successful login - navigate based on authentication status
   useEffect(() => {
     if (isAuthenticated) {
-      navigation.navigate("Home")
+      // Don't navigate manually - let AppNavigator handle the navigation
+      // The AppNavigator will automatically show the correct stack based on role
+      console.log('Login successful - AppNavigator will handle navigation')
     }
-  }, [isAuthenticated, navigation])
+  }, [isAuthenticated])
 
   // Show error alert
   useEffect(() => {
@@ -70,7 +71,8 @@ const LoginScreen = () => {
 
     try {
       await dispatch(loginUser(credentials)).unwrap()
-      // Login successful - useEffect will handle navigation
+      // Login successful - useEffect will handle the flow
+      // AppNavigator will automatically navigate to correct stack
     } catch (error) {
       // Error handled by useEffect
       console.error('Login failed:', error)
@@ -191,15 +193,6 @@ const styles = StyleSheet.create({
     color: "#4B5563",
     lineHeight: 20,
   },
-  phoneInputContainer: {
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 8,
-    marginBottom: 16,
-    height: 50,
-    alignItems: "center",
-  },
   inputContainer: {
     borderWidth: 1,
     borderColor: "#E5E7EB",
@@ -207,38 +200,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     height: 50,
   },
-  countryCodeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    borderRightWidth: 1,
-    borderRightColor: "#E5E7EB",
-    height: "100%",
-  },
-  flagIcon: {
-    width: 20,
-    height: 14,
-    marginRight: 6,
-  },
-  countryCodeText: {
-    fontSize: 14,
-  },
   textInput: {
     flex: 1,
     height: "100%",
     paddingHorizontal: 12,
-  },
-  passwordInputContainer: {
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 8,
-    marginBottom: 20,
-    height: 50,
-  },
-  passwordInput: {
-    flex: 1,
-    height: "100%",
-    paddingHorizontal: 10,
   },
   loginButton: {
     backgroundColor: "#F5B041",

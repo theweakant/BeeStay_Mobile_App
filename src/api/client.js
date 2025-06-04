@@ -1,18 +1,16 @@
-    // src/api/client.js
 import axios from 'axios';
-import { Platform } from 'react-native';
+import { REACT_APP_API_BASE } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseURL = process.env.REACT_APP_API_BASE;
+
 
 const apiClient = axios.create({
-  baseURL,
+  baseURL: REACT_APP_API_BASE,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Optional: attach token from AsyncStorage
 apiClient.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem('token');
   if (token) {
