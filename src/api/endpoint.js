@@ -8,28 +8,27 @@ export const AuthEndpoints = {
   
 export const UserEndpoints = {
   getUserByAccount: (accountId) => `/v1/user/by-account/${accountId}`,
-  // updateProfile: '/user/update-profile',
-  // uploadAvatar: '/user/upload-avatar',
+
 };
 
-export const HostEndpoints = {
-  viewProfile: '/user/view-profile',
-  updateProfile: '/user/update-profile',
-  uploadAvatar: '/user/upload-avatar',
-};
+// export const HostEndpoints = {
+//   viewProfile: '/user/view-profile',
+//   updateProfile: '/user/update-profile',
+//   uploadAvatar: '/user/upload-avatar',
+// };
 
 
-export const HomestayEndpoints = {
-  viewProfile: '/user/view-profile',
-  updateProfile: '/user/update-profile',
-  uploadAvatar: '/user/upload-avatar',
-};
+// export const HomestayEndpoints = {
+//   viewProfile: '/user/view-profile',
+//   updateProfile: '/user/update-profile',
+//   uploadAvatar: '/user/upload-avatar',
+// };
 
-export const ReviewEndpoints = {
-  viewProfile: '/user/view-profile',
-  updateProfile: '/user/update-profile',
-  uploadAvatar: '/user/upload-avatar',
-};
+// export const ReviewEndpoints = {
+//   viewProfile: '/user/view-profile',
+//   updateProfile: '/user/update-profile',
+//   uploadAvatar: '/user/upload-avatar',
+// };
 
 
 

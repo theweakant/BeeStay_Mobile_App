@@ -1,4 +1,4 @@
-// screens/AccountScreen.js - Cập nhật AccountScreen để sử dụng real API data
+// screens/AccountScreen.js 
 import React, { useEffect } from "react"
 import {
   View,
@@ -32,7 +32,12 @@ const AccountScreen = () => {
   // Fetch user profile when component mounts
   useEffect(() => {
     if (isAuthenticated && authUser?.accountId) {
+      console.log('✅ AccountScreen: Fetching user with accountId:', authUser.accountId);
       dispatch(fetchUserByAccount(authUser.accountId));
+    } else {
+      console.log('❌ AccountScreen: Missing isAuthenticated or accountId');
+      console.log('- isAuthenticated:', isAuthenticated);
+      console.log('- authUser:', authUser);
     }
   }, [dispatch, isAuthenticated, authUser?.accountId]);
 

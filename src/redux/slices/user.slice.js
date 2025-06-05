@@ -1,3 +1,4 @@
+// redux/slices/user.slice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserByAccount } from '../services/user.service';
 
@@ -37,8 +38,8 @@ const userSlice = createSlice({
       state.updateError = null;
     },
     
-    // Clear user profile
-    clearProfile: (state) => {
+    // Clear user profile - Đổi tên từ clearProfile thành clearUserProfile
+    clearUserProfile: (state) => {
       state.profile = null;
       state.error = null;
     },
@@ -70,8 +71,8 @@ const userSlice = createSlice({
   },
 });
 
-// Export actions
-export const { clearError, clearProfile, updateProfileLocal } = userSlice.actions;
+// Export actions - Cập nhật tên action export
+export const { clearError, clearUserProfile, updateProfileLocal } = userSlice.actions;
 
 // Selectors
 export const selectUserProfile = (state) => state.user.profile;

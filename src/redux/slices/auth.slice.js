@@ -1,7 +1,7 @@
 // redux/slices/auth.slice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode'; // Updated import syntax
+import { jwtDecode } from 'jwt-decode'; 
 import { login } from '../services/auth.service';
 
 // Đăng nhập
@@ -12,6 +12,10 @@ export const loginUser = createAsyncThunk(
       const data = await login(credentials);
       if (data.token) {
         await AsyncStorage.setItem('token', data.token);
+        // Lưu accountId vào AsyncStorage
+        if (data.accountId) {
+          await AsyncStorage.setItem('accountId', data.accountId.toString());
+        }
       }
       return data;
     } catch (error) {
@@ -26,6 +30,8 @@ export const restoreAuthState = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = await AsyncStorage.getItem('token');
+      const accountId = await AsyncStorage.getItem('accountId'); // Lấy accountId
+      
       if (token) {
         const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
@@ -33,6 +39,7 @@ export const restoreAuthState = createAsyncThunk(
         // Check if token is expired
         if (decoded.exp < currentTime) {
           await AsyncStorage.removeItem('token');
+          await AsyncStorage.removeItem('accountId'); // Xóa accountId khi token hết hạn
           return null;
         }
         
@@ -40,11 +47,13 @@ export const restoreAuthState = createAsyncThunk(
           token,
           role: decoded.role,
           userName: decoded.sub,
+          accountId: accountId ? parseInt(accountId) : null, // Thêm accountId
         };
       }
       return null;
     } catch (error) {
       await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('accountId');
       return thunkAPI.rejectWithValue('Failed to restore auth state');
     }
   }
@@ -68,6 +77,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.error = null;
       AsyncStorage.removeItem('token');
+      AsyncStorage.removeItem('accountId'); // Xóa accountId khi logout
     },
     clearError: (state) => {
       state.error = null;
@@ -113,6 +123,7 @@ const authSlice = createSlice({
           state.role = action.payload.role || null;
           state.user = {
             userName: action.payload.userName,
+            accountId: action.payload.accountId, // Thêm accountId
           };
           state.isAuthenticated = true;
         }
