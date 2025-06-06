@@ -11,17 +11,17 @@ const apiClient = axios.create({
   timeout: 15000,
 });
 
-console.log('BASE_URL:', process.env.REACT_APP_API_BASE);
+console.log('BASE_URL:', REACT_APP_API_BASE);
 
 const PUBLIC_ENDPOINTS = [
-  '/v1/auth/register',  // Gửi OTP
-  '/v1/auth/verify',    // Verify OTP và đăng ký
-  '/v1/auth/login',     // Đăng nhập
+  '/v1/auth/register',  
+  '/v1/auth/verify',    
+  '/v1/auth/login',     
 ];
 
-// ✅ FIXED: Helper function với proper error handling
+
 const isPublicEndpoint = (url) => {
-  // ✅ Check for null/undefined/empty string
+  
   if (!url || typeof url !== 'string') {
     console.warn('⚠️ isPublicEndpoint: Invalid URL provided:', url);
     return false;
@@ -29,7 +29,7 @@ const isPublicEndpoint = (url) => {
   
   try {
     return PUBLIC_ENDPOINTS.some(endpoint => {
-      // ✅ Double check endpoint is also a string
+      
       if (typeof endpoint !== 'string') {
         console.warn('⚠️ Invalid endpoint in PUBLIC_ENDPOINTS:', endpoint);
         return false;
@@ -42,39 +42,37 @@ const isPublicEndpoint = (url) => {
   }
 };
 
-// ✅ FIXED: Request interceptor with comprehensive error handling
+
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      // ✅ Validate config object
+     
       if (!config) {
         console.error('❌ Request config is undefined');
         return Promise.reject(new Error('Request configuration is missing'));
       }
 
-      // ✅ Validate URL exists
+      
       if (!config.url) {
         console.error('❌ Request URL is undefined');
         return Promise.reject(new Error('Request URL is missing'));
       }
 
-      // ✅ Ensure headers object exists
+     
       if (!config.headers) {
         config.headers = {};
       }
 
-      // ✅ Debug log - safe logging
-      const method = config.method ? config.method.toUpperCase() : 'UNKNOWN';
-      console.log(`🔄 API Request: ${method} ${config.url}`);
-      console.log('📋 Headers:', config.headers);
       
-      // ✅ Check if public endpoint (with error handling)
+      const method = config.method ? config.method.toUpperCase() : 'UNKNOWN';
+      
+   
       const isPublic = isPublicEndpoint(config.url);
       
       if (isPublic) {
         console.log('🔓 Public endpoint - No auth required');
       } else {
-        // ✅ Add token for protected endpoints
+        
         console.log('🔒 Protected endpoint - Adding auth token');
         try {
           const token = await AsyncStorage.getItem('token');
@@ -86,7 +84,7 @@ apiClient.interceptors.request.use(
           }
         } catch (tokenError) {
           console.error('❌ Error getting token from AsyncStorage:', tokenError);
-          // Don't reject here, let the server handle missing auth
+         
         }
       }
       
@@ -94,7 +92,7 @@ apiClient.interceptors.request.use(
       
     } catch (error) {
       console.error('❌ Request interceptor error:', error);
-      // ✅ Return config anyway to prevent blocking all requests
+      
       return config || { url: '', method: 'GET', headers: {} };
     }
   },

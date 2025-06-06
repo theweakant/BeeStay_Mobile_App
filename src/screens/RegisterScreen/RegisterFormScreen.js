@@ -13,8 +13,7 @@ import {
 import { useAuth } from '../../redux/hooks/useAuth';
 
 export default function RegisterFormScreen({ navigation }) {
-  console.log('→ Rendering RegisterFormScreen');
-  console.log('🔵 RegisterFormScreen mounted');
+
   
   const { 
     registration, 
@@ -25,17 +24,13 @@ export default function RegisterFormScreen({ navigation }) {
     isOTPExpired 
   } = useAuth();
 
-  console.log('📋 Registration data:', {
-    email: registration.email,
-    step: registration.step,
-    otpExpiry: registration.otpExpiry
-  });
+
 
   const [formData, setFormData] = useState({
     userName: '',
     password: '',
     confirmPassword: '',
-    role: 'USER', // Default role
+    role: 'USER', 
     otp: '',
   });
 

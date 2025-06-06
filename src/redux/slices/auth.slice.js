@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode'; 
-import { login, registerSendOTP, verifyOTPAndRegister } from '../services/auth.service';
+import { login, sendOTP, verifyOTPAndRegister } from '../services/auth.service';
 
 // Đăng nhập
 export const loginUser = createAsyncThunk(
@@ -28,7 +28,7 @@ export const sendRegisterOTP = createAsyncThunk(
   'auth/sendRegisterOTP',
   async (email, thunkAPI) => {
     try {
-      const data = await registerSendOTP(email);
+      const data = await sendOTP(email);
       return { email, message: data.message || 'OTP sent successfully' };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);

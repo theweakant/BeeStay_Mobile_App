@@ -12,9 +12,9 @@ export const login = async (credentials) => {
 };
 
 // API để gửi OTP đến email - theo swagger sử dụng query parameter
-export const registerSendOTP = async (email) => {
+export const sendOTP = async (email) => {
   try {
-    const response = await apiClient.post(AuthEndpoints.register, null, {
+    const response = await apiClient.post(AuthEndpoints.verify, null, {
       params: { email }
     });
     return response.data;
@@ -27,7 +27,7 @@ export const registerSendOTP = async (email) => {
 export const verifyOTPAndRegister = async (registerData) => {
   try {
     // registerData should contain: { userName, password, email, role, otp }
-    const response = await apiClient.post(AuthEndpoints.verify, registerData, {
+    const response = await apiClient.post(AuthEndpoints.register, registerData, {
       headers: {
         'Content-Type': 'application/json'
       }

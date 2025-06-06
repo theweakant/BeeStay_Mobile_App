@@ -1,8 +1,10 @@
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+
 // api/endpoint.js
 export const AuthEndpoints = {
     register: '/v1/auth/register',
     login:    '/v1/auth/login',
-    facebook: '/v1/auth/verify',
+    verify: '/v1/auth/verify',
    
   };
   
@@ -11,24 +13,14 @@ export const UserEndpoints = {
 
 };
 
-// export const HostEndpoints = {
-//   viewProfile: '/user/view-profile',
-//   updateProfile: '/user/update-profile',
-//   uploadAvatar: '/user/upload-avatar',
-// };
+export const HostEndpoints = {
+ getHostByAccount: (accountId) => `/v1/host/by-account/${accountId}`,
+ getHostById: (hostId) => `/v1/host/${hostId}`,
+};
 
 
-// export const HomestayEndpoints = {
-//   viewProfile: '/user/view-profile',
-//   updateProfile: '/user/update-profile',
-//   uploadAvatar: '/user/upload-avatar',
-// };
 
-// export const ReviewEndpoints = {
-//   viewProfile: '/user/view-profile',
-//   updateProfile: '/user/update-profile',
-//   uploadAvatar: '/user/upload-avatar',
-// };
+
 
 
 
