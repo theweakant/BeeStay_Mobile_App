@@ -87,6 +87,14 @@ const LoginScreen = () => {
     navigation.goBack()
   }
 
+    const handleNavigateToRegister = () => {
+    // Clear any errors before navigating
+    if (error) {
+      dispatch(clearError())
+    }
+    navigation.navigate('Register')
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Close Button */}
@@ -148,7 +156,11 @@ const LoginScreen = () => {
       <View style={styles.socialContainer}>
         <Text style={styles.socialLabel}>Hoặc đăng nhập bằng</Text>
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton} disabled={loading}>
+          <TouchableOpacity 
+            style={styles.socialButton} 
+            disabled={loading}
+            onPress={handleNavigateToRegister}
+          >
             <Text style={[styles.socialIcon, { color: "#3b5998" }]}>f</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton} disabled={loading}>

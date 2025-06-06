@@ -11,8 +11,7 @@ export const login = async (credentials) => {
   }
 };
 
-
-// API để gửi OTP đến email
+// API để gửi OTP đến email - theo swagger sử dụng query parameter
 export const registerSendOTP = async (email) => {
   try {
     const response = await apiClient.post(AuthEndpoints.register, null, {
@@ -24,10 +23,15 @@ export const registerSendOTP = async (email) => {
   }
 };
 
-// API để verify OTP và hoàn thành đăng ký
+// API để verify OTP và hoàn thành đăng ký - theo swagger sử dụng request body
 export const verifyOTPAndRegister = async (registerData) => {
   try {
-    const response = await apiClient.post(AuthEndpoints.verify, registerData);
+    // registerData should contain: { userName, password, email, role, otp }
+    const response = await apiClient.post(AuthEndpoints.verify, registerData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     return response.data;
   } catch (error) {
     throw error;

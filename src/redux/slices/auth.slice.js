@@ -12,7 +12,6 @@ export const loginUser = createAsyncThunk(
       const data = await login(credentials);
       if (data.token) {
         await AsyncStorage.setItem('token', data.token);
-        // Lưu accountId vào AsyncStorage
         if (data.accountId) {
           await AsyncStorage.setItem('accountId', data.accountId.toString());
         }
@@ -42,7 +41,9 @@ export const verifyAndRegister = createAsyncThunk(
   'auth/verifyAndRegister',
   async (registerData, thunkAPI) => {
     try {
+      // registerData = { userName, password, email, role, otp }
       const data = await verifyOTPAndRegister(registerData);
+      
       // Nếu API trả về token sau khi đăng ký thành công
       if (data.token) {
         await AsyncStorage.setItem('token', data.token);
@@ -69,7 +70,6 @@ export const restoreAuthState = createAsyncThunk(
         const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
         
-        // Check if token is expired
         if (decoded.exp < currentTime) {
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('accountId');
@@ -101,13 +101,23 @@ const authSlice = createSlice({
     loading: false,
     error: null,
     isAuthenticated: false,
-    // Thêm state cho registration flow
+    // Registration flow state
     registration: {
+      step: 1, // 1: nhập email, 2: nhập thông tin + OTP
       loading: false,
       error: null,
       otpSent: false,
-      email: null,
-      isRegistering: false,
+      email: '',
+      // Form data cho bước 2
+      formData: {
+        userName: '',
+        password: '',
+        role: '',
+        otp: '',
+      },
+      // OTP management
+      otpExpiry: null,
+      isComplete: false,
     },
   },
   reducers: {
@@ -126,12 +136,39 @@ const authSlice = createSlice({
     },
     resetRegistration: (state) => {
       state.registration = {
+        step: 1,
         loading: false,
         error: null,
         otpSent: false,
-        email: null,
-        isRegistering: false,
+        email: '',
+        formData: {
+          userName: '',
+          password: '',
+          role: '',
+          otp: '',
+        },
+        otpExpiry: null,
+        isComplete: false,
       };
+    },
+    // Registration form actions
+    setRegistrationEmail: (state, action) => {
+      state.registration.email = action.payload;
+    },
+    setRegistrationFormData: (state, action) => {
+      state.registration.formData = {
+        ...state.registration.formData,
+        ...action.payload,
+      };
+    },
+    nextRegistrationStep: (state) => {
+      state.registration.step += 1;
+    },
+    prevRegistrationStep: (state) => {
+      state.registration.step -= 1;
+    },
+    setRegistrationStep: (state, action) => {
+      state.registration.step = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -174,6 +211,9 @@ const authSlice = createSlice({
         state.registration.otpSent = true;
         state.registration.email = action.payload.email;
         state.registration.error = null;
+        state.registration.step = 2; 
+        // Set OTP expiry (5 phút)
+        state.registration.otpExpiry = Date.now() + 5 * 60 * 1000;
       })
       .addCase(sendRegisterOTP.rejected, (state, action) => {
         state.registration.loading = false;
@@ -184,12 +224,12 @@ const authSlice = createSlice({
       // Verify OTP và đăng ký
       .addCase(verifyAndRegister.pending, (state) => {
         state.registration.loading = true;
-        state.registration.isRegistering = true;
         state.registration.error = null;
       })
       .addCase(verifyAndRegister.fulfilled, (state, action) => {
         state.registration.loading = false;
-        state.registration.isRegistering = false;
+        state.registration.isComplete = true;
+         state.registration.step = 3;
         
         // Nếu API trả về token (tự động đăng nhập sau đăng ký)
         if (action.payload.token) {
@@ -207,18 +247,10 @@ const authSlice = createSlice({
           state.isAuthenticated = true;
         }
         
-        // Reset registration state
-        state.registration = {
-          loading: false,
-          error: null,
-          otpSent: false,
-          email: null,
-          isRegistering: false,
-        };
+        state.registration.error = null;
       })
       .addCase(verifyAndRegister.rejected, (state, action) => {
         state.registration.loading = false;
-        state.registration.isRegistering = false;
         state.registration.error = action.payload;
       })
       
@@ -245,5 +277,15 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError, resetRegistration } = authSlice.actions;
+export const { 
+  logout, 
+  clearError, 
+  resetRegistration,
+  setRegistrationEmail,
+  setRegistrationFormData,
+  nextRegistrationStep,
+  prevRegistrationStep,
+  setRegistrationStep,
+} = authSlice.actions;
+
 export default authSlice.reducer;

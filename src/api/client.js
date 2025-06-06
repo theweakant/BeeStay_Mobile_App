@@ -1,3 +1,4 @@
+// api/client.js - BULLETPROOF VERSION
 import axios from 'axios';
 import { REACT_APP_API_BASE } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,94 +8,198 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 15000, // 15 seconds timeout
+  timeout: 15000,
 });
 
-// Request interceptor
+console.log('BASE_URL:', process.env.REACT_APP_API_BASE);
+
+const PUBLIC_ENDPOINTS = [
+  '/v1/auth/register',  // Gửi OTP
+  '/v1/auth/verify',    // Verify OTP và đăng ký
+  '/v1/auth/login',     // Đăng nhập
+];
+
+// ✅ FIXED: Helper function với proper error handling
+const isPublicEndpoint = (url) => {
+  // ✅ Check for null/undefined/empty string
+  if (!url || typeof url !== 'string') {
+    console.warn('⚠️ isPublicEndpoint: Invalid URL provided:', url);
+    return false;
+  }
+  
+  try {
+    return PUBLIC_ENDPOINTS.some(endpoint => {
+      // ✅ Double check endpoint is also a string
+      if (typeof endpoint !== 'string') {
+        console.warn('⚠️ Invalid endpoint in PUBLIC_ENDPOINTS:', endpoint);
+        return false;
+      }
+      return url.includes(endpoint);
+    });
+  } catch (error) {
+    console.error('❌ Error in isPublicEndpoint:', error);
+    return false;
+  }
+};
+
+// ✅ FIXED: Request interceptor with comprehensive error handling
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      // ✅ Validate config object
+      if (!config) {
+        console.error('❌ Request config is undefined');
+        return Promise.reject(new Error('Request configuration is missing'));
       }
-      
-      // Debug log
-      console.log(`🔄 API Request: ${config.method?.toUpperCase()} ${config.url}`);
+
+      // ✅ Validate URL exists
+      if (!config.url) {
+        console.error('❌ Request URL is undefined');
+        return Promise.reject(new Error('Request URL is missing'));
+      }
+
+      // ✅ Ensure headers object exists
+      if (!config.headers) {
+        config.headers = {};
+      }
+
+      // ✅ Debug log - safe logging
+      const method = config.method ? config.method.toUpperCase() : 'UNKNOWN';
+      console.log(`🔄 API Request: ${method} ${config.url}`);
       console.log('📋 Headers:', config.headers);
       
+      // ✅ Check if public endpoint (with error handling)
+      const isPublic = isPublicEndpoint(config.url);
+      
+      if (isPublic) {
+        console.log('🔓 Public endpoint - No auth required');
+      } else {
+        // ✅ Add token for protected endpoints
+        console.log('🔒 Protected endpoint - Adding auth token');
+        try {
+          const token = await AsyncStorage.getItem('token');
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log('✅ Auth token added');
+          } else {
+            console.log('⚠️ No auth token found for protected endpoint');
+          }
+        } catch (tokenError) {
+          console.error('❌ Error getting token from AsyncStorage:', tokenError);
+          // Don't reject here, let the server handle missing auth
+        }
+      }
+      
       return config;
+      
     } catch (error) {
       console.error('❌ Request interceptor error:', error);
-      return config;
+      // ✅ Return config anyway to prevent blocking all requests
+      return config || { url: '', method: 'GET', headers: {} };
     }
   },
   (error) => {
-    console.error('❌ Request interceptor error:', error);
+    console.error('❌ Request interceptor promise error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor
+// ✅ FIXED: Response interceptor with better error handling
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(`✅ API Response: ${response.status} ${response.config.url}`);
+    // ✅ Safe logging
+    const status = response?.status || 'UNKNOWN';
+    const url = response?.config?.url || 'UNKNOWN';
+    console.log(`✅ API Response: ${status} ${url}`);
     return response;
   },
   async (error) => {
-    const originalRequest = error.config;
-    
-    console.error(`❌ API Error: ${error.response?.status} ${error.config?.url}`);
-    console.error('📋 Error Details:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
-
-    // Handle 403 Forbidden
-    if (error.response?.status === 403) {
-      console.log('🚫 403 Forbidden - Token có thể đã hết hạn');
+    try {
+      // ✅ Safe error logging
+      const status = error.response?.status || 'NO_RESPONSE';
+      const url = error.config?.url || 'UNKNOWN_URL';
+      const originalRequest = error.config;
       
-      // Check if we haven't already tried to refresh
-      if (!originalRequest._retry) {
-        originalRequest._retry = true;
+      console.error(`❌ API Error: ${status} ${url}`);
+      console.error('📋 Error Details:', {
+        status: error.response?.status,
+        data: error.response?.data || 'No response data',
+        message: error.message || 'No error message',
+      });
+
+      // ✅ Only handle auth errors for protected endpoints
+      if ((error.response?.status === 403 || error.response?.status === 401)) {
         
-        try {
-          // Try to get fresh token
-          const currentToken = await AsyncStorage.getItem('token');
+        // ✅ Check if this is a protected endpoint
+        const isPublic = originalRequest?.url ? isPublicEndpoint(originalRequest.url) : false;
+        
+        if (!isPublic && originalRequest) {
+          console.log('🚫 Auth error on protected endpoint');
           
-          if (currentToken) {
-            console.log('🔄 Thử lại request với token hiện tại...');
-            originalRequest.headers.Authorization = `Bearer ${currentToken}`;
-            return apiClient(originalRequest);
-          } else {
-            console.log('❌ Không tìm thấy token, cần đăng nhập lại');
-            // Clear storage and redirect to login
-            await AsyncStorage.multiRemove(['token', 'accountId']);
-            throw new Error('Authentication required');
+          // ✅ Retry logic with safety checks
+          if (!originalRequest._retry) {
+            originalRequest._retry = true;
+            
+            try {
+              const currentToken = await AsyncStorage.getItem('token');
+              
+              if (currentToken) {
+                console.log('🔄 Retry with current token...');
+                // ✅ Ensure headers exist
+                if (!originalRequest.headers) {
+                  originalRequest.headers = {};
+                }
+                originalRequest.headers.Authorization = `Bearer ${currentToken}`;
+                return apiClient(originalRequest);
+              } else {
+                console.log('❌ No token found, need to login');
+                await AsyncStorage.multiRemove(['token', 'accountId']);
+                throw new Error('Authentication required');
+              }
+            } catch (refreshError) {
+              console.error('❌ Token refresh failed:', refreshError);
+              await AsyncStorage.multiRemove(['token', 'accountId']);
+              throw refreshError;
+            }
           }
-        } catch (refreshError) {
-          console.error('❌ Refresh token failed:', refreshError);
-          await AsyncStorage.multiRemove(['token', 'accountId']);
-          throw refreshError;
+        } else {
+          console.log('🔓 Auth error on public endpoint - this is unusual but not handled');
         }
       }
-    }
 
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
-      console.log('🚫 401 Unauthorized - Clearing auth data');
-      await AsyncStorage.multiRemove(['token', 'accountId']);
-    }
+      // ✅ Handle network errors
+      if (!error.response) {
+        console.error('🌐 Network Error:', error.message);
+        const networkError = new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+        networkError.isNetworkError = true;
+        throw networkError;
+      }
 
-    // Handle network errors
-    if (!error.response) {
-      console.error('🌐 Network Error:', error.message);
-      error.message = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.';
+      // ✅ Handle other errors
+      return Promise.reject(error);
+      
+    } catch (interceptorError) {
+      console.error('❌ Response interceptor error:', interceptorError);
+      return Promise.reject(interceptorError);
     }
-
-    return Promise.reject(error);
   }
 );
+
+// ✅ Add a test function to validate the client
+export const testApiClient = () => {
+  console.log('🧪 Testing API Client Configuration...');
+  console.log('📍 Base URL:', apiClient.defaults.baseURL);
+  console.log('⏱️ Timeout:', apiClient.defaults.timeout);
+  console.log('🔓 Public endpoints:', PUBLIC_ENDPOINTS);
+  
+  // Test the isPublicEndpoint function
+  console.log('🧪 Testing isPublicEndpoint function:');
+  console.log('  /v1/auth/register:', isPublicEndpoint('/v1/auth/register'));
+  console.log('  /v1/auth/login:', isPublicEndpoint('/v1/auth/login'));
+  console.log('  /v1/users/profile:', isPublicEndpoint('/v1/users/profile'));
+  console.log('  undefined:', isPublicEndpoint(undefined));
+  console.log('  null:', isPublicEndpoint(null));
+  console.log('  empty string:', isPublicEndpoint(''));
+};
 
 export default apiClient;
