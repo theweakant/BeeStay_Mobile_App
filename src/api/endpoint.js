@@ -11,11 +11,18 @@ export const AuthEndpoints = {
 export const UserEndpoints = {
   getUserByAccount: (accountId) => `/v1/user/by-account/${accountId}`,
 
+
 };
 
 export const HostEndpoints = {
  getHostByAccount: (accountId) => `/v1/host/by-account/${accountId}`,
  getHostById: (hostId) => `/v1/host/${hostId}`,
+};
+
+export const HomestayEndpoints = {
+  addHomestay: `/v1/stay-cation/add`,
+  addHomestayImage: (homestayId) => `/v1/stay-cation/add-img/${homestayId}`,
+  getAllHomestay: '/v1/stay-cation/all',
 };
 
 

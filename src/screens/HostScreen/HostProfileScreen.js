@@ -13,19 +13,50 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
- import {hostData} from '../../data/MockData'; // Import dữ liệu mẫu
+ import {hostData} from '../../data/MockData'; 
 const { width } = Dimensions.get('window');
+import { useNavigation } from "@react-navigation/native"
+import { useDispatch, useSelector } from "react-redux"
+import { logout } from "../../redux/slices/auth.slice"
+import { fetchUserByAccount, clearUserProfile } from "../../redux/slices/user.slice"
 
-// Data mẫu cho host profile
 
 
 export default function HostProfileScreen() {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState(hostData);
   const [editedData, setEditedData] = useState({...hostData});
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Đăng xuất",
+      "Bạn có chắc chắn muốn đăng xuất?",
+      [
+        {
+          text: "Hủy",
+          style: "cancel"
+        },
+        {
+          text: "Đăng xuất",
+          style: "destructive",
+          onPress: () => {
+            dispatch(logout());
+            dispatch(clearUserProfile());
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          }
+        }
+      ]
+    );
+  };
+
 
   // Format ngày
   const formatDate = (dateString) => {
@@ -459,12 +490,11 @@ export default function HostProfileScreen() {
             <Text style={styles.confirmText}>Bạn có chắc chắn muốn đăng xuất?</Text>
             
             <View style={styles.confirmActions}>
+
+              
               <TouchableOpacity 
                 style={[styles.confirmButton, styles.confirmLogoutButton]}
-                onPress={() => {
-                  Alert.alert('Đã đăng xuất', 'Bạn đã đăng xuất thành công!');
-                  setShowLogoutConfirm(false);
-                }}
+                onPress={handleLogout}
               >
                 <Text style={styles.confirmLogoutText}>Đăng xuất</Text>
               </TouchableOpacity>
