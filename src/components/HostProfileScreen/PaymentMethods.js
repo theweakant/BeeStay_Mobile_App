@@ -1,37 +1,34 @@
+// components/PaymentMethods.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const PaymentMethod = ({ method }) => (
-  <View style={styles.paymentMethod}>
-    <View style={styles.paymentIconContainer}>
-      <Text style={styles.paymentIcon}>
-        {method.type === 'bank' ? '🏦' : '💳'}
-      </Text>
-    </View>
-    <View style={styles.paymentInfo}>
-      <Text style={styles.paymentName}>{method.name}</Text>
-      <Text style={styles.paymentNumber}>{method.number}</Text>
-    </View>
-    {method.isDefault && (
-      <View style={styles.defaultBadge}>
-        <Text style={styles.defaultText}>Mặc định</Text>
-      </View>
-    )}
-  </View>
-);
-
-const PaymentSection = ({ profileData, onAddPaymentMethod }) => {
+export const PaymentMethods = ({ profileData, setShowPaymentModal }) => {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Phương thức thanh toán</Text>
       
       {profileData.paymentMethods.map((method) => (
-        <PaymentMethod key={method.id} method={method} />
+        <View key={method.id} style={styles.paymentMethod}>
+          <View style={styles.paymentIconContainer}>
+            <Text style={styles.paymentIcon}>
+              {method.type === 'bank' ? '🏦' : '💳'}
+            </Text>
+          </View>
+          <View style={styles.paymentInfo}>
+            <Text style={styles.paymentName}>{method.name}</Text>
+            <Text style={styles.paymentNumber}>{method.number}</Text>
+          </View>
+          {method.isDefault && (
+            <View style={styles.defaultBadge}>
+              <Text style={styles.defaultText}>Mặc định</Text>
+            </View>
+          )}
+        </View>
       ))}
       
       <TouchableOpacity 
         style={styles.addPaymentButton}
-        onPress={onAddPaymentMethod}
+        onPress={() => setShowPaymentModal(true)}
       >
         <Text style={styles.addPaymentText}>+ Thêm phương thức thanh toán</Text>
       </TouchableOpacity>
@@ -51,7 +48,7 @@ const styles = StyleSheet.create({
     color: '#212529',
     marginBottom: 15,
   },
-  paymentMethod: {
+   paymentMethod: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
@@ -60,7 +57,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
     borderRadius: 8,
   },
-  paymentIconContainer: {
+    paymentIconContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -71,13 +68,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e9ecef',
   },
-  paymentIcon: {
-    fontSize: 18,
-  },
-  paymentInfo: {
-    flex: 1,
-  },
-  paymentName: {
+    paymentName: {
     fontSize: 14,
     fontWeight: '600',
     color: '#212529',
@@ -87,7 +78,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6c757d',
   },
-  defaultBadge: {
+    paymentInfo: {
+    flex: 1,
+  },
+    defaultBadge: {
     backgroundColor: '#E8F5E8',
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -98,7 +92,7 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
     fontWeight: '500',
   },
-  addPaymentButton: {
+    addPaymentButton: {
     paddingVertical: 12,
     alignItems: 'center',
     borderWidth: 1,
@@ -112,5 +106,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-export default PaymentSection;

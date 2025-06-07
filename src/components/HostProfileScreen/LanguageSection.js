@@ -1,23 +1,20 @@
+// components/LanguageSection.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const LanguageTag = ({ language }) => (
-  <View style={styles.languageTag}>
-    <Text style={styles.languageText}>{language}</Text>
-  </View>
-);
-
-const LanguageSection = ({ profileData, onAddLanguage }) => {
+export const LanguageSection = ({ profileData, setShowLanguageModal }) => {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Ngôn ngữ</Text>
       <View style={styles.languageContainer}>
         {profileData.languages.map((language, index) => (
-          <LanguageTag key={index} language={language} />
+          <View key={index} style={styles.languageTag}>
+            <Text style={styles.languageText}>{language}</Text>
+          </View>
         ))}
         <TouchableOpacity 
           style={styles.addLanguageButton}
-          onPress={onAddLanguage}
+          onPress={() => setShowLanguageModal(true)}
         >
           <Text style={styles.addLanguageText}>+ Thêm</Text>
         </TouchableOpacity>
@@ -51,11 +48,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e9ecef',
   },
-  languageText: {
+    languageText: {
     fontSize: 14,
     color: '#495057',
   },
-  addLanguageButton: {
+    addLanguageButton: {
     backgroundColor: '#fff',
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -68,5 +65,3 @@ const styles = StyleSheet.create({
     color: '#FF6B35',
   },
 });
-
-export default LanguageSection;

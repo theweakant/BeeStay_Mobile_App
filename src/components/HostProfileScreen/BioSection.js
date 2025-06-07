@@ -1,7 +1,8 @@
+// components/BioSection.js
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-const BioSection = ({ profileData, isEditing, editedData, onBioChange }) => {
+export const BioSection = ({ profileData, isEditing, editedData, setEditedData }) => {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Giới thiệu</Text>
@@ -9,7 +10,7 @@ const BioSection = ({ profileData, isEditing, editedData, onBioChange }) => {
         <TextInput
           style={styles.bioInput}
           value={editedData.bio}
-          onChangeText={onBioChange}
+          onChangeText={(text) => setEditedData({...editedData, bio: text})}
           multiline
           numberOfLines={4}
           textAlignVertical="top"
@@ -20,6 +21,7 @@ const BioSection = ({ profileData, isEditing, editedData, onBioChange }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   section: {
@@ -48,5 +50,3 @@ const styles = StyleSheet.create({
     minHeight: 100,
   },
 });
-
-export default BioSection;

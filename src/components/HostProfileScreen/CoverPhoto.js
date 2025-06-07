@@ -1,11 +1,12 @@
+// components/CoverPhoto.js
 import React from 'react';
 import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const CoverSection = ({ coverPhoto, onEditCover }) => {
+export const CoverPhoto = ({ coverPhoto }) => {
   return (
     <View style={styles.coverContainer}>
       <Image source={{ uri: coverPhoto }} style={styles.coverPhoto} />
-      <TouchableOpacity style={styles.editCoverButton} onPress={onEditCover}>
+      <TouchableOpacity style={styles.editCoverButton}>
         <Text style={styles.editCoverText}>Thay đổi ảnh bìa</Text>
       </TouchableOpacity>
     </View>
@@ -17,11 +18,11 @@ const styles = StyleSheet.create({
     height: 200,
     position: 'relative',
   },
-  coverPhoto: {
+    coverPhoto: {
     width: '100%',
     height: '100%',
   },
-  editCoverButton: {
+    editCoverButton: {
     position: 'absolute',
     right: 15,
     bottom: 15,
@@ -30,11 +31,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
   },
-  editCoverText: {
+    editCoverText: {
     color: '#fff',
     fontSize: 12,
     fontWeight: '600',
   },
 });
-
-export default CoverSection;

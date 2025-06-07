@@ -1,26 +1,33 @@
+// components/HostStats.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const StatItem = ({ value, label }) => (
-  <View style={styles.statItem}>
-    <Text style={styles.statValue}>{value}</Text>
-    <Text style={styles.statLabel}>{label}</Text>
-  </View>
-);
-
-const StatsSection = ({ profileData }) => {
+export const HostStats = ({ profileData }) => {
   return (
     <View style={styles.statsContainer}>
-      <StatItem value={profileData.rating} label="Đánh giá" />
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>{profileData.rating}</Text>
+        <Text style={styles.statLabel}>Đánh giá</Text>
+      </View>
       <View style={styles.statDivider} />
-      <StatItem value={profileData.totalProperties} label="Homestay" />
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>{profileData.totalProperties}</Text>
+        <Text style={styles.statLabel}>Homestay</Text>
+      </View>
       <View style={styles.statDivider} />
-      <StatItem value={profileData.totalBookings} label="Lượt đặt" />
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>{profileData.totalBookings}</Text>
+        <Text style={styles.statLabel}>Lượt đặt</Text>
+      </View>
       <View style={styles.statDivider} />
-      <StatItem value={`${profileData.responseRate}%`} label="Phản hồi" />
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>{profileData.responseRate}%</Text>
+        <Text style={styles.statLabel}>Phản hồi</Text>
+      </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   statsContainer: {
@@ -51,4 +58,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StatsSection;

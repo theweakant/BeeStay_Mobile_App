@@ -1,19 +1,14 @@
-import React from 'react';
-import { View, Image, TouchableOpacity, Text, TextInput, StyleSheet } from 'react-native';
 
-const ProfileHeader = ({ 
-  profileData, 
-  isEditing, 
-  editedData, 
-  onEditAvatar, 
-  onNameChange,
-  formatDate 
-}) => {
+// components/ProfileHeader.js
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+
+export const ProfileHeader = ({ profileData, isEditing, editedData, setEditedData, formatDate }) => {
   return (
     <View style={styles.profileHeader}>
       <View style={styles.avatarContainer}>
         <Image source={{ uri: profileData.avatar }} style={styles.avatar} />
-        <TouchableOpacity style={styles.editAvatarButton} onPress={onEditAvatar}>
+        <TouchableOpacity style={styles.editAvatarButton}>
           <Text style={styles.editAvatarIcon}>📷</Text>
         </TouchableOpacity>
       </View>
@@ -23,7 +18,7 @@ const ProfileHeader = ({
           <TextInput
             style={styles.nameInput}
             value={editedData.name}
-            onChangeText={onNameChange}
+            onChangeText={(text) => setEditedData({...editedData, name: text})}
           />
         ) : (
           <Text style={styles.name}>{profileData.name}</Text>
