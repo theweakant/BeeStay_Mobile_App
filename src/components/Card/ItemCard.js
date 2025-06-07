@@ -18,7 +18,7 @@ const formatLocation = (location) => {
   const { address, district, city, province } = location;
 
   return [address, district, city, province]
-    .filter(Boolean) // loại bỏ phần nào bị null hoặc undefined
+    .filter(Boolean) 
     .join(', ');
 };
 
