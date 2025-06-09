@@ -15,8 +15,11 @@ export const UserEndpoints = {
 };
 
 export const HostEndpoints = {
- getHostByAccount: (accountId) => `/v1/host/by-account/${accountId}`,
- getHostById: (hostId) => `/v1/host/${hostId}`,
+  getHostByAccount: (accountId) => `/v1/host/by-account/${accountId}`,
+  getHostById: (hostId) => `/v1/host/${hostId}`,
+  
+
+
 };
 
 export const HomestayEndpoints = {
