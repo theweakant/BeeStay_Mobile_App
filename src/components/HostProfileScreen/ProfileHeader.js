@@ -2,12 +2,47 @@
 // components/ProfileHeader.js
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { getFullLocation, formatDate } from '../../utils/textUtils'; 
 
 export const ProfileHeader = ({ profileData, isEditing, editedData, setEditedData, formatDate }) => {
+  
+  // CONSOLE LOG DEBUG - Kiểm tra tất cả data
+  console.log('=== ProfileHeader Debug ===');
+  console.log('profileData:', profileData);
+  console.log('profileData.location:', profileData?.location);
+  console.log('typeof profileData.location:', typeof profileData?.location);
+  console.log('profileData.name:', profileData?.name);
+  console.log('typeof profileData.name:', typeof profileData?.name);
+  console.log('profileData.joinedDate:', profileData?.joinedDate);
+  console.log('profileData.joinDate:', profileData?.joinDate);
+  console.log('profileData.avatar:', profileData?.avatar);
+  console.log('profileData.superHost:', profileData?.superHost);
+  console.log('editedData:', editedData);
+  console.log('isEditing:', isEditing);
+  
+  // Kiểm tra getFullLocation function
+  if (profileData?.location) {
+    console.log('getFullLocation result:', getFullLocation(profileData.location));
+  }
+  
+  // Kiểm tra formatDate function
+  const dateToFormat = profileData?.joinedDate || profileData?.joinDate;
+  console.log('Date to format:', dateToFormat);
+  if (dateToFormat && formatDate) {
+    console.log('formatDate result:', formatDate(dateToFormat));
+  }
+  
+  console.log('=== End Debug ===');
+
   return (
     <View style={styles.profileHeader}>
       <View style={styles.avatarContainer}>
-        <Image source={{ uri: profileData.avatar }} style={styles.avatar} />
+        <Image 
+          source={{ 
+            uri: profileData?.avatar || 'https://via.placeholder.com/100x100/cccccc/ffffff?text=No+Image' 
+          }} 
+          style={styles.avatar} 
+        />
         <TouchableOpacity style={styles.editAvatarButton}>
           <Text style={styles.editAvatarIcon}>📷</Text>
         </TouchableOpacity>
@@ -17,18 +52,46 @@ export const ProfileHeader = ({ profileData, isEditing, editedData, setEditedDat
         {isEditing ? (
           <TextInput
             style={styles.nameInput}
-            value={editedData.name}
+            value={editedData?.name || ''}
             onChangeText={(text) => setEditedData({...editedData, name: text})}
+            placeholder="Nhập tên của bạn"
           />
         ) : (
-          <Text style={styles.name}>{profileData.name}</Text>
+          <Text style={styles.name}>
+            {(() => {
+              console.log('Rendering name:', profileData?.name);
+              return profileData?.name || 'Chưa có tên';
+            })()}
+          </Text>
         )}
-        <Text style={styles.location}>{profileData.location}</Text>
-        <Text style={styles.joinDate}>Thành viên từ {formatDate(profileData.joinDate)}</Text>
+        
+        {/* DEBUG: Log location before rendering */}
+        <Text style={styles.location}>
+          {(() => {
+            console.log('Rendering location:', profileData?.location);
+            return profileData?.location ? getFullLocation(profileData.location) : 'Chưa cập nhật địa chỉ';
+          })()}
+        </Text>
+        
+        {/* DEBUG: Log date before rendering */}
+        <Text style={styles.joinDate}>
+          {(() => {
+            console.log('Rendering joinDate:', profileData?.joinedDate || profileData?.joinDate);
+            const dateToFormat = profileData?.joinedDate || profileData?.joinDate;
+            return `Thành viên từ ${dateToFormat ? formatDate(dateToFormat) : 'Chưa xác định'}`;
+          })()}
+        </Text>
+        
+        {profileData?.superHost && (
+          <View style={styles.superHostBadge}>
+            <Text style={styles.superHostText}>⭐ Super Host</Text>
+          </View>
+        )}
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   profileHeader: {

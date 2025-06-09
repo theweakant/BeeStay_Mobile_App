@@ -11,6 +11,25 @@ export const getFullAddress = (address) => {
   return `${address.street}, ${address.district}, ${address.city}, ${address.province}`;
 };
 
+export const getFullLocation = (address) => {
+  if (!address) return '';
+  return `${address.address}, ${address.district}, ${address.city}, ${address.province}`;
+};
+
+// export const getFullLocation = (location) => {
+//   if (!location) return 'Chưa cập nhật địa chỉ';
+  
+//   const parts = [];
+  
+//   if (location.address) parts.push(location.address);
+//   if (location.district) parts.push(location.district);
+//   if (location.city && location.city !== location.province) parts.push(location.city);
+//   if (location.province) parts.push(location.province);
+  
+//   return parts.length > 0 ? parts.join(', ') : 'Chưa cập nhật địa chỉ';
+// };
+
+
 export const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
