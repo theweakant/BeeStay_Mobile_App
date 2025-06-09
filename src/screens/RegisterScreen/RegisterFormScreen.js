@@ -1,4 +1,4 @@
-// RegisterFormScreen.js - FIXED VERSION
+// RegisterFormScreen.js - UPDATED VERSION
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -13,8 +13,6 @@ import {
 import { useAuth } from '../../redux/hooks/useAuth';
 
 export default function RegisterFormScreen({ navigation }) {
-
-  
   const { 
     registration, 
     verifyRegistration, 
@@ -24,18 +22,27 @@ export default function RegisterFormScreen({ navigation }) {
     isOTPExpired 
   } = useAuth();
 
-
-
   const [formData, setFormData] = useState({
     userName: '',
     password: '',
     confirmPassword: '',
+    email: registration.email || '', // ✅ Thêm email vào form state
     role: 'USER', 
     otp: '',
   });
 
   const [otpTimer, setOtpTimer] = useState(0);
   const [canResendOTP, setCanResendOTP] = useState(false);
+
+  // Sync email from registration state
+  useEffect(() => {
+    if (registration.email && registration.email !== formData.email) {
+      setFormData(prev => ({
+        ...prev,
+        email: registration.email
+      }));
+    }
+  }, [registration.email]);
 
   // OTP Timer
   useEffect(() => {
@@ -64,7 +71,7 @@ export default function RegisterFormScreen({ navigation }) {
     
     try {
       clearError();
-      const result = await sendOTP(registration.email);
+      const result = await sendOTP(formData.email);
       
       if (result.type === 'auth/sendRegisterOTP/fulfilled') {
         Alert.alert('Thành công', 'OTP mới đã được gửi đến email của bạn');
@@ -78,6 +85,11 @@ export default function RegisterFormScreen({ navigation }) {
     // Validation
     if (!formData.userName.trim()) {
       Alert.alert('Lỗi', 'Vui lòng nhập tên đăng nhập');
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      Alert.alert('Lỗi', 'Email không hợp lệ');
       return;
     }
 
@@ -104,11 +116,11 @@ export default function RegisterFormScreen({ navigation }) {
     try {
       clearError();
       
-      // ✅ FIX: Bao gồm field EMAIL trong request body
+      // ✅ Request data theo đúng format JSON
       const requestData = {
         userName: formData.userName.trim(),
         password: formData.password,
-        email: registration.email, // ✅ THÊM EMAIL VÀO REQUEST
+        email: formData.email.trim(),
         role: formData.role,
         otp: formData.otp.trim(),
       };
@@ -118,7 +130,6 @@ export default function RegisterFormScreen({ navigation }) {
       const result = await verifyRegistration(requestData);
 
       if (result.type === 'auth/verifyAndRegister/fulfilled') {
-        // Success sẽ được handle bởi RegisterScreen thông qua registration.isComplete
         console.log('✅ Registration successful');
       }
     } catch (error) {
@@ -134,6 +145,7 @@ export default function RegisterFormScreen({ navigation }) {
 
   const isFormValid = 
     formData.userName.trim() &&
+    formData.email.trim() &&
     formData.password.length >= 6 &&
     formData.password === formData.confirmPassword &&
     formData.otp.trim() &&
@@ -144,11 +156,20 @@ export default function RegisterFormScreen({ navigation }) {
       <View style={styles.header}>
         <Text style={styles.title}>Hoàn tất đăng ký</Text>
         <Text style={styles.subtitle}>
-          Điền thông tin và nhập mã OTP đã gửi đến: {registration.email}
+          Điền thông tin và nhập mã OTP để hoàn tất đăng ký
         </Text>
       </View>
 
       <View style={styles.form}>
+        {/* Email - Display only */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <View style={styles.emailDisplay}>
+            <Text style={styles.emailText}>{formData.email}</Text>
+            <Text style={styles.verifiedBadge}>✓ Đã xác thực</Text>
+          </View>
+        </View>
+
         {/* Username */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Tên đăng nhập *</Text>
@@ -216,16 +237,16 @@ export default function RegisterFormScreen({ navigation }) {
             <TouchableOpacity
               style={[
                 styles.roleButton,
-                formData.role === 'ADMIN' && styles.roleButtonActive
+                formData.role === 'HOST' && styles.roleButtonActive
               ]}
-              onPress={() => handleInputChange('role', 'ADMIN')}
+              onPress={() => handleInputChange('role', 'HOST')}
               disabled={registration.loading}
             >
               <Text style={[
                 styles.roleButtonText,
-                formData.role === 'ADMIN' && styles.roleButtonTextActive
+                formData.role === 'HOST' && styles.roleButtonTextActive
               ]}>
-                Quản trị viên
+                Chủ nhà
               </Text>
             </TouchableOpacity>
           </View>
@@ -252,7 +273,7 @@ export default function RegisterFormScreen({ navigation }) {
               styles.input,
               isOTPExpired && styles.inputError
             ]}
-            placeholder="Nhập mã OTP"
+            placeholder="Nhập mã OTP (6 số)"
             value={formData.otp}
             onChangeText={(value) => handleInputChange('otp', value)}
             keyboardType="numeric"
@@ -262,6 +283,9 @@ export default function RegisterFormScreen({ navigation }) {
           {isOTPExpired && (
             <Text style={styles.errorText}>Mã OTP đã hết hạn</Text>
           )}
+          <Text style={styles.helperText}>
+            OTP đã được gửi đến: {formData.email}
+          </Text>
         </View>
 
         {/* Error Message */}
@@ -300,7 +324,6 @@ export default function RegisterFormScreen({ navigation }) {
   );
 }
 
-// Styles remain the same as original
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -351,6 +374,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: '#ff4757',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  helperText: {
+    color: '#666',
     fontSize: 12,
     marginTop: 4,
   },
@@ -427,5 +455,31 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#666',
     fontSize: 16,
+  },
+  // Email display styles
+  emailDisplay: {
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e1e5e9',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  emailText: {
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
+  },
+  verifiedBadge: {
+    fontSize: 12,
+    color: '#28a745',
+    fontWeight: '600',
+    backgroundColor: '#d4edda',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
 });

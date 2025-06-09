@@ -1,6 +1,6 @@
 // redux/slices/user.slice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserByAccount } from '../services/user.service';
+import { getUserByAccount, updateUser } from '../services/user.service';
 
 // Async thunk for fetching user by account ID
 export const fetchUserByAccount = createAsyncThunk(
@@ -14,6 +14,22 @@ export const fetchUserByAccount = createAsyncThunk(
         error.response?.data?.message || 
         error.message || 
         'Có lỗi xảy ra khi tải thông tin người dùng'
+      );
+    }
+  }
+);
+
+export const updateUserProfile = createAsyncThunk(
+  'user/updateUserProfile',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const data = await updateUser(userData);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 
+        error.message || 
+        'Có lỗi xảy ra khi cập nhật thông tin người dùng'
       );
     }
   }
@@ -67,7 +83,24 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.profile = null;
+      })
+
+      //updateUserProfile
+      .addCase(updateUserProfile.pending, (state) => {
+        state.updateLoading = true;
+        state.updateError = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.updateLoading = false;
+        state.profile = action.payload; 
+        state.updateError = null;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.updateLoading = false;
+        state.updateError = action.payload;
       });
+
+      
   },
 });
 
@@ -75,9 +108,14 @@ const userSlice = createSlice({
 export const { clearError, clearUserProfile, updateProfileLocal } = userSlice.actions;
 
 // Selectors
+//fetchUserByAccount
 export const selectUserProfile = (state) => state.user.profile;
 export const selectUserLoading = (state) => state.user.loading;
 export const selectUserError = (state) => state.user.error;
+
+//updateUserProfile
+export const selectUpdateLoading = (state) => state.user.updateLoading;
+export const selectUpdateError = (state) => state.user.updateError;
 
 // Export reducer
 export default userSlice.reducer;

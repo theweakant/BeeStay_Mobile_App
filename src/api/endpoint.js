@@ -10,7 +10,7 @@ export const AuthEndpoints = {
   
 export const UserEndpoints = {
   getUserByAccount: (accountId) => `/v1/user/by-account/${accountId}`,
-
+  updateUser: '/v1/user/update'
 
 };
 
@@ -18,6 +18,7 @@ export const HostEndpoints = {
   getHostByAccount: (accountId) => `/v1/host/by-account/${accountId}`,
   getHostById: (hostId) => `/v1/host/${hostId}`,
   
+  // updateHost
 
 
 };

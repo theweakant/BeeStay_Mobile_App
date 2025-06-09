@@ -5,14 +5,43 @@ import { useNavigation } from '@react-navigation/native';
 const Header = ({ host }) => {
   const navigation = useNavigation();
 
+  // Kiểm tra và xử lý dữ liệu host
+  const getFirstName = (name) => {
+    if (!name || typeof name !== 'string') {
+      return 'Bạn'; // Giá trị mặc định
+    }
+    return name.split(' ')[0];
+  };
+
+  const getLocationText = (location) => {
+    if (!location || !location.city) {
+      return 'Việt Nam'; // Giá trị mặc định
+    }
+    return location.city;
+  };
+
+  const getAvatarUri = (avatar) => {
+    if (!avatar) {
+      return 'https://via.placeholder.com/55'; // Avatar mặc định
+    }
+    return avatar;
+  };
+
   return (
     <View style={styles.header}>
       <View style={styles.profileSection}>
         <View style={styles.profileInfo}>
-          <Image source={{ uri: host.avatar }} style={styles.profileImage} />
+          <Image 
+            source={{ uri: getAvatarUri(host?.avatar) }} 
+            style={styles.profileImage} 
+          />
           <View style={styles.profileText}>
-            <Text style={styles.profileName}>Chào bạn, {host.name.split(' ')[0]}!</Text>
-            <Text style={styles.profileSubtitle}>Quản lý Homestay tại {host.location.city}</Text>
+            <Text style={styles.profileName}>
+              Chào bạn, {getFirstName(host?.name)}!
+            </Text>
+            <Text style={styles.profileSubtitle}>
+              Quản lý Homestay tại {getLocationText(host?.location)}
+            </Text>
           </View>
         </View>
         <TouchableOpacity 

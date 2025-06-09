@@ -10,3 +10,13 @@ export const getUserByAccount = async (accountId) => {
     throw error;
   }
 };
+
+
+export const updateUser = async (userData) => {
+  try {
+    const response = await apiClient.put(UserEndpoints.updateUser, userData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
