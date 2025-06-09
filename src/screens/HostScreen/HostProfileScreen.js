@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { ScrollView, Alert, StyleSheet, ActivityIndicator, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,10 +15,14 @@ import { ProfileHeader } from '../../components/HostProfileScreen/ProfileHeader'
 import { HostStats } from '../../components/HostProfileScreen/HostStats';
 import { BioSection } from '../../components/HostProfileScreen/BioSection';
 import { ContactInformation } from '../../components/HostProfileScreen/ContactInformation';
+import { LanguageSection } from '../../components/HostProfileScreen/LanguageSection';
+import { PaymentMethods } from '../../components/HostProfileScreen/PaymentMethods';
 import { NotificationSettings } from '../../components/HostProfileScreen/NotificationSettings';
 import { ActionButtons } from '../../components/HostProfileScreen/ActionButtons';
 
 // Import modals
+import { PaymentMethodModal } from '../../components/HostProfileScreen/PaymentMethodModal';
+import { LanguageModal } from '../../components/HostProfileScreen/LanguageModal';
 import { LogoutConfirmModal } from '../../components/HostProfileScreen/LogoutConfirmModal';
 
 export default function HostProfileScreen() {
@@ -30,8 +36,21 @@ export default function HostProfileScreen() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({});
-
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  // DEBUG: Log all data
+  console.log('=== HostProfileScreen Debug ===');
+  console.log('host data:', host);
+  console.log('host type:', typeof host);
+  if (host) {
+    Object.keys(host).forEach(key => {
+      console.log(`host.${key}:`, host[key], 'type:', typeof host[key]);
+    });
+  }
+  console.log('editedData:', editedData);
+  console.log('=== End HostProfileScreen Debug ===');
 
   // Fetch host data on component mount
   useEffect(() => {
@@ -147,24 +166,24 @@ export default function HostProfileScreen() {
         {/* TEST 1: Chỉ hiển thị CoverPhoto và ProfileHeader */}
         <CoverPhoto coverPhoto={host?.coverPhoto || host?.avatar} />
         
-        <ProfileHeader 
+        {/* <ProfileHeader 
           profileData={host}
           isEditing={isEditing}
           editedData={editedData}
           setEditedData={setEditedData}
           formatDate={formatDate}
-        />
+        /> */}
         
         {/* COMMENT CÁC COMPONENT KHÁC ĐỂ TEST */}
         
         {/* <HostStats profileData={host} /> */}
         
-        <BioSection 
+        {/* <BioSection 
           profileData={host}
           isEditing={isEditing}
           editedData={editedData}
           setEditedData={setEditedData}
-        />
+        /> */}
         
         <ContactInformation 
           profileData={host}
@@ -194,14 +213,14 @@ export default function HostProfileScreen() {
       </ScrollView>
 
       {/* COMMENT CÁC MODAL ĐỂ TEST */}
-
       
+
       <LogoutConfirmModal 
         visible={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
         onConfirm={handleLogout}
       />
-
+     
     </SafeAreaView>
   );
 }
@@ -254,3 +273,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+// HƯỚNG DẪN DEBUG:
+// 1. Chạy code này trước - chỉ có CoverPhoto và ProfileHeader
+// 2. Nếu không còn lỗi -> lỗi từ component khác
+// 3. Nếu vẫn lỗi -> uncomment từng component một để tìm ra thủ phạm
+// 4. Từng bước uncomment: HostStats -> BioSection -> ContactInformation -> ...
+// 5. Component nào gây lỗi thì báo cho tôi để fix

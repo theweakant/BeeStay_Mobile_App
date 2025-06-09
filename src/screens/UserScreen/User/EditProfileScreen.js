@@ -19,7 +19,7 @@ import {
   selectUpdateLoading,
   selectUpdateError,
   clearError
-} from '../redux/slices/user.slice';
+} from '../../../redux/slices/user.slice';
 
 const EditProfileScreen = ({ route }) => {
   const dispatch = useDispatch();
