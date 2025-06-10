@@ -24,9 +24,9 @@ export const HostEndpoints = {
 };
 
 export const HomestayEndpoints = {
-  addHomestay: `/v1/stay-cation/add`,
-  addHomestayImage: (homestayId) => `/v1/stay-cation/add-img/${homestayId}`,
-  getAllHomestay: '/v1/stay-cation/all',
+  addStayCation: `/v1/stay-cation/add`,
+  addStayCationImage: (stayCationId) => `/v1/stay-cation/add-img/${stayCationId}`,
+  getAllStayCations: '/v1/stay-cation/all',
 };
 
 

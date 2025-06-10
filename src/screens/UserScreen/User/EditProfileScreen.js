@@ -26,6 +26,9 @@ const EditProfileScreen = ({ route }) => {
   
   // Lấy userId từ route params hoặc từ auth state
   const { userId, accountId } = route.params || {};
+  console.log('Received userId:', userId);
+console.log('Received accountId:', accountId);
+
   
   // Redux selectors
   const profile = useSelector(selectUserProfile);
@@ -58,6 +61,7 @@ const EditProfileScreen = ({ route }) => {
   // Update form data khi profile được load
   useEffect(() => {
     if (profile) {
+      console.log('Loaded profile from Redux:', profile);
       setFormData({
         name: profile.name || '',
         phone: profile.phone || '',
@@ -102,7 +106,8 @@ const EditProfileScreen = ({ route }) => {
       userId: profile.userId,
       ...formData
     };
-    
+    console.log('Data to update:', userData);
+
     dispatch(updateUserProfile(userData))
       .unwrap()
       .then(() => {

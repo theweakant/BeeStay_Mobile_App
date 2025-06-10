@@ -183,21 +183,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-// ✅ Add a test function to validate the client
-export const testApiClient = () => {
-  console.log('🧪 Testing API Client Configuration...');
-  console.log('📍 Base URL:', apiClient.defaults.baseURL);
-  console.log('⏱️ Timeout:', apiClient.defaults.timeout);
-  console.log('🔓 Public endpoints:', PUBLIC_ENDPOINTS);
-  
-  // Test the isPublicEndpoint function
-  console.log('🧪 Testing isPublicEndpoint function:');
-  console.log('  /v1/auth/register:', isPublicEndpoint('/v1/auth/register'));
-  console.log('  /v1/auth/login:', isPublicEndpoint('/v1/auth/login'));
-  console.log('  /v1/users/profile:', isPublicEndpoint('/v1/users/profile'));
-  console.log('  undefined:', isPublicEndpoint(undefined));
-  console.log('  null:', isPublicEndpoint(null));
-  console.log('  empty string:', isPublicEndpoint(''));
-};
+
 
 export default apiClient;

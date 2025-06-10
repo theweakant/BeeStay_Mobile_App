@@ -1,53 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
 import InfoCard from '../../components/Card/InfoCard';
 import SearchBar from '../../components/SearchBar';
 import Banner from '../../components/Banner';
 import TabSelector from '../../components/TabSelector';
-import { HomestayData} from '../../data/MockData'; 
+import { fetchAllHomestays } from '../../redux/slices/homestay.slice';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { homestays, loading, error } = useSelector(state => state.homestay);
+  
   const [flashSaleActiveTab, setFlashSaleActiveTab] = useState(0);
   const [availableActiveTab, setAvailableActiveTab] = useState(0);
 
   // Tab data
   const tabOptions = ['On Sale', 'Book Now'];
 
+  // Fetch homestays when component mounts
+  useEffect(() => {
+    dispatch(fetchAllHomestays());
+  }, [dispatch]);
+
   // Filter homestays based on properties
   const getFilteredHomestays = (filterType, tabIndex = 0) => {
+    if (!homestays || homestays.length === 0) return [];
+
     switch (filterType) {
       case 'flashSale':
         if (tabIndex === 0) {
-          // "On Sale" tab - show homestays that are on sale
-          return HomestayData.filter(item => item.isOnSale);
+          // "On Sale" tab - show homestays that are on flash sale
+          return homestays.filter(item => item.flashSale);
         } else {
           // "Book Now" tab - show homestays that are instant book
-          return HomestayData.filter(item => item.isInstantBook);
+          return homestays.filter(item => item.instantBook);
         }
       
       case 'available':
         if (tabIndex === 0) {
           // "On Sale" tab - show available homestays that are on sale
-          return HomestayData.filter(item => item.isAvailable && item.isOnSale);
+          return homestays.filter(item => item.available && item.flashSale);
         } else {
           // "Book Now" tab - show available homestays for instant booking
-          return HomestayData.filter(item => item.isAvailable && item.isInstantBook);
+          return homestays.filter(item => item.available && item.instantBook);
         }
       
       case 'new':
-        // Show newest homestays (you can add a createdDate field and sort by it)
-        // For now, just show available homestays
-        return HomestayData.filter(item => item.isAvailable);
+        // Show available homestays (you can add sorting logic based on date later)
+        return homestays.filter(item => item.available);
       
       case 'recommended':
         // Show recommended homestays
-        return HomestayData.filter(item => item.isRecommended);
+        return homestays.filter(item => item.recommended);
       
       default:
-        return HomestayData;
+        return homestays;
     }
   };
 
@@ -79,6 +89,34 @@ const HomeScreen = () => {
     setAvailableActiveTab(index);
     console.log('Available tab pressed:', tab);
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingContainer}>
+          <Text>Đang tải...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.errorContainer}>
+          <Text>Có lỗi xảy ra: {error}</Text>
+          <TouchableOpacity 
+            style={styles.retryButton}
+            onPress={() => dispatch(fetchAllHomestays())}
+          >
+            <Text style={styles.retryButtonText}>Thử lại</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>

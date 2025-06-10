@@ -5,34 +5,12 @@ import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet } from 'reac
 import { getFullLocation, formatDate } from '../../utils/textUtils'; 
 
 export const ProfileHeader = ({ profileData, isEditing, editedData, setEditedData, formatDate }) => {
-  
-  // CONSOLE LOG DEBUG - Kiểm tra tất cả data
-  console.log('=== ProfileHeader Debug ===');
-  console.log('profileData:', profileData);
-  console.log('profileData.location:', profileData?.location);
-  console.log('typeof profileData.location:', typeof profileData?.location);
-  console.log('profileData.name:', profileData?.name);
-  console.log('typeof profileData.name:', typeof profileData?.name);
-  console.log('profileData.joinedDate:', profileData?.joinedDate);
-  console.log('profileData.joinDate:', profileData?.joinDate);
-  console.log('profileData.avatar:', profileData?.avatar);
-  console.log('profileData.superHost:', profileData?.superHost);
-  console.log('editedData:', editedData);
-  console.log('isEditing:', isEditing);
-  
-  // Kiểm tra getFullLocation function
-  if (profileData?.location) {
-    console.log('getFullLocation result:', getFullLocation(profileData.location));
-  }
-  
+
   // Kiểm tra formatDate function
   const dateToFormat = profileData?.joinedDate || profileData?.joinDate;
-  console.log('Date to format:', dateToFormat);
-  if (dateToFormat && formatDate) {
-    console.log('formatDate result:', formatDate(dateToFormat));
-  }
+
   
-  console.log('=== End Debug ===');
+
 
   return (
     <View style={styles.profileHeader}>

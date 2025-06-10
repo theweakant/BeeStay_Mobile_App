@@ -60,10 +60,10 @@ export default function ProfileScreen() {
             <View style={styles.header}>
                 <TouchableOpacity 
                     style={styles.editButton} 
-                    onPress={handleEditProfile}
+
                     activeOpacity={0.7}
                 >
-                    <Text style={styles.editButtonText}>✏️ Chỉnh sửa</Text>
+                    <Text style={styles.editButtonText}>change image</Text>
                 </TouchableOpacity>
 
                 <View style={styles.avatarContainer}>
