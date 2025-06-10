@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import { fetchUserByAccount } from '../../../redux/slices/user.slice';
 import { formatDate, getFullAddress } from '../../../utils/textUtils';
 
 export default function ProfileScreen() {
     const dispatch = useDispatch();
-    const navigation = useNavigation();
     
     const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
     const { profile: userProfile, loading: userLoading, error: userError } = useSelector((state) => state.user);
@@ -22,10 +20,6 @@ export default function ProfileScreen() {
             console.log('- authUser:', authUser);
         }
     }, [dispatch, isAuthenticated, authUser?.accountId]);
-
-    const handleEditProfile = () => {
-        navigation.navigate('EditProfile');
-    };
     
     if (userLoading && !userProfile) {
         return (
@@ -58,14 +52,6 @@ export default function ProfileScreen() {
         <ScrollView style={styles.container}>
             {/* Header Section */}
             <View style={styles.header}>
-                <TouchableOpacity 
-                    style={styles.editButton} 
-
-                    activeOpacity={0.7}
-                >
-                    <Text style={styles.editButtonText}>change image</Text>
-                </TouchableOpacity>
-
                 <View style={styles.avatarContainer}>
                     <Image 
                         source={{ uri: userProfile.avatar || 'https://via.placeholder.com/100' }} 
@@ -116,13 +102,7 @@ export default function ProfileScreen() {
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
-                    <TouchableOpacity 
-                        onPress={handleEditProfile}
-                        style={styles.editIconButton}
-                        activeOpacity={0.7}
-                    >
-                        <Text style={styles.editIcon}>✏️</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.editIcon}>✏️</Text>
                 </View>
 
                 <View style={styles.infoRow}>
@@ -167,20 +147,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
-    centerContent: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        marginTop: 10,
-        fontSize: 16,
-        color: '#666',
-    },
-    errorText: {
-        fontSize: 16,
-        color: '#ff4444',
-        textAlign: 'center',
-    },
     header: {
         backgroundColor: '#fff',
         alignItems: 'center',
@@ -188,22 +154,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
-        position: 'relative',
-    },
-    editButton: {
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        backgroundColor: '#FF6B6B',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 20,
-        zIndex: 1,
-    },
-    editButtonText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: '600',
     },
     avatarContainer: {
         position: 'relative',
@@ -261,12 +211,7 @@ const styles = StyleSheet.create({
     statusText: {
         fontSize: 12,
         fontWeight: '600',
-    },
-    activeStatusText: {
         color: '#4CAF50',
-    },
-    inactiveStatusText: {
-        color: '#FF6B6B',
     },
     statsContainer: {
         backgroundColor: '#fff',
@@ -312,28 +257,15 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        marginBottom: 20,
-    },
-    sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-        paddingBottom: 10,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#333',
-    },
-    editIconButton: {
-        padding: 5,
-    },
-    editIcon: {
-        fontSize: 18,
-        color: '#FF6B6B',
+        marginBottom: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+        paddingBottom: 10,
     },
     infoRow: {
         flexDirection: 'row',
