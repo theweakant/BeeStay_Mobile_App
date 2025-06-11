@@ -1,37 +1,60 @@
 {
-  "name": "BeeStay_Mobile_App",
-  "slug": "beestay-mobile",
-  "version": "1.0.0",
-  "orientation": "portrait",
-  "icon": "./assets/icon.png",
-  "userInterfaceStyle": "light",
-  "splash": {
-    "image": "./assets/splash.png",
-    "resizeMode": "contain",
-    "backgroundColor": "#ffffff"
-  },
-  "assetBundlePatterns": [
-    "**/*"
-  ],
-  "ios": {
-    "supportsTablet": true,
-    "bundleIdentifier": "com.anonymous.beestaymobile"
-  },
-  "android": {
-    "adaptiveIcon": {
-      "foregroundImage": "./assets/adaptive-icon.png",
+  "expo": {
+    "name": "BeeStay_Mobile_App",
+    "slug": "beestay-mobile",
+    "owner": "theweakant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "package": "com.anonymous.beestaymobile"
-  },
-  "web": {
-    "favicon": "./assets/favicon.png"
-  },
-  "sdkVersion": "53.0.0",
-  "extra": {
-    "eas": {
-      "projectId": "6363cd6e-230c-4c7a-961b-28ded997e1b7"
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.theweakant.beestaymobile",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.theweakant.beestaymobile",
+      "runtimeVersion": "1.0.0"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "sdkVersion": "53.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "6363cd6e-230c-4c7a-961b-28ded997e1b7"
+      }
+    },
+    "scheme": "beestay",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.75416150561-t3ia9i1stka3ve3fki5l413gm1or82a1"
+        }
+      ]
+    ],
+    "updates": {
+      "url": "https://u.expo.dev/6363cd6e-230c-4c7a-961b-28ded997e1b7"
     }
-  },
-  "scheme": "BeeStay_Mobile_App" 
+  }
 }
