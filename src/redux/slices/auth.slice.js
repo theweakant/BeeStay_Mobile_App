@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode'; 
-import { login, sendOTP, verifyOTPAndRegister } from '../services/auth.service';
+import { login, sendOTP, verifyOTPAndRegister, refreshToken } from '../services/auth.service';
 
 // Đăng nhập
 export const loginUser = createAsyncThunk(
@@ -12,6 +12,9 @@ export const loginUser = createAsyncThunk(
       const data = await login(credentials);
       if (data.token) {
         await AsyncStorage.setItem('token', data.token);
+        if (data.refreshToken) {
+          await AsyncStorage.setItem('refreshToken', data.refreshToken);
+        }
         if (data.accountId) {
           await AsyncStorage.setItem('accountId', data.accountId.toString());
         }
@@ -23,7 +26,38 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Gửi OTP đến email để đăng ký
+// Refresh token
+export const refreshTokenUser = createAsyncThunk(
+  'auth/refreshToken',
+  async (_, thunkAPI) => {
+    try {
+      const refreshTokenStored = await AsyncStorage.getItem('refreshToken');
+      if (!refreshTokenStored) {
+        throw new Error('No refresh token available');
+      }
+      
+      const data = await refreshToken(refreshTokenStored);
+      if (data.token) {
+        await AsyncStorage.setItem('token', data.token);
+        if (data.refreshToken) {
+          await AsyncStorage.setItem('refreshToken', data.refreshToken);
+        }
+        if (data.accountId) {
+          await AsyncStorage.setItem('accountId', data.accountId.toString());
+        }
+      }
+      return data;
+    } catch (error) {
+      // Nếu refresh token thất bại, clear tất cả stored data
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('refreshToken');
+      await AsyncStorage.removeItem('accountId');
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
 export const sendRegisterOTP = createAsyncThunk(
   'auth/sendRegisterOTP',
   async (email, thunkAPI) => {
@@ -36,7 +70,7 @@ export const sendRegisterOTP = createAsyncThunk(
   }
 );
 
-// Verify OTP và hoàn thành đăng ký
+
 export const verifyAndRegister = createAsyncThunk(
   'auth/verifyAndRegister',
   async (registerData, thunkAPI) => {
@@ -47,6 +81,9 @@ export const verifyAndRegister = createAsyncThunk(
       // Nếu API trả về token sau khi đăng ký thành công
       if (data.token) {
         await AsyncStorage.setItem('token', data.token);
+        if (data.refreshToken) {
+          await AsyncStorage.setItem('refreshToken', data.refreshToken);
+        }
         if (data.accountId) {
           await AsyncStorage.setItem('accountId', data.accountId.toString());
         }
@@ -64,20 +101,32 @@ export const restoreAuthState = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const token = await AsyncStorage.getItem('token');
+      const refreshTokenStored = await AsyncStorage.getItem('refreshToken');
       const accountId = await AsyncStorage.getItem('accountId');
       
       if (token) {
         const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
         
+        // Nếu token hết hạn, thử refresh token
         if (decoded.exp < currentTime) {
+          if (refreshTokenStored) {
+            // Dispatch refresh token action
+            const refreshResult = await thunkAPI.dispatch(refreshTokenUser());
+            if (refreshResult.type === 'auth/refreshToken/fulfilled') {
+              return refreshResult.payload;
+            }
+          }
+          // Nếu không có refresh token hoặc refresh thất bại
           await AsyncStorage.removeItem('token');
+          await AsyncStorage.removeItem('refreshToken');
           await AsyncStorage.removeItem('accountId');
           return null;
         }
         
         return {
           token,
+          refreshToken: refreshTokenStored,
           role: decoded.role,
           userName: decoded.sub,
           accountId: accountId ? parseInt(accountId) : null,
@@ -86,6 +135,7 @@ export const restoreAuthState = createAsyncThunk(
       return null;
     } catch (error) {
       await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('refreshToken');
       await AsyncStorage.removeItem('accountId');
       return thunkAPI.rejectWithValue('Failed to restore auth state');
     }
@@ -97,6 +147,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     token: null,
+    refreshToken: null,
     role: null,
     loading: false,
     error: null,
@@ -124,10 +175,12 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.refreshToken = null;
       state.role = null;
       state.isAuthenticated = false;
       state.error = null;
       AsyncStorage.removeItem('token');
+      AsyncStorage.removeItem('refreshToken');
       AsyncStorage.removeItem('accountId');
     },
     clearError: (state) => {
@@ -180,10 +233,11 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const { accountId, userName, token } = action.payload;
+        const { accountId, userName, token, refreshToken } = action.payload;
         
         state.user = { accountId, userName };
         state.token = token;
+        state.refreshToken = refreshToken;
         
         try {
           const decoded = jwtDecode(token);
@@ -199,6 +253,39 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;
+      })
+      
+      // Refresh Token
+      .addCase(refreshTokenUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refreshTokenUser.fulfilled, (state, action) => {
+        state.loading = false;
+        const { accountId, userName, token, refreshToken } = action.payload;
+        
+        state.user = { accountId, userName };
+        state.token = token;
+        state.refreshToken = refreshToken;
+        
+        try {
+          const decoded = jwtDecode(token);
+          state.role = decoded.role || null;
+        } catch (e) {
+          state.role = null;
+        }
+        
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(refreshTokenUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.refreshToken = null;
+        state.role = null;
       })
       
       // Gửi OTP đăng ký
@@ -229,13 +316,14 @@ const authSlice = createSlice({
       .addCase(verifyAndRegister.fulfilled, (state, action) => {
         state.registration.loading = false;
         state.registration.isComplete = true;
-         state.registration.step = 3;
+        state.registration.step = 3;
         
         // Nếu API trả về token (tự động đăng nhập sau đăng ký)
         if (action.payload.token) {
-          const { accountId, userName, token } = action.payload;
+          const { accountId, userName, token, refreshToken } = action.payload;
           state.user = { accountId, userName };
           state.token = token;
+          state.refreshToken = refreshToken;
           
           try {
             const decoded = jwtDecode(token);
@@ -262,6 +350,7 @@ const authSlice = createSlice({
         state.loading = false;
         if (action.payload?.token) {
           state.token = action.payload.token;
+          state.refreshToken = action.payload.refreshToken;
           state.role = action.payload.role || null;
           state.user = {
             userName: action.payload.userName,

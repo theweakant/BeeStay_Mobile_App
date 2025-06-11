@@ -3,12 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { 
   sendRegisterOTP, 
   verifyAndRegister,
+  refreshTokenUser,
   setRegistrationEmail,
   setRegistrationFormData,
   nextRegistrationStep,
   prevRegistrationStep,
   resetRegistration,
   clearError,
+  logout,
 } from '../slices/auth.slice';
 
 export const useAuth = () => {
@@ -19,6 +21,7 @@ export const useAuth = () => {
     // Auth state
     user: auth.user,
     token: auth.token,
+    refreshToken: auth.refreshToken,
     role: auth.role,
     loading: auth.loading,
     error: auth.error,
@@ -26,6 +29,10 @@ export const useAuth = () => {
     
     // Registration state
     registration: auth.registration,
+    
+    // Auth actions
+    refreshToken: () => dispatch(refreshTokenUser()),
+    logout: () => dispatch(logout()),
     
     // Registration actions
     sendOTP: (email) => dispatch(sendRegisterOTP(email)),
@@ -61,6 +68,10 @@ export const useAuth = () => {
     get canVerify() {
       const { userName, password, role, otp } = auth.registration.formData;
       return userName && password && role && otp && auth.registration.email;
+    },
+    
+    get hasRefreshToken() {
+      return !!auth.refreshToken;
     },
   };
 };

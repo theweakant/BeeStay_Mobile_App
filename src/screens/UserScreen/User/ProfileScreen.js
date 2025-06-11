@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator } from 're
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserByAccount } from '../../../redux/slices/user.slice';
 import { formatDate, getFullAddress } from '../../../utils/textUtils';
+import UpdateAvatar from '../../../components/UpdateAvatar'; // Import component UpdateAvatar
 
 export default function ProfileScreen() {
     const dispatch = useDispatch();
@@ -20,6 +21,12 @@ export default function ProfileScreen() {
             console.log('- authUser:', authUser);
         }
     }, [dispatch, isAuthenticated, authUser?.accountId]);
+
+    // Callback function khi avatar được cập nhật thành công
+    const handleAvatarUpdated = (newAvatarUrl) => {
+        console.log('Avatar updated successfully:', newAvatarUrl);
+        // Có thể thêm logic khác nếu cần
+    };
     
     if (userLoading && !userProfile) {
         return (
@@ -54,7 +61,7 @@ export default function ProfileScreen() {
             <View style={styles.header}>
                 <View style={styles.avatarContainer}>
                     <Image 
-                        source={{ uri: userProfile.avatar || 'https://via.placeholder.com/100' }} 
+                        source={{ uri: userProfile.avatar || userProfile.image || 'https://via.placeholder.com/100' }} 
                         style={styles.avatar}
                         defaultSource={require('../../../../assets/Avatar/default-avatar.jpg')} 
                     />
@@ -64,8 +71,10 @@ export default function ProfileScreen() {
                         </View>
                     )}
                 </View>
+                
                 <Text style={styles.name}>{userProfile.name}</Text>
                 <Text style={styles.email}>{userProfile.email}</Text>
+                
                 <View style={styles.statusContainer}>
                     <View style={[styles.statusBadge, userProfile.status === 'active' ? styles.activeStatus : styles.inactiveStatus]}>
                         <Text style={[styles.statusText, userProfile.status === 'active' ? styles.activeStatusText : styles.inactiveStatusText]}>
@@ -73,6 +82,13 @@ export default function ProfileScreen() {
                         </Text>
                     </View>
                 </View>
+
+                {/* UpdateAvatar Component */}
+                <UpdateAvatar 
+                    accountId={authUser?.accountId}
+                    currentAvatar={userProfile.avatar || userProfile.image}
+                    onAvatarUpdated={handleAvatarUpdated}
+                />
             </View>
 
             {/* Stats Section */}
@@ -147,6 +163,21 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
+    centerContent: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#666',
+    },
+    errorText: {
+        fontSize: 16,
+        color: '#FF6B6B',
+        textAlign: 'center',
+        marginHorizontal: 20,
+    },
     header: {
         backgroundColor: '#fff',
         alignItems: 'center',
@@ -211,7 +242,12 @@ const styles = StyleSheet.create({
     statusText: {
         fontSize: 12,
         fontWeight: '600',
+    },
+    activeStatusText: {
         color: '#4CAF50',
+    },
+    inactiveStatusText: {
+        color: '#FF6B6B',
     },
     statsContainer: {
         backgroundColor: '#fff',
@@ -258,14 +294,22 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
     },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
         paddingBottom: 10,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    editIcon: {
+        fontSize: 16,
     },
     infoRow: {
         flexDirection: 'row',

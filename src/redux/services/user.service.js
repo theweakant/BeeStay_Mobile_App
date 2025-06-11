@@ -11,10 +11,22 @@ export const getUserByAccount = async (accountId) => {
   }
 };
 
-
-export const updateUser = async (userData) => {
+// Cập nhật user theo accountId
+export const updateUserByAccount = async (accountId, userData) => {
   try {
-    const response = await apiClient.put(UserEndpoints.updateUser, userData);
+    const response = await apiClient.put(UserEndpoints.updateUserByAccount(accountId), userData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Cập nhật avatar theo accountId
+export const updateUserAvatar = async (accountId, imageData) => {
+  try {
+    const response = await apiClient.put(UserEndpoints.updateUserAvatar(accountId), {
+      image: imageData
+    });
     return response.data;
   } catch (error) {
     throw error;

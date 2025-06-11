@@ -12,7 +12,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchUserByAccount,
-  updateUserProfile,
+  updateUserProfileByAccount, 
   selectUserProfile,
   selectUserLoading,
   selectUserError,
@@ -27,9 +27,8 @@ const EditProfileScreen = ({ route }) => {
   // Lấy userId từ route params hoặc từ auth state
   const { userId, accountId } = route.params || {};
   console.log('Received userId:', userId);
-console.log('Received accountId:', accountId);
+  console.log('Received accountId:', accountId);
 
-  
   // Redux selectors
   const profile = useSelector(selectUserProfile);
   const loading = useSelector(selectUserLoading);
@@ -95,27 +94,34 @@ console.log('Received accountId:', accountId);
     }));
   };
 
-  // Handle update profile
+  // Handle update profile - Sử dụng updateUserProfileByAccount
   const handleUpdateProfile = () => {
-    if (!profile?.userId) {
-      Alert.alert('Lỗi', 'Không tìm thấy thông tin người dùng');
+    if (!accountId) {
+      Alert.alert('Lỗi', 'Không tìm thấy Account ID');
       return;
     }
 
-    const userData = {
-      userId: profile.userId,
-      ...formData
+    // Chuẩn bị data để update theo accountId
+    const updateData = {
+      accountId: accountId,
+      userData: {
+        ...formData
+      }
     };
-    console.log('Data to update:', userData);
+    
+    console.log('Data to update by account:', updateData);
 
-    dispatch(updateUserProfile(userData))
+    dispatch(updateUserProfileByAccount(updateData))
       .unwrap()
-      .then(() => {
+      .then((result) => {
+        console.log('Update success:', result);
         Alert.alert('Thành công', 'Cập nhật thông tin thành công!');
+        // Refresh lại profile sau khi update
+        dispatch(fetchUserByAccount(accountId));
       })
       .catch((error) => {
         console.error('Update failed:', error);
-        Alert.alert('Lỗi', error || 'Có lỗi xảy ra khi cập nhật');
+        Alert.alert('Lỗi', error?.message || error || 'Có lỗi xảy ra khi cập nhật');
       });
   };
 
@@ -153,8 +159,11 @@ console.log('Received accountId:', accountId);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Display User ID */}
-      <Text style={styles.userIdText}>User ID: {profile?.userId || userId}</Text>
+      {/* Display Account ID và User ID */}
+      <View style={styles.idContainer}>
+        <Text style={styles.userIdText}>Account ID: {accountId}</Text>
+        <Text style={styles.userIdText}>User ID: {profile?.userId || userId}</Text>
+      </View>
       
       {/* Show update error if exists */}
       {updateError && (
@@ -190,12 +199,20 @@ console.log('Received accountId:', accountId);
 
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Giới tính</Text>
-        <TextInput
-          style={styles.input}
-          value={formData.gender}
-          onChangeText={(text) => handleInputChange('gender', text)}
-          placeholder="Nam/Nữ"
-        />
+        <View style={styles.genderContainer}>
+          <TouchableOpacity 
+            style={[styles.genderButton, formData.gender === 'Male' && styles.selectedGender]}
+            onPress={() => handleInputChange('gender', 'Male')}
+          >
+            <Text style={[styles.genderText, formData.gender === 'Male' && styles.selectedGenderText]}>Nam</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.genderButton, formData.gender === 'Female' && styles.selectedGender]}
+            onPress={() => handleInputChange('gender', 'Female')}
+          >
+            <Text style={[styles.genderText, formData.gender === 'Female' && styles.selectedGenderText]}>Nữ</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.fieldContainer}>
@@ -278,10 +295,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  userIdText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  idContainer: {
+    backgroundColor: '#f5f5f5',
+    padding: 12,
+    borderRadius: 8,
     marginBottom: 20,
+  },
+  userIdText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
     color: '#333',
   },
   loadingText: {
@@ -344,6 +367,32 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     backgroundColor: '#fff',
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  genderButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  selectedGender: {
+    backgroundColor: '#0066CC',
+    borderColor: '#0066CC',
+  },
+  genderText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  selectedGenderText: {
+    color: '#fff',
+    fontWeight: '600',
   },
   updateButton: {
     backgroundColor: '#0066CC',

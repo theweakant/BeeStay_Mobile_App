@@ -18,6 +18,8 @@ import { loginUser, clearError } from '../redux/slices/auth.slice'
 import * as Google from 'expo-auth-session/providers/google'
 import * as WebBrowser from 'expo-web-browser'
 import * as AuthSession from 'expo-auth-session'
+import { ResponseType } from 'expo-auth-session'
+import Constants from 'expo-constants'
 
 // Logo
 import Glogo from "../../assets/Logo/g_logo.png"
@@ -40,67 +42,71 @@ export default function LoginScreen() {
   const [userName, setUserName] = useState("")
   const [password, setPassword] = useState("")
 
-  // Google OAuth configuration - Fixed URI generation
-const createRedirectUri = () => {
-  const uri = AuthSession.makeRedirectUri({
-    useProxy: true, 
-  })
-  console.log('Generated redirectUri:', uri)
-  return uri
-}
+  // FIX 1: Tạo redirect URI chính xác với proxy
+  const createRedirectUri = () => {
+    if (__DEV__) {
+      // Development: Force sử dụng Expo Auth Proxy
+      return `https://auth.expo.io/@${Constants.expoConfig?.owner || 'anonymous'}/${Constants.expoConfig?.slug || 'app'}`
+    } else {
+      // Production: Sử dụng custom scheme hoặc deep link
+      return AuthSession.makeRedirectUri({
+        scheme: Constants.expoConfig?.scheme || 'beestay',
+        path: 'auth'
+      })
+    }
+  }
 
   const redirectUri = createRedirectUri()
 
-const config = {
-  clientId: Platform.select({
-    ios: iosClientId,
-    android: androidClientId,
-    web: webClientId,
-    default: webClientId,
-  }),
-  redirectUri: createRedirectUri(),
-  scopes: ['profile', 'email'],
-}
+  // FIX 2: Cấu hình Google OAuth chính xác
+  const googleConfig = {
+    clientId: Platform.select({
+      ios: iosClientId,
+      android: androidClientId,
+      web: webClientId,
+      default: webClientId,
+    }),
+    redirectUri: redirectUri,
+    scopes: ['profile', 'email', 'openid'],
+    responseType: ResponseType.Token,
+    additionalParameters: {},
+    // Đảm bảo sử dụng proxy trong development
+    ...__DEV__ && {
+      redirectUri: `https://auth.expo.io/@${Constants.expoConfig?.owner || 'anonymous'}/${Constants.expoConfig?.slug || 'beestay-mobile'}`
+    }
+  }
 
-  const [request, response, promptAsync] = Google.useAuthRequest(config)
+  const [request, response, promptAsync] = Google.useAuthRequest(googleConfig)
 
   // Debug log - Kiểm tra cấu hình
   useEffect(() => {
-    console.log('=== GOOGLE OAUTH DEBUG ===')
+    console.log('=== FIXED GOOGLE OAUTH DEBUG ===')
     console.log('Environment:', __DEV__ ? 'Development' : 'Production')
     console.log('Platform:', Platform.OS)
-    console.log('App slug:', 'beestay-mobile')
-    console.log('Expected owner:', 'theweakant')
+    console.log('App Config:', {
+      owner: Constants.expoConfig?.owner,
+      slug: Constants.expoConfig?.slug,
+      scheme: Constants.expoConfig?.scheme
+    })
     console.log('Generated redirectUri:', redirectUri)
-
+    console.log('Uses HTTPS:', redirectUri.startsWith('https://'))
+    console.log('Compatible with Google:', redirectUri.startsWith('https://auth.expo.io') || redirectUri.startsWith('https://'))
+    
     if (request) {
       console.log('Final request redirectUri:', request.redirectUri)
       console.log('Request clientId:', request.clientId)
-
-      // Danh sách URI hợp lệ
-      const validUris = [
-        'http://localhost:8081',
-        'https://auth.expo.io/@theweakant/beestay-mobile', 
-        'https://auth.expo.io/@anonymous/beestay-mobile' 
-      ]
-
-      const isValidUri = validUris.some(uri =>
-        request.redirectUri === uri || request.redirectUri.startsWith(uri)
-      )
-      console.log('URI valid:', isValidUri ? '✅' : '❌')
-      console.log('Valid URIs:', validUris)
-      console.log('Current URI:', request.redirectUri)
-
-      // Kiểm tra có khớp với Google Console không
-      const googleConsoleUris = [
-        'http://localhost:8081',
-        'https://auth.expo.io/@anonymous/beestay-mobile', 
-        'https://auth.expo.io/@theweakant/beestay-mobile' 
-      ]
-      const matchesConsole = googleConsoleUris.includes(request.redirectUri)
-      console.log('Matches Google Console:', matchesConsole ? '✅' : '❌')
+      
+      // Kiểm tra URI hợp lệ
+      const isValidForGoogle = request.redirectUri.startsWith('https://')
+      console.log('Valid for Google OAuth:', isValidForGoogle ? '✅' : '❌')
+      
+      if (!isValidForGoogle) {
+        console.warn('⚠️ Redirect URI không hợp lệ cho Google OAuth!')
+        console.warn('Expected: https://auth.expo.io/@owner/slug')
+        console.warn('Received:', request.redirectUri)
+      }
     }
-    console.log('===========================')
+    console.log('===============================')
   }, [request, redirectUri])
 
   // Handle successful login
@@ -130,7 +136,7 @@ const config = {
   const getUserProfile = async (token) => {
     if (!token) return
     try {
-      const response = await fetch("https://www.googleapis.com/userinfo/v2/me",  {
+      const response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       const user = await response.json()
@@ -157,13 +163,20 @@ const config = {
       const { authentication } = response
       const token = authentication?.accessToken
       console.log("Google access token received:", !!token)
-      getUserProfile(token)
+      if (token) {
+        getUserProfile(token)
+      } else {
+        Alert.alert("Lỗi", "Không nhận được access token từ Google")
+      }
     } else if (response?.type === "error") {
       console.log("Google OAuth error:", response.error)
       Alert.alert(
         "Lỗi đăng nhập Google",
         response.error?.message || "Có lỗi xảy ra khi đăng nhập với Google"
       )
+    } else if (response?.type === "cancel") {
+      console.log("Google OAuth cancelled by user")
+      // Không cần alert cho trường hợp user cancel
     }
     console.log('===============================')
   }
@@ -199,7 +212,7 @@ const config = {
     }
   }
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     console.log('=== INITIATING GOOGLE LOGIN ===')
     console.log('Request available:', !!request)
     console.log('Request redirectUri:', request?.redirectUri)
@@ -210,8 +223,22 @@ const config = {
       return
     }
 
-    promptAsync()
-    console.log('Google login prompt initiated')
+    // Kiểm tra redirect URI trước khi thực hiện
+    if (!request.redirectUri.startsWith('https://')) {
+      Alert.alert(
+        "Cấu hình không hợp lệ", 
+        "Redirect URI không đúng định dạng. Vui lòng kiểm tra cấu hình app.json"
+      )
+      return
+    }
+
+    try {
+      const result = await promptAsync()
+      console.log('Google login prompt result:', result)
+    } catch (error) {
+      console.error('Google login error:', error)
+      Alert.alert("Lỗi", "Có lỗi xảy ra khi đăng nhập với Google")
+    }
     console.log('================================')
   }
 
@@ -325,8 +352,22 @@ const config = {
           URI: {request?.redirectUri || 'Loading...'}
         </Text>
         <Text style={styles.debugText}>
-          Environment: {__DEV__ ? 'Dev' : 'Prod'}
+          Environment: {__DEV__ ? 'Dev' : 'Prod'} | Platform: {Platform.OS}
         </Text>
+        <Text style={styles.debugText}>
+          Request Status: {request ? '✅ Ready' : '❌ Not Ready'}
+        </Text>
+        <Text style={styles.debugText}>
+          Valid for Google: {request?.redirectUri?.startsWith('https://') ? '✅' : '❌'}
+        </Text>
+      </View>
+
+      {/* Register Link */}
+      <View style={styles.registerContainer}>
+        <Text style={styles.registerText}>Chưa có tài khoản? </Text>
+        <TouchableOpacity onPress={handleNavigateToRegister}>
+          <Text style={styles.registerLink}>Đăng ký ngay</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )
@@ -447,5 +488,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop: 5,
+    textAlign: 'center',
+  },
+  registerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  registerText: {
+    color: '#666',
+  },
+  registerLink: {
+    color: '#FFA500',
+    fontWeight: 'bold',
   },
 })
