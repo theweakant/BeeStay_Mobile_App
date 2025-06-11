@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator } from 're
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserByAccount } from '../../../redux/slices/user.slice';
 import { formatDate, getFullAddress } from '../../../utils/textUtils';
-import UpdateAvatar from '../../../components/UpdateAvatar'; // Import component UpdateAvatar
+import UpdateAvatar from '../../../components/UpdateAvatar'; 
 
 export default function ProfileScreen() {
     const dispatch = useDispatch();
