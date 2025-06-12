@@ -23,7 +23,7 @@ const InfoCard = ({
       onPress={handlePress}
     >
       <Image 
-        source={{ uri: item.imageURL }} 
+        source={{ uri: item.thumnailImage }} 
         style={[styles.homestayImage, imageStyle]} 
       />
       <View style={[styles.cardContent, contentStyle]}>
@@ -34,12 +34,12 @@ const InfoCard = ({
           <FontAwesome name="star" size={12} color="#F5B041" />
           <Text style={styles.ratingText}>{item.averageRating}</Text>
             <Text style={styles.reviewCount}>({item.reviewCount}) </Text>
-          <Text style={styles.locationText}> • {truncateText(item.location.city)}</Text>
+            <Text style={styles.locationText}> • {truncateText(item.location.city)}</Text>
         </View>
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>{item.priceOnSalePerNight}d</Text>
+          <Text style={styles.price}>{item.pricePerNight}VND</Text>
           <Text style={styles.priceOriginalPerNight}>
-            {item.priceOriginalPerNight}d
+            {item.originalPricePerNight}VND
           </Text>
         </View>
       </View>

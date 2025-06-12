@@ -4,10 +4,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import InfoCard from '../../components/Card/InfoCard';
 import SearchBar from '../../components/SearchBar';
-import Banner from '../../components/Banner';
+import BannerCarousel from '../../components/BannerCarousel';
 import TabSelector from '../../components/TabSelector';
+import Loading from '../../components/StateScreen/Loading';
+import Error from '../../components/StateScreen/Error';
 import { fetchAllHomestays } from '../../redux/slices/homestay.slice';
 import { useNavigation } from '@react-navigation/native';
+import bannerData from '../../data/Data'
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -32,28 +35,22 @@ const HomeScreen = () => {
     switch (filterType) {
       case 'flashSale':
         if (tabIndex === 0) {
-          // "On Sale" tab - show homestays that are on flash sale
           return homestays.filter(item => item.flashSale);
         } else {
-          // "Book Now" tab - show homestays that are instant book
           return homestays.filter(item => item.instantBook);
         }
       
       case 'available':
         if (tabIndex === 0) {
-          // "On Sale" tab - show available homestays that are on sale
           return homestays.filter(item => item.available && item.flashSale);
         } else {
-          // "Book Now" tab - show available homestays for instant booking
           return homestays.filter(item => item.available && item.instantBook);
         }
       
       case 'new':
-        // Show available homestays (you can add sorting logic based on date later)
         return homestays.filter(item => item.available);
       
       case 'recommended':
-        // Show recommended homestays
         return homestays.filter(item => item.recommended);
       
       default:
@@ -72,10 +69,14 @@ const HomeScreen = () => {
     // Implement search logic here
   };
 
-  // Handle promotion banner press
-  const handlePromotionPress = () => {
-    console.log('Promotion banner pressed');
-    // Navigate to promotion detail or open link
+  // Handle banner press
+  const handleBannerPress = (banner, index) => {
+    console.log('Banner pressed:', banner.title, 'at index:', index);
+    // Navigate based on banner link or show promotion detail
+    if (banner.link) {
+      // navigation.navigate('Promotion', { promotionId: banner.id });
+      console.log('Navigate to:', banner.link);
+    }
   };
 
   // Handle tab press for Flash Sale
@@ -90,13 +91,16 @@ const HomeScreen = () => {
     console.log('Available tab pressed:', tab);
   };
 
+  // Handle retry
+  const handleRetry = () => {
+    dispatch(fetchAllHomestays());
+  };
+
   // Show loading state
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.loadingContainer}>
-          <Text>Đang tải...</Text>
-        </View>
+        <Loading />
       </SafeAreaView>
     );
   }
@@ -105,15 +109,13 @@ const HomeScreen = () => {
   if (error) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.errorContainer}>
-          <Text>Có lỗi xảy ra: {error}</Text>
-          <TouchableOpacity 
-            style={styles.retryButton}
-            onPress={() => dispatch(fetchAllHomestays())}
-          >
-            <Text style={styles.retryButtonText}>Thử lại</Text>
-          </TouchableOpacity>
-        </View>
+        <Error message={`Có lỗi xảy ra: ${error}`} />
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={handleRetry}
+        >
+          <Text style={styles.retryButtonText}>Thử lại</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -136,9 +138,17 @@ const HomeScreen = () => {
           placeholder="Tên homestay, hotel, quận/huyện"
         />
 
-        {/* Promotion Banner */}
-        <Banner 
-          onPress={handlePromotionPress}
+        {/* Banner Carousel */}
+        <BannerCarousel 
+          banners={bannerData}
+          onBannerPress={handleBannerPress}
+          autoPlay={true}
+          autoPlayInterval={4000}
+          height={180}
+          borderRadius={12}
+          showDots={true}
+          dotColor="#FF6B00"
+          inactiveDotColor="#D1D5DB"
         />
 
         {/* Flash Sale Section */}
@@ -242,20 +252,21 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            <TouchableOpacity style={styles.programCard}>
-              <Image
-                source={{ uri: 'https://cf.shopee.vn/file/sg-11134201-22110-7wjrxjpvgfkv5a' }}
-                style={styles.programImage}
-                resizeMode="cover"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.programCard}>
-              <Image
-                source={{ uri: 'https://cf.shopee.vn/file/sg-11134201-22110-7wjrxjpvgfkv5a' }}
-                style={styles.programImage}
-                resizeMode="cover"
-              />
-            </TouchableOpacity>
+          <TouchableOpacity style={styles.programCard}>
+            <Image
+              source={require('../../../assets/Banner/banner1.jpg')}
+              style={styles.programImage}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.programCard}>
+            <Image
+              source={require('../../../assets/Banner/banner2.jpg')}
+              style={styles.programImage}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
           </ScrollView>
         </View>
 
@@ -362,7 +373,20 @@ const styles = StyleSheet.create({
   bottomPadding: {
     height: 20,
   },
+  retryButton: {
+    backgroundColor: '#FF6B00',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
-
 
 export default HomeScreen;

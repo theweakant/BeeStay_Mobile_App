@@ -1,8 +1,8 @@
-// components/TabSwitcher.js
+// components/TabSelector.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const TabSwitcher = ({ activeTab, onTabChange, tabs }) => {
+const TabSelector = ({ activeTab, onTabChange, tabs }) => {
   return (
     <View style={styles.tabContainer}>
       {tabs.map((tab) => (
@@ -23,28 +23,38 @@ const TabSwitcher = ({ activeTab, onTabChange, tabs }) => {
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
+    gap: 30, 
+    marginBottom: 10, 
     backgroundColor: '#f8f9fa',
     borderRadius: 8,
     padding: 4,
+    alignSelf: 'flex-start'
   },
   tab: {
-    flex: 1,
-    paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 6,
+    paddingVertical: 8,
+    borderRadius: 20, 
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#dee2e6',
     alignItems: 'center',
+    flex: 1,
+    minWidth: '40%', // Giới hạn chiều rộng nhỏ hơn
+    marginRight: 8,
+    
   },
   activeTab: {
     backgroundColor: '#FF6B35',
+    borderColor: '#FF6B35',
   },
   tabText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#6c757d',
+    fontWeight: '500', // từ filterButtonText
+    color: '#495057', // từ filterButtonText
   },
   activeTabText: {
     color: '#fff',
   },
 });
 
-export default TabSwitcher;
+export default TabSelector;
