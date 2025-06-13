@@ -17,13 +17,20 @@ const InfoCard = ({
     }
   };
 
+  const getLocationText = () => {
+    if (item.location && item.location.city) {
+      return truncateText(item.location.city);
+    }
+    return 'Chưa cập nhật'; // Fallback text
+  };
+
   return (
     <TouchableOpacity 
       style={[styles.homestayCard, style]} 
       onPress={handlePress}
     >
       <Image 
-        source={{ uri: item.thumnailImage }} 
+        source={{ uri: item.image }} 
         style={[styles.homestayImage, imageStyle]} 
       />
       <View style={[styles.cardContent, contentStyle]}>
@@ -34,7 +41,7 @@ const InfoCard = ({
           <FontAwesome name="star" size={12} color="#F5B041" />
           <Text style={styles.ratingText}>{item.averageRating}</Text>
             <Text style={styles.reviewCount}>({item.reviewCount}) </Text>
-            <Text style={styles.locationText}> • {truncateText(item.location.city)}</Text>
+            <Text style={styles.locationText}> • {getLocationText()}</Text>
         </View>
         <View style={styles.priceContainer}>
           <Text style={styles.price}>{item.pricePerNight}VND</Text>

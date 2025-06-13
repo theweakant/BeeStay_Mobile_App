@@ -10,15 +10,18 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import ItemList from '../../components/List/ItemList';
 import { fetchAllHomestays } from '../../redux/slices/homestay.slice';
+import { formatCurrency } from '../../utils/formatUtils';
 
 export default function SearchScreen() {
   const dispatch = useDispatch();
   const { homestays, loading, error } = useSelector(state => state.homestay);
 
-  // Fetch homestays when component mounts
+  // Chỉ fetch nếu chưa có dữ liệu hoặc dữ liệu rỗng
   useEffect(() => {
-    dispatch(fetchAllHomestays());
-  }, [dispatch]);
+    if (!homestays || homestays.length === 0) {
+      dispatch(fetchAllHomestays());
+    }
+  }, [dispatch, homestays]);
 
   // Filter homestays - only show recommended and available ones
   const getFilteredHomestays = () => {
@@ -41,34 +44,18 @@ export default function SearchScreen() {
     // Implement navigation to details screen
   };
 
-  const formatCurrency = (price) => {
-    // Format price from API (assuming it's a number)
-    if (typeof price === 'number') {
-      return price.toLocaleString('vi-VN') + 'đ';
-    }
-    return price;
+
+
+  // Refresh function for manual refresh
+  const handleRefresh = () => {
+    dispatch(fetchAllHomestays());
   };
 
-  // Transform API data to match ItemList component format
-  const transformHomestaysData = () => {
-    const filteredHomestays = getFilteredHomestays();
-    
-    return filteredHomestays.map(item => ({
-      id: item.id,
-      name: item.name,
-      rating: item.averageRating || 0,
-      reviews: item.reviewCount || 0,
-      price: formatCurrency(item.pricePerNight),
-      discount: item.discountPercentage ? `${item.discountPercentage}%` : '0%',
-      image: item.imageList && item.imageList.length > 0 
-        ? (item.imageList.find(img => img.startsWith('http')) || item.imageList[0])
-        : 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80',
-      originalData: item // Keep original data for navigation
-    }));
-  };
+  // Get filtered homestays directly
+  const filteredHomestays = getFilteredHomestays();
 
-  // Show loading state
-  if (loading) {
+  // Show loading state chỉ khi chưa có dữ liệu
+  if (loading && (!homestays || homestays.length === 0)) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingContainer}>
@@ -78,15 +65,15 @@ export default function SearchScreen() {
     );
   }
 
-  // Show error state
-  if (error) {
+  // Show error state chỉ khi chưa có dữ liệu
+  if (error && (!homestays || homestays.length === 0)) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.errorContainer}>
           <Text>Có lỗi xảy ra: {error}</Text>
           <TouchableOpacity 
             style={styles.retryButton}
-            onPress={() => dispatch(fetchAllHomestays())}
+            onPress={handleRefresh}
           >
             <Text style={styles.retryButtonText}>Thử lại</Text>
           </TouchableOpacity>
@@ -95,13 +82,11 @@ export default function SearchScreen() {
     );
   }
 
-  const transformedHomestays = transformHomestaysData();
-
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
+      
       {/* Header Section */}
-      <View style={styles.headerSection}>
+      {/* <View style={styles.headerSection}>
         <Text style={styles.headerTitle}>Đề xuất</Text>
         <Text style={styles.headerSubtitle}>
           Đăng ký ngay để nhận nhiều ưu đãi hấp dẫn
@@ -109,18 +94,32 @@ export default function SearchScreen() {
         <TouchableOpacity>
           <Text style={styles.loginRegisterText}>Đăng nhập/ Đăng ký</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
       
       {/* Nearby Section */}
       <View style={styles.nearbySection}>
-        <Text style={styles.sectionTitle}>Gần bạn nhất</Text>
-        <Text style={styles.sectionSubtitle}>
-          Các homestay gần bạn có đánh giá tốt nhất ({transformedHomestays.length} kết quả)
-        </Text>
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Gần bạn nhất</Text>
+            <Text style={styles.sectionSubtitle}>
+              Các homestay gần bạn có đánh giá tốt nhất ({filteredHomestays.length} kết quả)
+            </Text>
+          </View>
+          {/* Refresh button */}
+          <TouchableOpacity 
+            style={styles.refreshButton}
+            onPress={handleRefresh}
+            disabled={loading}
+          >
+            <Text style={[styles.refreshText, loading && styles.refreshTextDisabled]}>
+              {loading ? 'Đang tải...' : 'Làm mới'}
+            </Text>
+          </TouchableOpacity>
+        </View>
         
-        {transformedHomestays.length > 0 ? (
+        {filteredHomestays.length > 0 ? (
           <ItemList
-            homestays={transformedHomestays}
+            homestays={filteredHomestays}
             toggleHomestayStatus={toggleHomestayStatus}
             viewDetails={viewDetails}
             formatCurrency={formatCurrency}
@@ -128,6 +127,12 @@ export default function SearchScreen() {
         ) : (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>Không có homestay nào phù hợp</Text>
+            <TouchableOpacity 
+              style={styles.retryButton}
+              onPress={handleRefresh}
+            >
+              <Text style={styles.retryButtonText}>Tải lại</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -165,6 +170,12 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     flex: 1,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -173,7 +184,20 @@ const styles = StyleSheet.create({
   sectionSubtitle: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 16,
+  },
+  refreshButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: '#F5B041',
+  },
+  refreshText: {
+    fontSize: 12,
+    color: 'white',
+    fontWeight: '500',
+  },
+  refreshTextDisabled: {
+    opacity: 0.6,
   },
   loadingContainer: {
     flex: 1,
@@ -206,5 +230,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+    marginBottom: 16,
   },
 });

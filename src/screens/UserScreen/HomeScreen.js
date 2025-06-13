@@ -79,17 +79,7 @@ const HomeScreen = () => {
     }
   };
 
-  // Handle tab press for Flash Sale
-  const handleFlashSaleTabPress = (index, tab) => {
-    setFlashSaleActiveTab(index);
-    console.log('Flash Sale tab pressed:', tab);
-  };
 
-  // Handle tab press for Available section
-  const handleAvailableTabPress = (index, tab) => {
-    setAvailableActiveTab(index);
-    console.log('Available tab pressed:', tab);
-  };
 
   // Handle retry
   const handleRetry = () => {
@@ -163,11 +153,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* <TabSelector 
-            tabs={tabOptions}
-            activeTabIndex={flashSaleActiveTab}
-            onTabPress={handleFlashSaleTabPress}
-          /> */}
+
 
           <ScrollView
             horizontal

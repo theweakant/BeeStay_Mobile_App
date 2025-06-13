@@ -193,10 +193,6 @@ const AccountScreen = () => {
         {/* Settings Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Cài đặt</Text>
-          <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Setting')}>
-            <AntDesign name="Safety" size={20} color="#F5B041" />
-            <Text style={styles.itemText}>Tài khoản đã liên kết</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.itemRow}>
             <Ionicons name="language" size={20} color="#F5B041" />
             <Text style={styles.itemText}>Ngôn ngữ</Text>

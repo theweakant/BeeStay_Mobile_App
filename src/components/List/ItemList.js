@@ -1,25 +1,22 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
-import ItemCard from '../Card/ItemCard'
-
+import InfoCard from '../Card/InfoCard'; // Changed from ItemCard to InfoCard
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 45) / 2;
 
 const ItemList = ({ homestays, toggleHomestayStatus, viewDetails, formatCurrency }) => {
-  const rendeItem = ({ item, index }) => (
-    <ItemCard
+  const renderItem = ({ item, index }) => (
+    <InfoCard
       item={item}
-      index={index}
-      toggleHomestayStatus={toggleHomestayStatus}
-      viewDetails={viewDetails}
-      formatCurrency={formatCurrency}
+      onPress={viewDetails} 
+      style={{ width: CARD_WIDTH }} 
     />
   );
 
   return (
     <FlatList
       data={homestays}
-      renderItem={rendeItem}
+      renderItem={renderItem} 
       keyExtractor={(item) => item.id.toString()}
       numColumns={2}
       contentContainerStyle={styles.flatListContent}
