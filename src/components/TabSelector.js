@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     borderColor: '#dee2e6',
     alignItems: 'center',
     flex: 1,
-    minWidth: '40%', // Giới hạn chiều rộng nhỏ hơn
+    minWidth: '40%',
     marginRight: 8,
     
   },

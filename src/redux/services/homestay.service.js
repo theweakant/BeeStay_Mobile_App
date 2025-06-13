@@ -10,3 +10,13 @@ export const getAllHomestays = async () => {
     throw error;
   }
 };
+
+
+export const addStaycation = async (staycationData) => {
+  try {
+    const response = await apiClient.post(HomestayEndpoints.addStayCation, staycationData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

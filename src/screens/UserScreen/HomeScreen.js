@@ -163,11 +163,11 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <TabSelector 
+          {/* <TabSelector 
             tabs={tabOptions}
             activeTabIndex={flashSaleActiveTab}
             onTabPress={handleFlashSaleTabPress}
-          />
+          /> */}
 
           <ScrollView
             horizontal
@@ -193,11 +193,11 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <TabSelector 
+          {/* <TabSelector 
             tabs={tabOptions}
             activeTabIndex={availableActiveTab}
             onTabPress={handleAvailableTabPress}
-          />
+          /> */}
 
           <ScrollView
             horizontal

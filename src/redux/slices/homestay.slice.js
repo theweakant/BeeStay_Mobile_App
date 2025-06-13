@@ -1,6 +1,6 @@
 // redux/slices/homestaySlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getAllHomestays } from '../services/homestay.service';
+import { getAllHomestays, addStaycation } from '../services/homestay.service';
 
 // Async thunk: Lấy tất cả homestays
 export const fetchAllHomestays = createAsyncThunk(
@@ -8,6 +8,19 @@ export const fetchAllHomestays = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const data = await getAllHomestays();
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Thêm staycation mới
+export const createStaycation = createAsyncThunk(
+  'homestay/createStaycation',
+  async (staycationData, thunkAPI) => {
+    try {
+      const data = await addStaycation(staycationData);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
@@ -23,6 +36,11 @@ const homestaySlice = createSlice({
     loading: false,
     error: null,
     totalCount: 0,
+
+    //state cho việc tạo staycation
+    creating: false,
+    createError: null,
+    createSuccess: false,
   },
   reducers: {
     clearHomestays: (state) => {
@@ -38,6 +56,14 @@ const homestaySlice = createSlice({
     setSelectedHomestay: (state, action) => {
       state.selectedHomestay = action.payload;
     },
+
+    // Reset create state
+    resetCreateState: (state) => {
+      state.creating = false;
+      state.createError = null;
+      state.createSuccess = false;
+    },
+
     // Filter homestays by criteria
     filterHomestays: (state, action) => {
       const { criteria } = action.payload;
@@ -60,6 +86,27 @@ const homestaySlice = createSlice({
       .addCase(fetchAllHomestays.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Create staycation
+      .addCase(createStaycation.pending, (state) => {
+        state.creating = true;
+        state.createError = null;
+        state.createSuccess = false;
+      })
+      .addCase(createStaycation.fulfilled, (state, action) => {
+        state.creating = false;
+        state.createSuccess = true;
+        // Thêm staycation mới vào danh sách (nếu cần)
+        if (action.payload) {
+          state.homestays.push(action.payload);
+          state.totalCount += 1;
+        }
+      })
+      .addCase(createStaycation.rejected, (state, action) => {
+        state.creating = false;
+        state.createError = action.payload;
+        state.createSuccess = false;
       });
   },
 });

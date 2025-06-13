@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, ScrollView, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, ScrollView, ActivityIndicator, Text, TouchableOpacity, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHostByAccount, clearHost } from '../../../redux/slices/host.slice';
 import Header from '../../../components/HostHomeScreen/Header';
@@ -7,10 +7,13 @@ import Stats from '../../../components/HostHomeScreen/Stats';
 import Dashboard from '../../../components/HostHomeScreen/Dashboard';
 import Schedule from '../../../components/HostHomeScreen/Schedule';
 import Section from '../../../components/HostHomeScreen/Section';
+import AddButton from '../../../components/Button/AddButton';
+import AddStaycationForm from '../../../components/Form/AddStaycationForm';
 import { DashboardStats, DashboardItems, DashboardSchedule } from '../../../data/MockData';
 
 const HostHomeScreen = () => {
   const dispatch = useDispatch();
+  const [showAddForm, setShowAddForm] = useState(false);
   
   // Get data from Redux store
   const { user } = useSelector(state => state.auth); // Adjust based on your auth structure
@@ -33,6 +36,14 @@ const HostHomeScreen = () => {
     if (accountId) {
       dispatch(fetchHostByAccount(accountId));
     }
+  };
+
+  const handleAddHomestay = () => {
+    setShowAddForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
   };
 
   // Loading state
@@ -86,6 +97,11 @@ const HostHomeScreen = () => {
       >
         <Header host={host} />
 
+        {/* Add Homestay Button */}
+        <View style={styles.addButtonContainer}>
+          <AddButton onPress={handleAddHomestay} />
+        </View>
+
         <Section title="Tổng Quan Hôm Nay">
           <Stats stats={DashboardStats} />
         </Section>
@@ -98,6 +114,26 @@ const HostHomeScreen = () => {
           <Schedule schedule={DashboardSchedule} />
         </Section>
       </ScrollView>
+
+      {/* Add Homestay Modal */}
+      <Modal
+        visible={showAddForm}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleCloseForm}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Thêm Homestay Mới</Text>
+            <TouchableOpacity onPress={handleCloseForm} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>×</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalContent}>
+            <AddStaycationForm onSuccess={handleCloseForm} />
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -112,6 +148,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 30,
+  },
+  addButtonContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
   },
   loadingContainer: {
     flex: 1,
@@ -158,6 +198,43 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+    paddingTop: 50, // Account for status bar
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    fontSize: 24,
+    color: '#6B7280',
+    fontWeight: '300',
+  },
+  modalContent: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
   },
 });
 
