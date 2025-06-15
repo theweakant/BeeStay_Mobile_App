@@ -22,10 +22,16 @@ export const updateUserByAccount = async (accountId, userData) => {
 };
 
 // Cập nhật avatar theo accountId
+// Trong user.service.js - sửa hàm updateUserAvatar
 export const updateUserAvatar = async (accountId, imageData) => {
   try {
-    const response = await apiClient.put(UserEndpoints.updateUserAvatar(accountId), {
-      image: imageData
+    const formData = new FormData();
+    formData.append('image', imageData); // imageData phải là File object
+    
+    const response = await apiClient.put(UserEndpoints.updateUserAvatar(accountId), formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   } catch (error) {

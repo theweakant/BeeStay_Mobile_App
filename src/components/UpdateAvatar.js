@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Image } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
+// ✅ THAY ĐỔI: Import Expo ImagePicker thay vì react-native-image-picker
+import * as ImagePicker from 'expo-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserAvatarByAccount } from '../redux/slices/user.slice';
 
@@ -9,33 +10,31 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
     const { avatarUpdateLoading } = useSelector((state) => state.user);
     const [previewImage, setPreviewImage] = useState(null);
 
-    const showImagePicker = () => {
-        const options = {
-            title: 'Chọn ảnh đại diện',
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-            },
-            mediaType: 'photo',
-            quality: 0.8,
-            maxWidth: 800,
-            maxHeight: 800,
-        };
-
-        launchImageLibrary(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
+    // ✅ THAY ĐỔI: Sử dụng Expo ImagePicker
+    const showImagePicker = async () => {
+        try {
+            // Request permission
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert(
+                    'Quyền truy cập',
+                    'Cần cấp quyền truy cập thư viện ảnh để chọn ảnh đại diện',
+                    [{ text: 'OK' }]
+                );
                 return;
             }
 
-            if (response.errorMessage) {
-                console.log('ImagePicker Error: ', response.errorMessage);
-                Alert.alert('Lỗi', 'Có lỗi xảy ra khi chọn ảnh');
-                return;
-            }
+            // Launch image picker
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1], // Square aspect ratio
+                quality: 0.8,
+                base64: false,
+            });
 
-            if (response.assets && response.assets[0]) {
-                const imageAsset = response.assets[0];
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const imageAsset = result.assets[0];
                 console.log('Selected image:', imageAsset);
                 
                 // Show preview
@@ -58,18 +57,26 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
                     ]
                 );
             }
-        });
+        } catch (error) {
+            console.error('Error opening image picker:', error);
+            Alert.alert('Lỗi', 'Không thể mở thư viện ảnh');
+        }
     };
 
     const handleUpdateAvatar = async (imageAsset) => {
         try {
-            // Convert image to base64 string for API
-            const imageData = `data:${imageAsset.type};base64,${imageAsset.base64}`;
+            // ✅ THAY ĐỔI: Tạo FormData cho Expo
+            const formData = new FormData();
+            formData.append('image', {
+                uri: imageAsset.uri,
+                type: imageAsset.type || 'image/jpeg',
+                name: imageAsset.fileName || 'avatar.jpg',
+            });
             
-            // Dispatch update avatar action
+            // Dispatch update avatar action với FormData
             const result = await dispatch(updateUserAvatarByAccount({
                 accountId: accountId,
-                imageData: imageData
+                imageData: formData // Gửi FormData
             })).unwrap();
 
             console.log('Avatar updated successfully:', result);

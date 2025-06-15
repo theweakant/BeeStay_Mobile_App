@@ -224,6 +224,7 @@ const authSlice = createSlice({
       state.registration.step = action.payload;
     },
   },
+
   extraReducers: (builder) => {
     builder
       // Đăng nhập
@@ -233,18 +234,27 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const { accountId, userName, token, refreshToken } = action.payload;
+        const { accountId, userName, token, refreshToken, role } = action.payload;
         
-        state.user = { accountId, userName };
+        state.user = { 
+          accountId, 
+          userName,
+          role: role || null
+        };
         state.token = token;
         state.refreshToken = refreshToken;
         
+      // Ưu tiên role từ response trước, nếu không có thì decode từ token
+      if (role) {
+        state.role = role;
+      } else {
         try {
           const decoded = jwtDecode(token);
           state.role = decoded.role || null;
         } catch (e) {
           state.role = null;
         }
+      }
         
         state.isAuthenticated = true;
         state.error = null;
@@ -262,17 +272,26 @@ const authSlice = createSlice({
       })
       .addCase(refreshTokenUser.fulfilled, (state, action) => {
         state.loading = false;
-        const { accountId, userName, token, refreshToken } = action.payload;
+        const { accountId, userName, token, refreshToken, role } = action.payload;
         
-        state.user = { accountId, userName };
+        state.user = { 
+          accountId, 
+          userName,
+          role: role || null 
+        };
         state.token = token;
         state.refreshToken = refreshToken;
         
-        try {
-          const decoded = jwtDecode(token);
-          state.role = decoded.role || null;
-        } catch (e) {
-          state.role = null;
+        // Ưu tiên role từ response trước, nếu không có thì decode từ token
+        if (role) {
+          state.role = role;
+        } else {
+          try {
+            const decoded = jwtDecode(token);
+            state.role = decoded.role || null;
+          } catch (e) {
+            state.role = null;
+          }
         }
         
         state.isAuthenticated = true;
@@ -320,16 +339,24 @@ const authSlice = createSlice({
         
         // Nếu API trả về token (tự động đăng nhập sau đăng ký)
         if (action.payload.token) {
-          const { accountId, userName, token, refreshToken } = action.payload;
-          state.user = { accountId, userName };
+          const { accountId, userName, token, refreshToken, role } = action.payload;
+          state.user = { 
+            accountId, 
+            userName,
+            role: role || null  
+          };
           state.token = token;
           state.refreshToken = refreshToken;
           
-          try {
-            const decoded = jwtDecode(token);
-            state.role = decoded.role || null;
-          } catch (e) {
-            state.role = null;
+          if (role) {
+            state.role = role;
+          } else {
+            try {
+              const decoded = jwtDecode(token);
+              state.role = decoded.role || null;
+            } catch (e) {
+              state.role = null;
+            }
           }
           
           state.isAuthenticated = true;
@@ -355,6 +382,7 @@ const authSlice = createSlice({
           state.user = {
             userName: action.payload.userName,
             accountId: action.payload.accountId,
+            role: action.payload.role || null,
           };
           state.isAuthenticated = true;
         }

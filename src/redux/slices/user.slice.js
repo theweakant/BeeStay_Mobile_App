@@ -95,6 +95,7 @@ const userSlice = createSlice({
       }
     },
   },
+  
   extraReducers: (builder) => {
     builder
       // Fetch user by account

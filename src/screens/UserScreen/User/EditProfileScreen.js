@@ -10,6 +10,7 @@ import {
   StyleSheet 
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAuth } from '../../../redux/hooks/useAuth'; 
 import {
   fetchUserByAccount,
   updateUserProfileByAccount, 
@@ -23,11 +24,13 @@ import {
 
 const EditProfileScreen = ({ route }) => {
   const dispatch = useDispatch();
+  const { user } = useAuth(); // Lấy user từ useAuth hook
   
-  // Lấy userId từ route params hoặc từ auth state
-  const { userId, accountId } = route.params || {};
-  console.log('Received userId:', userId);
-  console.log('Received accountId:', accountId);
+  // Lấy accountId từ useAuth (ưu tiên) hoặc route params (fallback)
+  const accountId = user?.accountId || route.params?.accountId;
+  
+  console.log('Current accountId:', accountId);
+  console.log('User from auth:', user);
 
   // Redux selectors
   const profile = useSelector(selectUserProfile);
@@ -54,6 +57,8 @@ const EditProfileScreen = ({ route }) => {
   useEffect(() => {
     if (accountId) {
       dispatch(fetchUserByAccount(accountId));
+    } else {
+      Alert.alert('Lỗi', 'Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.');
     }
   }, [dispatch, accountId]);
 
@@ -94,10 +99,16 @@ const EditProfileScreen = ({ route }) => {
     }));
   };
 
-  // Handle update profile - Sử dụng updateUserProfileByAccount
+  // Handle update profile
   const handleUpdateProfile = () => {
     if (!accountId) {
       Alert.alert('Lỗi', 'Không tìm thấy Account ID');
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.name?.trim()) {
+      Alert.alert('Lỗi', 'Vui lòng nhập tên');
       return;
     }
 
@@ -105,7 +116,9 @@ const EditProfileScreen = ({ route }) => {
     const updateData = {
       accountId: accountId,
       userData: {
-        ...formData
+        ...formData,
+        name: formData.name.trim(), // Trim whitespace
+        phone: formData.phone?.trim() || '',
       }
     };
     
@@ -129,6 +142,16 @@ const EditProfileScreen = ({ route }) => {
   const handleClearError = () => {
     dispatch(clearError());
   };
+
+  // Show error if no accountId
+  if (!accountId) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>Không tìm thấy thông tin tài khoản</Text>
+        <Text style={styles.subErrorText}>Vui lòng đăng nhập lại</Text>
+      </View>
+    );
+  }
 
   // Show loading when fetching user data
   if (loading) {
@@ -159,12 +182,7 @@ const EditProfileScreen = ({ route }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Display Account ID và User ID */}
-      <View style={styles.idContainer}>
-        <Text style={styles.userIdText}>Account ID: {accountId}</Text>
-        <Text style={styles.userIdText}>User ID: {profile?.userId || userId}</Text>
-      </View>
-      
+ 
       {/* Show update error if exists */}
       {updateError && (
         <View style={styles.errorContainer}>
@@ -177,7 +195,7 @@ const EditProfileScreen = ({ route }) => {
 
       {/* Form Fields */}
       <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Tên</Text>
+        <Text style={styles.label}>Tên *</Text>
         <TextInput
           style={styles.input}
           value={formData.name}
@@ -211,6 +229,12 @@ const EditProfileScreen = ({ route }) => {
             onPress={() => handleInputChange('gender', 'Female')}
           >
             <Text style={[styles.genderText, formData.gender === 'Female' && styles.selectedGenderText]}>Nữ</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.genderButton, formData.gender === 'Other' && styles.selectedGender]}
+            onPress={() => handleInputChange('gender', 'Other')}
+          >
+            <Text style={[styles.genderText, formData.gender === 'Other' && styles.selectedGenderText]}>Khác</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -325,6 +349,12 @@ const styles = StyleSheet.create({
     color: '#c62828',
     fontSize: 14,
     flex: 1,
+  },
+  subErrorText: {
+    color: '#666',
+    fontSize: 12,
+    marginTop: 5,
+    textAlign: 'center',
   },
   closeErrorText: {
     color: '#c62828',

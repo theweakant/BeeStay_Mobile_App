@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity  } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import { fetchUserByAccount } from '../../../redux/slices/user.slice';
 import { formatDate, getFullAddress } from '../../../utils/textUtils';
 import UpdateAvatar from '../../../components/UpdateAvatar'; 
 
 export default function ProfileScreen() {
     const dispatch = useDispatch();
+    const navigation = useNavigation();
     
     const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
     const { profile: userProfile, loading: userLoading, error: userError } = useSelector((state) => state.user);
@@ -25,7 +27,10 @@ export default function ProfileScreen() {
     // Callback function khi avatar được cập nhật thành công
     const handleAvatarUpdated = (newAvatarUrl) => {
         console.log('Avatar updated successfully:', newAvatarUrl);
-        // Có thể thêm logic khác nếu cần
+        // Có thể refresh lại user profile để lấy avatar mới
+        if (authUser?.accountId) {
+            dispatch(fetchUserByAccount(authUser.accountId));
+        }
     };
     
     if (userLoading && !userProfile) {
@@ -83,7 +88,7 @@ export default function ProfileScreen() {
                     </View>
                 </View>
 
-                {/* UpdateAvatar Component */}
+                {/* UpdateAvatar Component - Tích hợp component upload avatar */}
                 <UpdateAvatar 
                     accountId={authUser?.accountId}
                     currentAvatar={userProfile.avatar || userProfile.image}
@@ -118,7 +123,12 @@ export default function ProfileScreen() {
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
-                    <Text style={styles.editIcon}>✏️</Text>
+                    <TouchableOpacity 
+                        onPress={() => navigation.navigate('EditProfile')}
+                        style={styles.editButton}
+                    >
+                        <Text style={styles.editText}>Edit</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.infoRow}>
@@ -227,6 +237,7 @@ const styles = StyleSheet.create({
     },
     statusContainer: {
         marginTop: 5,
+        marginBottom: 15,
     },
     statusBadge: {
         paddingHorizontal: 12,
@@ -293,6 +304,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
+        marginBottom: 20,
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -308,8 +320,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
-    editIcon: {
-        fontSize: 16,
+    editButton: {
+        backgroundColor: '#FF6B6B',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 15,
+    },
+    editText: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: '600',
     },
     infoRow: {
         flexDirection: 'row',
