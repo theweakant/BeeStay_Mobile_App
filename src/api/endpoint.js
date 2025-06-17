@@ -23,11 +23,17 @@ export const HostEndpoints = {
 };
 
 export const HomestayEndpoints = {
-  getAllStayCations: '/v1/stay-cation/all',
-  addStayCation: `/v1/stay-cation/add`,
-  addStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`,
-  addStayCationImage: (stayCationId) => `/v1/stay-cation/add-img/${stayCationId}`,
-  
+  getAllStayCations: '/v1/stay-cation/all', //yy
+  getStayCationByHost: (accountId) => `/v1/stay-cation/get-by-host/${accountId}`,//yy
+  getStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`, //yy
+
+  addStayCationByAccountId: (accountId) => `/v1/stay-cation/add/${accountId}`, //yy
+
+  updateStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`,//y
+
+  addStayCationImage: (stayCationId) => `/v1/stay-cation/add-img/${stayCationId}`,//n
+  addStayCationVideo: (stayCationId) => `/v1/stay-cation/add-video/${stayCationId}`, //n
+
 };
 
 

@@ -14,13 +14,12 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { createStaycation, resetCreateState } from '../../redux/slices/homestay.slice';
 
-const AddStaycationForm = () => {
+const AddStaycationForm = ({ accountId, onSuccess }) => {
   const dispatch = useDispatch();
   const { creating, createError, createSuccess } = useSelector(state => state.homestay);
 
   const [formData, setFormData] = useState({
     name: '',
-    hostId: '',
     pricePerNight: '',
     originalPricePerNight: '',
     discountPercentage: 0,
@@ -85,7 +84,6 @@ const AddStaycationForm = () => {
       // Reset form
       setFormData({
         name: '',
-        hostId: '',
         pricePerNight: '',
         originalPricePerNight: '',
         discountPercentage: 0,
@@ -130,12 +128,19 @@ const AddStaycationForm = () => {
         flashSale: false
       });
       
+      // Call onSuccess callback to close modal
+      if (onSuccess) {
+        setTimeout(() => {
+          onSuccess();
+        }, 2000); // Close modal after 2 seconds
+      }
+      
       // Reset state sau 3 giây
       setTimeout(() => {
         dispatch(resetCreateState());
       }, 3000);
     }
-  }, [createSuccess, dispatch]);
+  }, [createSuccess, dispatch, onSuccess]);
 
   const handleInputChange = (name, value) => {
     if (name.includes('.')) {
@@ -183,15 +188,20 @@ const AddStaycationForm = () => {
 
   const handleSubmit = async () => {
     // Validate required fields
-    if (!formData.name || !formData.hostId || !formData.pricePerNight) {
+    if (!formData.name || !formData.pricePerNight) {
       Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin bắt buộc');
+      return;
+    }
+
+    // Check if accountId is available
+    if (!accountId) {
+      Alert.alert('Lỗi', 'Không tìm thấy thông tin tài khoản');
       return;
     }
 
     // Prepare data for API
     const submitData = {
       ...formData,
-      hostId: parseInt(formData.hostId),
       pricePerNight: parseInt(formData.pricePerNight),
       originalPricePerNight: parseInt(formData.originalPricePerNight || formData.pricePerNight),
       discountPercentage: parseInt(formData.discountPercentage || 0),
@@ -204,7 +214,8 @@ const AddStaycationForm = () => {
       availableDates: [] // You can implement date picker later
     };
 
-    dispatch(createStaycation(submitData));
+    // Use accountId from props instead of hostId from form
+    dispatch(createStaycation({ accountId, staycationData: submitData }));
   };
 
   const renderSwitchRow = (items) => {
@@ -249,30 +260,25 @@ const AddStaycationForm = () => {
             </View>
           )}
 
+          {/* Account Info Display */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Thông tin tài khoản</Text>
+            <View style={styles.accountInfo}>
+              <Text style={styles.accountText}>Account ID: {accountId}</Text>
+            </View>
+          </View>
+
           {/* Basic Information */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Thông tin cơ bản</Text>
-            <View style={styles.row}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Tên staycation *</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.name}
-                  onChangeText={(value) => handleInputChange('name', value)}
-                  placeholder="Nhập tên staycation"
-                />
-              </View>
-              
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Host ID *</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.hostId}
-                  onChangeText={(value) => handleInputChange('hostId', value)}
-                  placeholder="Nhập Host ID"
-                  keyboardType="numeric"
-                />
-              </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Tên staycation *</Text>
+              <TextInput
+                style={styles.input}
+                value={formData.name}
+                onChangeText={(value) => handleInputChange('name', value)}
+                placeholder="Nhập tên staycation"
+              />
             </View>
 
             <View style={styles.inputContainer}>
@@ -720,6 +726,186 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
+  },
+  // Các style còn thiếu được bổ sung:
+  accountInfo: {
+    backgroundColor: '#f9fafb',
+    padding: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  accountText: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  // Style cho input khi focus
+  inputFocused: {
+    borderColor: '#3b82f6',
+    backgroundColor: '#ffffff',
+    shadowColor: '#3b82f6',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  // Style cho validation error
+  inputError: {
+    borderColor: '#ef4444',
+    backgroundColor: '#fef2f2',
+  },
+  // Style cho required field indicator
+  requiredIndicator: {
+    color: '#ef4444',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  // Style cho loading overlay
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 10,
+  },
+  // Style cho disabled input
+  inputDisabled: {
+    backgroundColor: '#f3f4f6',
+    color: '#9ca3af',
+  },
+  // Style cho switch container
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  // Style cho image preview
+  imagePreview: {
+    width: '100%',
+    height: 200,
+    borderRadius: 6,
+    marginTop: 8,
+    backgroundColor: '#f3f4f6',
+  },
+  imagePreviewContainer: {
+    position: 'relative',
+    marginTop: 8,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeImageText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  // Style cho dropdown/picker
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
+  },
+  picker: {
+    height: 50,
+  },
+  // Style cho date picker
+  datePickerContainer: {
+    marginTop: 8,
+  },
+  datePickerButton: {
+    backgroundColor: '#f9fafb',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 6,
+    padding: 12,
+    alignItems: 'center',
+  },
+  datePickerButtonText: {
+    color: '#374151',
+    fontSize: 14,
+  },
+  // Style cho checkbox
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 3,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#3b82f6',
+    borderColor: '#3b82f6',
+  },
+  checkboxText: {
+    fontSize: 14,
+    color: '#374151',
+    flex: 1,
+  },
+  // Style cho tag input
+  tagContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+  },
+  tag: {
+    backgroundColor: '#e5e7eb',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tagText: {
+    fontSize: 12,
+    color: '#374151',
+    marginRight: 4,
+  },
+  tagRemove: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#6b7280',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tagRemoveText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
 });
 

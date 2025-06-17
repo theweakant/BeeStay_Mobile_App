@@ -22,7 +22,6 @@ export const updateUserByAccount = async (accountId, userData) => {
 };
 
 // Cập nhật avatar theo accountId
-// Trong user.service.js - sửa hàm updateUserAvatar
 export const updateUserAvatar = async (accountId, imageData) => {
   try {
     const formData = new FormData();

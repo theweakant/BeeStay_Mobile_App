@@ -7,7 +7,7 @@ import Stats from '../../../components/HostHomeScreen/Stats';
 import Dashboard from '../../../components/HostHomeScreen/Dashboard';
 import Schedule from '../../../components/HostHomeScreen/Schedule';
 import Section from '../../../components/HostHomeScreen/Section';
-import AddButton from '../../../components/Button/AddButton';
+
 import AddStaycationForm from '../../../components/Form/AddStaycationForm';
 import { DashboardStats, DashboardItems, DashboardSchedule } from '../../../data/MockData';
 
@@ -16,7 +16,7 @@ const HostHomeScreen = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   
   // Get data from Redux store
-  const { user } = useSelector(state => state.auth); // Adjust based on your auth structure
+  const { user } = useSelector(state => state.auth); 
   const { host, loading, error } = useSelector(state => state.host);
   const accountId = user?.id || user?.accountId;
 
@@ -26,7 +26,6 @@ const HostHomeScreen = () => {
       dispatch(fetchHostByAccount(accountId));
     }
 
-    // Cleanup function to clear host data when component unmounts (optional)
     return () => {
       // dispatch(clearHost()); // Uncomment if you want to clear data on unmount
     };
@@ -38,9 +37,6 @@ const HostHomeScreen = () => {
     }
   };
 
-  const handleAddHomestay = () => {
-    setShowAddForm(true);
-  };
 
   const handleCloseForm = () => {
     setShowAddForm(false);
@@ -97,10 +93,6 @@ const HostHomeScreen = () => {
       >
         <Header host={host} />
 
-        {/* Add Homestay Button */}
-        <View style={styles.addButtonContainer}>
-          <AddButton onPress={handleAddHomestay} />
-        </View>
 
         <Section title="Tổng Quan Hôm Nay">
           <Stats stats={DashboardStats} />

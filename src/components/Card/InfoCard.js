@@ -21,7 +21,7 @@ const InfoCard = ({
     if (item.location && item.location.city) {
       return truncateText(item.location.city);
     }
-    return 'Chưa cập nhật'; // Fallback text
+    return 'Chưa cập nhật'; 
   };
 
   return (
