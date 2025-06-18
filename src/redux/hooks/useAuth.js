@@ -1,9 +1,8 @@
-// src/redux/hooks/useAuth.js
+// src/redux/hooks/useAuth.js 
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   sendRegisterOTP, 
   verifyAndRegister,
-  refreshTokenUser,
   setRegistrationEmail,
   setRegistrationFormData,
   nextRegistrationStep,
@@ -12,7 +11,6 @@ import {
   clearError,
   logout,
 } from '../slices/auth.slice';
-
 
 export const useAuth = () => {
   const auth = useSelector(state => state.auth);
@@ -32,7 +30,6 @@ export const useAuth = () => {
     registration: auth.registration,
     
     // Auth actions
-    refreshToken: () => dispatch(refreshTokenUser()),
     logout: () => dispatch(logout()),
     
     // Registration actions
@@ -70,9 +67,6 @@ export const useAuth = () => {
       const { userName, password, role, otp } = auth.registration.formData;
       return userName && password && role && otp && auth.registration.email;
     },
-    
-    get hasRefreshToken() {
-      return !!auth.refreshToken;
-    },
+
   };
 };

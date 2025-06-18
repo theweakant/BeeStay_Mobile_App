@@ -36,21 +36,8 @@ export default function HostProfileScreen() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({});
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  // DEBUG: Log all data
-  console.log('=== HostProfileScreen Debug ===');
-  console.log('host data:', host);
-  console.log('host type:', typeof host);
-  if (host) {
-    Object.keys(host).forEach(key => {
-      console.log(`host.${key}:`, host[key], 'type:', typeof host[key]);
-    });
-  }
-  console.log('editedData:', editedData);
-  console.log('=== End HostProfileScreen Debug ===');
 
   // Fetch host data on component mount
   useEffect(() => {

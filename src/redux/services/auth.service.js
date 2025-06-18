@@ -11,20 +11,6 @@ export const login = async (credentials) => {
   }
 };
 
-
-
-export const refreshToken = async (refreshToken) => {
-  try {
-    const response = await apiClient.post(AuthEndpoints.refreshToken, {
-      refreshToken: refreshToken
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-
 export const sendOTP = async (email) => {
   try {
     const response = await apiClient.post(AuthEndpoints.verify, null, {
@@ -36,7 +22,7 @@ export const sendOTP = async (email) => {
   }
 };
 
-// API để verify OTP và hoàn thành đăng ký - theo swagger sử dụng request body
+// API để verify OTP và hoàn thành đăng ký 
 export const verifyOTPAndRegister = async (registerData) => {
   try {
     // registerData should contain: { userName, password, email, role, otp }

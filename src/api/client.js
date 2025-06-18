@@ -1,234 +1,174 @@
-// api/client.js - BULLETPROOF VERSION WITH REFRESH TOKEN
+// api/client.js
+import { Alert } from 'react-native';
 import axios from 'axios';
 import { REACT_APP_API_BASE } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const apiClient = axios.create({
   baseURL: REACT_APP_API_BASE,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
 });
 
-console.log('BASE_URL:', REACT_APP_API_BASE);
+const refreshClient = axios.create({
+  baseURL: REACT_APP_API_BASE,
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 15000,
+});
 
 const PUBLIC_ENDPOINTS = [
-  '/v1/auth/register',  
-  '/v1/auth/verify',    
+  '/v1/auth/register',
+  '/v1/auth/verify',
   '/v1/auth/login',
-  '/v1/auth/refresh-token', 
+  '/v1/auth/refresh-token',
 ];
 
-// Biến để quản lý refresh token process
 let isRefreshing = false;
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
   failedQueue.forEach(prom => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
+    error ? prom.reject(error) : prom.resolve(token);
   });
-  
   failedQueue = [];
 };
 
 const isPublicEndpoint = (url) => {
-  if (!url || typeof url !== 'string') {
-    console.warn('⚠️ isPublicEndpoint: Invalid URL provided:', url);
-    return false;
-  }
-  
-  try {
-    return PUBLIC_ENDPOINTS.some(endpoint => {
-      if (typeof endpoint !== 'string') {
-        console.warn('⚠️ Invalid endpoint in PUBLIC_ENDPOINTS:', endpoint);
-        return false;
-      }
-      return url.includes(endpoint);
-    });
-  } catch (error) {
-    console.error('❌ Error in isPublicEndpoint:', error);
-    return false;
-  }
+  if (!url || typeof url !== 'string') return false;
+  return PUBLIC_ENDPOINTS.some(endpoint => url.includes(endpoint));
 };
 
-// Request interceptor
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      if (!config) {
-        console.error('❌ Request config is undefined');
-        return Promise.reject(new Error('Request configuration is missing'));
-      }
-
-      if (!config.url) {
-        console.error('❌ Request URL is undefined');
-        return Promise.reject(new Error('Request URL is missing'));
-      }
-
-      if (!config.headers) {
-        config.headers = {};
-      }
-
-      const method = config.method ? config.method.toUpperCase() : 'UNKNOWN';
+      const method = config.method?.toUpperCase() || 'UNKNOWN';
       const isPublic = isPublicEndpoint(config.url);
-      
-      if (isPublic) {
-        console.log('🔓 Public endpoint - No auth required');
-      } else {
-        console.log('🔒 Protected endpoint - Adding auth token');
-        try {
-          const token = await AsyncStorage.getItem('token');
-          if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-            console.log('✅ Auth token added');
-          } else {
-            console.log('⚠️ No auth token found for protected endpoint');
-          }
-        } catch (tokenError) {
-          console.error('❌ Error getting token from AsyncStorage:', tokenError);
+      if (__DEV__) console.log(`🚀 ${method} ${config.url} - ${isPublic ? 'Public' : 'Protected'}`);
+
+      if (!isPublic) {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+          if (__DEV__) console.log('✅ Auth token added');
+        } else {
+          if (__DEV__) console.warn('⚠️ No auth token found for protected endpoint');
         }
       }
-      
+
       return config;
-      
-    } catch (error) {
-      console.error('❌ Request interceptor error:', error);
-      return config || { url: '', method: 'GET', headers: {} };
+    } catch (err) {
+      if (__DEV__) console.error('❌ Request Interceptor Error:', err);
+      return config;
     }
   },
   (error) => {
-    console.error('❌ Request interceptor promise error:', error);
+    if (__DEV__) console.error('❌ Request Interceptor Promise Error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor with refresh token logic
 apiClient.interceptors.response.use(
   (response) => {
-    const status = response?.status || 'UNKNOWN';
-    const url = response?.config?.url || 'UNKNOWN';
-    console.log(`✅ API Response: ${status} ${url}`);
+    if (__DEV__) {
+      const status = response?.status || 'UNKNOWN';
+      const url = response?.config?.url || 'UNKNOWN';
+      console.log(`✅ API Response: ${status} ${url}`);
+    }
     return response;
   },
   async (error) => {
-    try {
-      const status = error.response?.status || 'NO_RESPONSE';
-      const url = error.config?.url || 'UNKNOWN_URL';
-      const originalRequest = error.config;
-      
+    const originalRequest = error.config;
+    const status = error.response?.status;
+    const url = originalRequest?.url;
+
+    if (__DEV__) {
       console.error(`❌ API Error: ${status} ${url}`);
       console.error('📋 Error Details:', {
-        status: error.response?.status,
-        data: error.response?.data || 'No response data',
-        message: error.message || 'No error message',
+        status,
+        data: error.response?.data,
+        message: error.message,
       });
+    }
 
-      // Handle 401/403 errors for protected endpoints
-      if ((error.response?.status === 403 || error.response?.status === 401)) {
-        const isPublic = originalRequest?.url ? isPublicEndpoint(originalRequest.url) : false;
-        
-        if (!isPublic && originalRequest && !originalRequest._retry) {
-          console.log('🚫 Auth error on protected endpoint');
+    if ((status === 401 || status === 403) && originalRequest && !originalRequest._retry) {
+      const isPublic = isPublicEndpoint(originalRequest.url);
+      if (!isPublic) {
+        if (isRefreshing) {
+          if (__DEV__) console.log('🔄 Waiting for ongoing token refresh...');
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          }).then(token => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return apiClient(originalRequest);
+          });
+        }
+
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        try {
+          const refreshToken = await AsyncStorage.getItem('refreshToken');
+          if (!refreshToken) throw new Error('No refresh token available');
+
+          if (__DEV__) console.log('🔄 Attempting to refresh token...');
           
-          // If already refreshing, add to queue
-          if (isRefreshing) {
-            console.log('🔄 Already refreshing, adding to queue...');
-            return new Promise((resolve, reject) => {
-              failedQueue.push({ resolve, reject });
-            }).then(token => {
-              if (!originalRequest.headers) {
-                originalRequest.headers = {};
-              }
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-              return apiClient(originalRequest);
-            }).catch(err => {
-              return Promise.reject(err);
-            });
+          const refreshResponse = await refreshClient.post(
+            '/v1/auth/refresh-token',
+            null, 
+            {
+              params: {
+                refresh_token: refreshToken,
+              },
+            }
+          );
+
+          const { token: newToken, refreshToken: newRefreshToken } = refreshResponse.data;
+
+          if (!newToken) throw new Error('No token returned from refresh API');
+
+          await AsyncStorage.setItem('token', newToken);
+          if (newRefreshToken) {
+            await AsyncStorage.setItem('refreshToken', newRefreshToken);
+            if (__DEV__) console.log('✅ Tokens refreshed & saved');
           }
 
-          originalRequest._retry = true;
-          isRefreshing = true;
+          processQueue(null, newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return apiClient(originalRequest);
 
-          try {
-            const refreshToken = await AsyncStorage.getItem('refreshToken');
-            
-            if (!refreshToken) {
-              throw new Error('No refresh token available');
-            }
+        } catch (refreshError) {
+          if (__DEV__) console.error('❌ Refresh Token Failed:', refreshError);
 
-            console.log('🔄 Attempting to refresh token...');
-            
-            // Call refresh token API
-            const refreshResponse = await apiClient.post('/v1/auth/refresh-token', {
-              refreshToken: refreshToken
-            });
+          // ❗️Reset `isRefreshing` early to avoid locking queue
+          isRefreshing = false;
 
-            const { token: newToken, refreshToken: newRefreshToken } = refreshResponse.data;
-            
-            if (newToken) {
-              // Save new tokens
-              await AsyncStorage.setItem('token', newToken);
-              if (newRefreshToken) {
-                await AsyncStorage.setItem('refreshToken', newRefreshToken);
-              }
-              
-              console.log('✅ Token refreshed successfully');
-              
-              // Process queued requests
-              processQueue(null, newToken);
-              
-              // Retry original request
-              if (!originalRequest.headers) {
-                originalRequest.headers = {};
-              }
-              originalRequest.headers.Authorization = `Bearer ${newToken}`;
-              return apiClient(originalRequest);
-            } else {
-              throw new Error('No token received from refresh');
-            }
-            
-          } catch (refreshError) {
-            console.error('❌ Token refresh failed:', refreshError);
-            
-            // Process queue with error
-            processQueue(refreshError, null);
-            
-            // Clear all tokens
-            await AsyncStorage.multiRemove(['token', 'refreshToken', 'accountId']);
-            
-            // Create a specific error for token refresh failure
-            const authError = new Error('Session expired. Please login again.');
-            authError.isAuthError = true;
-            throw authError;
-            
-          } finally {
-            isRefreshing = false;
-          }
-        } else if (!isPublic) {
-          console.log('🔓 Auth error on public endpoint - this is unusual but not handled');
+          processQueue(refreshError, null);
+
+          // Clear tokens
+          await AsyncStorage.multiRemove(['token', 'refreshToken', 'accountId']);
+          if (__DEV__) console.log('🧹 Cleared all auth tokens');
+
+          // // 🔥 Force logout
+          // store.dispatch(forceLogout());
+
+          const authError = new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          authError.isAuthError = true;
+          throw authError;
+        } finally {
+          isRefreshing = false;
         }
       }
-
-      // Handle network errors
-      if (!error.response) {
-        console.error('🌐 Network Error:', error.message);
-        const networkError = new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
-        networkError.isNetworkError = true;
-        throw networkError;
-      }
-
-      // Handle other errors
-      return Promise.reject(error);
-      
-    } catch (interceptorError) {
-      console.error('❌ Response interceptor error:', interceptorError);
-      return Promise.reject(interceptorError);
     }
+
+    // Network error
+    if (!error.response) {
+      const networkError = new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+      networkError.isNetworkError = true;
+      throw networkError;
+    }
+
+    return Promise.reject(error);
   }
 );
 
