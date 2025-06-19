@@ -199,8 +199,8 @@ export default function HomestayUpdateModal({
     };
 
     dispatch(updateStaycationById({
-      id: homestay.id,
-      data: updateData
+      homeStayId: homestay.id,
+      staycationData: updateData
     }));
   };
 

@@ -63,10 +63,7 @@ export default function HostProfileScreen() {
     });
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
+
 
   const saveProfile = async () => {
     try {
@@ -78,15 +75,7 @@ export default function HostProfileScreen() {
     }
   };
 
-  const toggleNotification = (key) => {
-    setEditedData(prev => ({
-      ...prev,
-      notifications: {
-        ...prev.notifications,
-        [key]: !prev.notifications[key]
-      }
-    }));
-  };
+
 
   const handleRetry = () => {
     if (accountId) {

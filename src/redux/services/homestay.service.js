@@ -37,6 +37,7 @@ export const getHomestaysByHost = async (accountId) => {
 };
 
 export const updateStaycation = async (homeStayId, staycationData) => {
+  console.log("🟡 updateStaycation called with ID:", homeStayId);
   try {
     const response = await apiClient.put(
       HomestayEndpoints.updateStayCationById(homeStayId),
@@ -44,6 +45,7 @@ export const updateStaycation = async (homeStayId, staycationData) => {
     );
     return response.data;
   } catch (error) {
+    console.error("🔴 updateStaycation API error:", error);
     throw error;
   }
 };
