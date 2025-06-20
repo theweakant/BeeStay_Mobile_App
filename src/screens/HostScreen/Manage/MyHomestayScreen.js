@@ -1,3 +1,6 @@
+
+
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -18,14 +21,13 @@ import { useDispatch, useSelector } from "react-redux"
 import SearchFilter from "../../../components/SearchFilter"
 import ItemList from "../../../components/List/ItemList"
 import AddStaycationForm from "../../../components/Form/AddStaycationForm"
-import HomestayDetailModal from "../../../components/Modal/HomestayDetail/HomestayDetailModal"
 import { useAuth } from "../../../redux/hooks/useAuth"
 import { fetchHomestaysByHost, clearHostHomestays } from "../../../redux/slices/homestay.slice"
 import { formatCurrency } from "../../../utils/textUtils"
 
 const { width } = Dimensions.get("window")
 
-export default function MyHomestayScreen() {
+export default function MyHomestayScreen({ navigation }) {
   const { user } = useAuth()
   const dispatch = useDispatch()
   const accountId = user?.accountId
@@ -38,8 +40,6 @@ export default function MyHomestayScreen() {
   const [filterStatus, setFilterStatus] = useState("all")
   const [filterRating, setFilterRating] = useState("all")
   const [searchText, setSearchText] = useState("")
-  const [selectedHomestay, setSelectedHomestay] = useState(null)
-  const [detailModalVisible, setDetailModalVisible] = useState(false)
   const [filterModalVisible, setFilterModalVisible] = useState(false)
   const [addModalVisible, setAddModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
@@ -111,10 +111,12 @@ export default function MyHomestayScreen() {
     }
   }
 
-  // View details
+  // View details - Navigate to detail screen
   const viewDetails = (homestay) => {
-    setSelectedHomestay(homestay)
-    setDetailModalVisible(true)
+    navigation.navigate('HostHomestayDetail', {
+      homestayId: homestay.id,
+      formatCurrency: formatCurrency
+    })
   }
 
   // Handle filter modal
@@ -124,11 +126,6 @@ export default function MyHomestayScreen() {
 
   const handleFilterClose = () => {
     setFilterModalVisible(false)
-  }
-
-  const handleDetailModalClose = () => {
-    setDetailModalVisible(false)
-    setSelectedHomestay(null)
   }
 
   // Handle add modal
@@ -357,14 +354,6 @@ export default function MyHomestayScreen() {
           />
         </View>
       </ScrollView>
-
-      {/* Detail Modal */}
-      <HomestayDetailModal
-        visible={detailModalVisible}
-        onClose={handleDetailModalClose}
-        homestayId={selectedHomestay?.id}
-        formatCurrency={formatCurrency}
-      />
 
       {/* Add Modal */}
       <Modal

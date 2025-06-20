@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateStaycationById, resetUpdateState } from '../../../redux/slices/homestay.slice';
+import { validateHomestayForm } from '../../../helper/validate';
+import UploadImage from '../../../components/UploadImage'; 
 
 export default function HomestayUpdateModal({ 
   visible, 
@@ -82,11 +84,6 @@ export default function HomestayUpdateModal({
 
   // Initialize form data when homestay prop changes
   useEffect(() => {
-    console.log('===================================');
-    console.log('🏠 Homestay được chọn để update:');
-    console.log('📋 Full homestay object:', homestay);
-    console.log('===================================');
-    
     if (homestay && visible) {
       setFormData({
         name: homestay.name || '',
@@ -156,7 +153,7 @@ export default function HomestayUpdateModal({
         ]
       );
     }
-  }, [updateSuccess, visible]);
+  }, [updateSuccess, visible, dispatch, onUpdateSuccess, onClose]);
 
   // Handle update error
   useEffect(() => {
@@ -172,135 +169,14 @@ export default function HomestayUpdateModal({
         ]
       );
     }
-  }, [updateError, visible]);
-
-  // Validate form
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = 'Tên homestay không được để trống';
-    } else if (formData.name.trim().length < 3) {
-      newErrors.name = 'Tên homestay phải có ít nhất 3 ký tự';
-    }
-
-    // Description validation
-    if (!formData.description.trim()) {
-      newErrors.description = 'Mô tả không được để trống';
-    } else if (formData.description.trim().length < 10) {
-      newErrors.description = 'Mô tả phải có ít nhất 10 ký tự';
-    }
-
-    // Price validation
-    if (!formData.pricePerNight.trim()) {
-      newErrors.pricePerNight = 'Giá không được để trống';
-    } else {
-      const price = parseFloat(formData.pricePerNight);
-      if (isNaN(price) || price <= 0) {
-        newErrors.pricePerNight = 'Giá phải là số dương';
-      } else if (price < 50000) {
-        newErrors.pricePerNight = 'Giá phải lớn hơn 50,000 VND';
-      }
-    }
-
-    // Original price validation
-    if (formData.originalPricePerNight.trim()) {
-      const originalPrice = parseFloat(formData.originalPricePerNight);
-      const currentPrice = parseFloat(formData.pricePerNight);
-      if (isNaN(originalPrice) || originalPrice <= 0) {
-        newErrors.originalPricePerNight = 'Giá gốc phải là số dương';
-      } else if (originalPrice < currentPrice) {
-        newErrors.originalPricePerNight = 'Giá gốc phải lớn hơn hoặc bằng giá hiện tại';
-      }
-    }
-
-    // Room count validation
-    if (!formData.roomCount.trim()) {
-      newErrors.roomCount = 'Số phòng không được để trống';
-    } else {
-      const roomCount = parseInt(formData.roomCount);
-      if (isNaN(roomCount) || roomCount <= 0) {
-        newErrors.roomCount = 'Số phòng phải là số nguyên dương';
-      }
-    }
-
-    // Max guests validation
-    if (!formData.maxGuests.trim()) {
-      newErrors.maxGuests = 'Số khách tối đa không được để trống';
-    } else {
-      const maxGuests = parseInt(formData.maxGuests);
-      if (isNaN(maxGuests) || maxGuests <= 0) {
-        newErrors.maxGuests = 'Số khách tối đa phải là số nguyên dương';
-      }
-    }
-
-    // Bed count validation
-    if (!formData.bedCount.trim()) {
-      newErrors.bedCount = 'Số giường không được để trống';
-    } else {
-      const bedCount = parseInt(formData.bedCount);
-      if (isNaN(bedCount) || bedCount <= 0) {
-        newErrors.bedCount = 'Số giường phải là số nguyên dương';
-      }
-    }
-
-    // Bathroom count validation
-    if (!formData.bathroomCount.trim()) {
-      newErrors.bathroomCount = 'Số phòng tắm không được để trống';
-    } else {
-      const bathroomCount = parseInt(formData.bathroomCount);
-      if (isNaN(bathroomCount) || bathroomCount <= 0) {
-        newErrors.bathroomCount = 'Số phòng tắm phải là số nguyên dương';
-      }
-    }
-
-    // Location validation
-    if (!formData.location.address.trim()) {
-      newErrors.address = 'Địa chỉ không được để trống';
-    }
-    if (!formData.location.district.trim()) {
-      newErrors.district = 'Quận/Huyện không được để trống';
-    }
-    if (!formData.location.city.trim()) {
-      newErrors.city = 'Thành phố không được để trống';
-    }
-    if (!formData.location.province.trim()) {
-      newErrors.province = 'Tỉnh/Thành phố không được để trống';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const cleanData = (input) => {
-    if (typeof input === 'string') {
-      return input
-        .replace(/[\u200B-\u200D\uFEFF]/g, '')         // zero-width chars
-        .replace(/[""]/g, '"')                         // smart double quotes
-        .replace(/['']/g, "'")                         // smart single quotes
-        .replace(/\u00A0/g, ' ')                       // non-breaking space
-        .trim();
-    }
-
-    if (Array.isArray(input)) {
-      return input.map(item => cleanData(item));
-    }
-
-    if (typeof input === 'object' && input !== null) {
-      const cleaned = {};
-      for (const key in input) {
-        cleaned[key] = cleanData(input[key]);
-      }
-      return cleaned;
-    }
-
-    return input;
-  };
+  }, [updateError, visible, dispatch]);
 
   // Handle form submission
   const handleSubmit = () => {
-    if (!validateForm()) {
+    const { errors: validationErrors, isValid } = validateHomestayForm(formData);
+    
+    if (!isValid) {
+      setErrors(validationErrors);
       Alert.alert('Lỗi', 'Vui lòng kiểm tra lại thông tin đã nhập');
       return;
     }
@@ -320,7 +196,7 @@ export default function HomestayUpdateModal({
       ? formData.availableDates.split(',').map(date => date.trim()).filter(date => date)
       : [];
 
-    const rawData = {
+    const updateData = {
       name: formData.name,
       pricePerNight: parseInt(formData.pricePerNight),
       originalPricePerNight: parseInt(formData.originalPricePerNight) || parseInt(formData.pricePerNight),
@@ -351,15 +227,6 @@ export default function HomestayUpdateModal({
       amenities: formData.amenities,
       policies: formData.policies
     };
-
-    const updateData = cleanData(rawData);
-
-    console.log('===================================');
-    console.log('🚀 Chuẩn bị PUT request:');
-    console.log('📋 Homestay ID:', homestay.id);
-    console.log('📋 Update payload:', JSON.stringify(updateData, null, 2));
-    console.log('📋 Request URL sẽ là: PUT /v1/stay-cation/' + homestay.id);
-    console.log('===================================');
 
     dispatch(updateStaycationById({
       homeStayId: homestay.id,
@@ -399,29 +266,21 @@ export default function HomestayUpdateModal({
   const handleClose = () => {
     if (updating) return;
     
-    // Check if form has changes (simplified check)
-    const hasChanges = true; // You can implement detailed change detection if needed
-
-    if (hasChanges) {
-      Alert.alert(
-        'Xác nhận',
-        'Bạn có thay đổi chưa được lưu. Bạn có muốn thoát không?',
-        [
-          { text: 'Ở lại', style: 'cancel' },
-          { 
-            text: 'Thoát', 
-            style: 'destructive',
-            onPress: () => {
-              dispatch(resetUpdateState());
-              onClose();
-            }
+    Alert.alert(
+      'Xác nhận',
+      'Bạn có thay đổi chưa được lưu. Bạn có muốn thoát không?',
+      [
+        { text: 'Ở lại', style: 'cancel' },
+        { 
+          text: 'Thoát', 
+          style: 'destructive',
+          onPress: () => {
+            dispatch(resetUpdateState());
+            onClose();
           }
-        ]
-      );
-    } else {
-      dispatch(resetUpdateState());
-      onClose();
-    }
+        }
+      ]
+    );
   };
 
   const renderInput = (label, field, placeholder, options = {}) => {
@@ -483,7 +342,7 @@ export default function HomestayUpdateModal({
     <Modal
       visible={visible}
       animationType="slide"
-      presentationStyle="pageSheet"
+      presentationStyle="fullScreen"
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView 
@@ -535,7 +394,13 @@ export default function HomestayUpdateModal({
             
             {renderInput('Loại phòng', 'roomType', 'Standard, Deluxe, Suite, ...')}
             
-            {renderInput('Hình ảnh URL', 'image', 'https://example.com/image.jpg')}
+            {/* Upload Image Component */}
+            <View style={styles.uploadSection}>
+              <Text style={styles.inputLabel}>Hình ảnh homestay</Text>
+              <UploadImage homestayId={homestay.id} />
+            </View>
+            
+            {renderInput('Hình ảnh URL (tùy chọn)', 'image', 'https://example.com/image.jpg')}
             
             {renderInput('Video tour URL', 'videoTourUrl', 'https://example.com/video.mp4')}
           </View>
@@ -760,6 +625,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#ef4444',
     marginTop: 4,
+  },
+  uploadSection: {
+    marginBottom: 16,
   },
   switchContainer: {
     flexDirection: 'row',

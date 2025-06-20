@@ -4,45 +4,50 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Modal,
   ScrollView,
   ActivityIndicator,
   Image,
   Alert,
-  Pressable 
+  SafeAreaView,
+  StatusBar
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
 import { getFullLocation } from '../../../utils/textUtils'; 
-import HomestayUpdateModal from './HomestayUpdateModal';
+import HomestayUpdateModal from '../../../components/Modal/HomestayDetail/HomestayUpdateModal';
 
-export default function HomestayDetailModal({ 
-  visible, 
-  onClose, 
-  homestayId,
+export default function HostHomestayDetailScreen({ 
+  route,
+  navigation,
   formatCurrency 
 }) {
   const dispatch = useDispatch();
+  const { homestayId } = route.params;
   
   const {
     selectedHomestay,
     fetchingById,
     fetchByIdError
   } = useSelector(state => state.homestay);
-   const [showUpdateModal, setShowUpdateModal] = useState(false);
-
   
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
   useEffect(() => {
-    if (visible && homestayId) {
+    if (homestayId) {
       dispatch(fetchHomestayById(homestayId));
     }
-  }, [visible, homestayId, dispatch]);
+  }, [homestayId, dispatch]);
 
   // Handle retry
   const handleRetry = () => {
     if (homestayId) {
       dispatch(fetchHomestayById(homestayId));
     }
+  };
+
+  // Handle back navigation
+  const handleGoBack = () => {
+    navigation.goBack();
   };
 
   // Handle toggle status
@@ -69,10 +74,9 @@ export default function HomestayDetailModal({
     );
   };
 
- // Handle edit - Navigate to update modal
+  // Handle edit - Navigate to update modal
   const handleEdit = () => {
-      console.log('➡️ Nút chỉnh sửa được nhấn'); // Check có nhấn
-  Alert.alert('Đã nhấn chỉnh sửa');
+    console.log('➡️ Nút chỉnh sửa được nhấn');
     if (!selectedHomestay) {
       Alert.alert('Lỗi', 'Không tìm thấy thông tin homestay để chỉnh sửa');
       return;
@@ -86,9 +90,6 @@ export default function HomestayDetailModal({
       dispatch(fetchHomestayById(homestayId));
     }
   };
-
-
-
 
   const renderLoadingState = () => (
     <View style={styles.centerContainer}>
@@ -237,14 +238,14 @@ export default function HomestayDetailModal({
 
         {/* Action Buttons */}
         <View style={styles.actionSection}>
-<TouchableOpacity 
-  style={[styles.actionButton, styles.editButton]}
-  onPress={handleEdit}
-  activeOpacity={0.7}
-  disabled={!selectedHomestay}
->
-  <Text style={styles.editButtonText}>✏️ Chỉnh sửa</Text>
-</TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.editButton]}
+            onPress={handleEdit}
+            activeOpacity={0.7}
+            disabled={!selectedHomestay}
+          >
+            <Text style={styles.editButtonText}>✏️ Chỉnh sửa</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity 
             style={[
@@ -269,29 +270,25 @@ export default function HomestayDetailModal({
   };
 
   return (
-    <>
-      <Modal
-      visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={onClose}
-      >
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Chi tiết Homestay</Text>
-          <TouchableOpacity 
-            style={styles.closeButton}
-            onPress={onClose}
-          >
-            <Text style={styles.closeButtonText}>✕</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Content */}
-        {renderContent()}
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={handleGoBack}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Chi tiết Homestay</Text>
+        <View style={styles.headerRight} />
       </View>
-    </Modal>
+
+      {/* Content */}
+      {renderContent()}
+
+      {/* Update Modal */}
       <HomestayUpdateModal
         visible={showUpdateModal}
         onClose={() => setShowUpdateModal(false)}
@@ -299,10 +296,7 @@ export default function HomestayDetailModal({
         onUpdateSuccess={handleUpdateSuccess}
       />
       {console.log('📦 showUpdateModal:', showUpdateModal)}
-    </>
-
-
-    
+    </SafeAreaView>
   );
 }
 
@@ -317,7 +311,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingTop: 60,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
@@ -334,8 +327,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: '#111827',
+    flex: 1,
+    textAlign: 'center',
   },
-  closeButton: {
+  backButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -343,10 +338,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  closeButtonText: {
-    fontSize: 18,
+  backButtonText: {
+    fontSize: 20,
     color: '#6b7280',
     fontWeight: '500',
+  },
+  headerRight: {
+    width: 32,
+    height: 32,
   },
   content: {
     flex: 1,

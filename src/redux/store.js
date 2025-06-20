@@ -4,9 +4,8 @@ import authReducer from './slices/auth.slice';
 import userReducer from './slices/user.slice'; 
 import hostReducer from './slices/host.slice'; 
 import homestayReducer from './slices/homestay.slice'; 
+import uploadReducer from './slices/upload.slice'; 
 
-
-// import các slice khác nếu cần
 
 const store = configureStore({
   reducer: {
@@ -14,7 +13,8 @@ const store = configureStore({
     user: userReducer, 
     host: hostReducer,
     homestay: homestayReducer,
-    // ...other reducers
+    upload: uploadReducer, 
+    
   },
 });
 
