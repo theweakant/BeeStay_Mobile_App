@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Image } from 'react-native';
-// ✅ THAY ĐỔI: Import Expo ImagePicker thay vì react-native-image-picker
 import * as ImagePicker from 'expo-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserAvatarByAccount } from '../redux/slices/user.slice';
@@ -28,7 +27,7 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
-                aspect: [1, 1], // Square aspect ratio
+                aspect: [1, 1],
                 quality: 0.8,
                 base64: false,
             });
