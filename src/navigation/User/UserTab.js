@@ -38,7 +38,7 @@ export default function UserTabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Booking"
+        name="OrderBooking"
         component={OrderBookingScreen}
         options={{
           tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,

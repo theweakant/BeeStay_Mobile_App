@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import InfoCard from '../../components/Card/InfoCard';
 import SearchBar from '../../components/SearchBar';
 import BannerCarousel from '../../components/BannerCarousel';
-import TabSelector from '../../components/TabSelector';
 import Loading from '../../components/StateScreen/Loading';
 import Error from '../../components/StateScreen/Error';
 import { fetchAllHomestays } from '../../redux/slices/homestay.slice';
@@ -59,9 +58,9 @@ const HomeScreen = () => {
   };
 
   // Handle card press
-  const handleCardPress = (item) => {
-    navigation.navigate('Detail', { item });
-  };
+const handleCardPress = (item) => {
+  navigation.navigate('Booking', { homestayId: item.id });
+};
 
   // Handle search
   const handleSearch = (text) => {
