@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateStaycationById, resetUpdateState } from '../../../redux/slices/homestay.slice';
 import { validateHomestayForm } from '../../../helper/validate';
 import UploadImage from '../../../components/UploadImage'; 
+import  UploadVideo from '../../../components/UploadVideo';
 
 export default function HomestayUpdateModal({ 
   visible, 
@@ -402,6 +403,10 @@ export default function HomestayUpdateModal({
             
             {renderInput('Hình ảnh URL (tùy chọn)', 'image', 'https://example.com/image.jpg')}
             
+                      <View style={styles.uploadSection}>
+            <Text style={styles.inputLabel}>Video homestay</Text>
+            <UploadVideo homestayId={homestay.id} />
+          </View>
             {renderInput('Video tour URL', 'videoTourUrl', 'https://example.com/video.mp4')}
           </View>
 

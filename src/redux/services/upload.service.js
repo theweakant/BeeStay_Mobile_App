@@ -31,3 +31,33 @@ export const uploadImageByHomestayId = async (homestayId, imageFiles) => {
     throw error;
   }
 };
+
+export const uploadVideoByHomestayId = async (homestayId, videoFiles) => {
+  try {
+    const formData = new FormData();
+    
+    // Thêm các file video vào FormData
+    if (Array.isArray(videoFiles)) {
+      videoFiles.forEach((file, index) => {
+        formData.append('video', file);
+      });
+    } else {
+      formData.append('video', videoFiles);
+    }
+
+    const response = await apiClient.put(
+      HomestayEndpoints.addStayCationVideo(homestayId),
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error("🔴 uploadVideoByHomestayId API error:", error);
+    throw error;
+  }
+};
