@@ -124,7 +124,6 @@ export default function BookingScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BookingHeader onBack={() => navigation.goBack()} title="Chi tiết homestay" styles={styles} />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <BookingImages 
           hotelImages={hotelImages} 
