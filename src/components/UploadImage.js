@@ -13,20 +13,20 @@ import * as ImagePicker from 'expo-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   uploadHomestayImage,
-  selectIsUploading,
-  selectUploadProgress,
-  selectUploadError,
-  selectUploadSuccess,
-  clearUploadState
+  selectIsUploadingImage,
+  selectImageUploadProgress,
+  selectImageUploadError,
+  selectImageUploadSuccess,
+  clearImageUploadState
 } from '../redux/slices/upload.slice';
 
 export default function UploadImage({ homestayId }) {
   const dispatch = useDispatch();
 
-  const isUploading = useSelector(selectIsUploading);
-  const uploadProgress = useSelector(selectUploadProgress);
-  const uploadError = useSelector(selectUploadError);
-  const uploadSuccess = useSelector(selectUploadSuccess);
+  const isUploading = useSelector(selectIsUploadingImage);
+  const uploadProgress = useSelector(selectImageUploadProgress);
+  const uploadError = useSelector(selectImageUploadError);
+  const uploadSuccess = useSelector(selectImageUploadSuccess);
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUris, setPreviewUris] = useState([]);

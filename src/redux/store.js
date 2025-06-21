@@ -4,7 +4,7 @@ import authReducer from './slices/auth.slice';
 import userReducer from './slices/user.slice'; 
 import hostReducer from './slices/host.slice'; 
 import homestayReducer from './slices/homestay.slice'; 
-import  uploadReducer from './slices/upload.slice';
+import uploadReducer from './slices/upload.slice';
 // import imageUploadReducer from './slices/imageUpload.slice'; 
 // import videoUploadReducer from './slices/videoUpload.slice'; 
 

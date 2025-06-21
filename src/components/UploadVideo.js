@@ -24,7 +24,12 @@ import {
 } from '../redux/slices/upload.slice';
 
 const { width } = Dimensions.get('window');
-console.log('selectIsUploadingVideo', selectIsUploadingVideo);
+console.log('All selectors:', {
+  selectIsUploadingVideo,
+  selectVideoUploadProgress,
+  selectVideoUploadError,
+  selectVideoUploadSuccess
+});
 export default function UploadVideo({ homestayId }) {
   const dispatch = useDispatch();
 

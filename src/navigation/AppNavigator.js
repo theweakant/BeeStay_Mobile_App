@@ -9,7 +9,7 @@ import UserStack from './User/UserStack';
 import HostStack from './Host/HostStack'; 
 import AuthStack from './AuthStack';
 
-const AppNavigator = () => {
+const  AppNavigator = () => {
   const dispatch = useDispatch();
   const { user, role, isAuthenticated, loading } = useAuth();
 
