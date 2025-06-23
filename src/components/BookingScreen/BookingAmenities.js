@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const BookingAmenities = ({ amenities, styles }) => (
+const BookingAmenities = ({ amenities }) => (
   amenities.length > 0 && (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>Tiện ích homestay</Text>
@@ -19,5 +19,32 @@ const BookingAmenities = ({ amenities, styles }) => (
     </View>
   )
 );
+
+const styles = StyleSheet.create({
+  sectionContainer: {
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  amenitiesGrid: {
+    // Add any grid-specific styles if needed
+  },
+  amenityItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  amenityText: {
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
+  },
+});
 
 export default BookingAmenities;

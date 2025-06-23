@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-const BookingDescription = ({ description, styles }) => (
+const BookingDescription = ({ description }) => (
   description && (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>Mô tả</Text>
@@ -11,3 +11,23 @@ const BookingDescription = ({ description, styles }) => (
 );
 
 export default BookingDescription;
+
+const styles = StyleSheet.create({
+  sectionContainer: {
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  policyText: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+    marginBottom: 3,
+  },
+});
+

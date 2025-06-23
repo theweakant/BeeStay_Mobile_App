@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-const BookingPolicies = ({ homestayPolicies, policyData, styles }) => (
+const BookingPolicies = ({ homestayPolicies, policyData }) => (
   <View style={styles.sectionContainer}>
     <Text style={styles.sectionTitle}>Quy định</Text>
     {homestayPolicies && (
@@ -30,3 +30,31 @@ const BookingPolicies = ({ homestayPolicies, policyData, styles }) => (
 );
 
 export default BookingPolicies;
+
+const styles = StyleSheet.create({
+  sectionContainer: {
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  policyItem: {
+    marginBottom: 20,
+  },
+  policyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  policyText: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+    marginBottom: 3,
+  },
+});
+

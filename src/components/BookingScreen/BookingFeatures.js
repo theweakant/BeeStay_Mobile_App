@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const BookingFeatures = ({ features, styles }) => (
+const BookingFeatures = ({ features }) => (
   features && features.length > 0 && (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>Đặc điểm</Text>
@@ -15,5 +15,28 @@ const BookingFeatures = ({ features, styles }) => (
     </View>
   )
 );
+
+const styles = StyleSheet.create({
+  sectionContainer: {
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  featureText: {
+    fontSize: 14,
+    color: '#333',
+    marginLeft: 8,
+  },
+});
 
 export default BookingFeatures;

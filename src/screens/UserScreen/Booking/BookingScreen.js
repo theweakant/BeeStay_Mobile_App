@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ActivityIndicator, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView, ActivityIndicator, Text, View, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
@@ -7,7 +7,6 @@ import { convertToHotelImages, formatPrice, getStarRating } from '../../../utils
 import { openGoogleMaps } from '../../../utils/mapUtil';
 import { PolicyData } from '../../../data/MockData';
 // BookingScreen components
-import BookingHeader from '../../../components/BookingScreen/BookingHeader';
 import BookingImages from '../../../components/BookingScreen/BookingImages';
 import BookingInfo from '../../../components/BookingScreen/BookingInfo';
 import BookingPriceSection from '../../../components/BookingScreen/BookingPriceSection';
@@ -16,7 +15,6 @@ import BookingFeatures from '../../../components/BookingScreen/BookingFeatures';
 import BookingDescription from '../../../components/BookingScreen/BookingDescription';
 import BookingHostInfo from '../../../components/BookingScreen/BookingHostInfo';
 import BookingPolicies from '../../../components/BookingScreen/BookingPolicies';
-import styles from './BookingScreen.styles'; // If you have a separate styles file, otherwise keep the styles object below
 
 export default function BookingScreen() {
   const navigation = useNavigation();
@@ -67,6 +65,7 @@ export default function BookingScreen() {
       </SafeAreaView>
     );
   }
+
   if (error) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -83,6 +82,7 @@ export default function BookingScreen() {
       </SafeAreaView>
     );
   }
+
   if (!homestayData) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -102,14 +102,17 @@ export default function BookingScreen() {
   const hotelImages = convertToHotelImages(homestayData.imageList || []);
   const amenities = getAmenitiesArray(homestayData.amenities || {});
   const starRating = getStarRating(homestayData.averageRating || 0);
+  
   const locationRender = (location) => {
     if (!location) return 'Chưa có thông tin địa chỉ';
     return `${location.address || ''}, ${location.district || ''}, ${location.city || ''}, ${location.province || ''}`;
   };
+
   const handleMapPress = () => {
     const fullAddress = locationRender(homestayData.location);
     openGoogleMaps(fullAddress);
   };
+
   const renderThumbnail = ({ item, index }) => (
     <TouchableOpacity 
       style={[styles.thumbnailContainer, selectedImageIndex === index && styles.selectedThumbnail]} 
@@ -118,6 +121,7 @@ export default function BookingScreen() {
       <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
     </TouchableOpacity>
   );
+
   const handleChooseRoom = () => {
     navigation.navigate('CheckOut', { homestayId: homestayData.id });
   };
@@ -129,28 +133,108 @@ export default function BookingScreen() {
           hotelImages={hotelImages} 
           selectedImageIndex={selectedImageIndex} 
           setSelectedImageIndex={setSelectedImageIndex} 
-          styles={styles} 
           renderThumbnail={renderThumbnail}
         />
         <BookingInfo 
           homestayData={homestayData} 
           starRating={starRating} 
-          styles={styles} 
           locationRender={locationRender} 
           handleMapPress={handleMapPress}
         />
         <BookingPriceSection 
           homestayData={homestayData} 
-          styles={styles} 
           onChooseRoom={handleChooseRoom}
         />
-        <BookingAmenities amenities={amenities} styles={styles} />
-        <BookingFeatures features={homestayData.features} styles={styles} />
-        <BookingDescription description={homestayData.description} styles={styles} />
-        <BookingHostInfo host={homestayData.host} styles={styles} />
-        <BookingPolicies homestayPolicies={homestayData.policies} policyData={PolicyData} styles={styles} />
+        <BookingAmenities amenities={amenities} />
+        <BookingFeatures features={homestayData.features} />
+        <BookingDescription description={homestayData.description} />
+        <BookingHostInfo host={homestayData.host} />
+        <BookingPolicies homestayPolicies={homestayData.policies} policyData={PolicyData} />
         <View style={styles.bottomPadding} />
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  // Main container styles
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+
+  // Loading states
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666666',
+    textAlign: 'center',
+  },
+
+  // Error states
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FF3B30',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  errorSubText: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  // Image gallery styles (only what's used in this component)
+  thumbnailContainer: {
+    width: 60,
+    height: 40,
+    marginHorizontal: 4,
+    borderRadius: 4,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  selectedThumbnail: {
+    borderColor: '#007AFF',
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+
+  // General styles
+  bottomPadding: {
+    height: 20,
+  },
+});
