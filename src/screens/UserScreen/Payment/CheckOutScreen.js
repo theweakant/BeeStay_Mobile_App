@@ -1,111 +1,113 @@
-// components/CheckOutScreen/index.js
-import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Alert, Text, View, Image } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import RoomImageSection from '../../../components/CheckOutScreen/RoomImageSection';
-import RoomDetailsSection from '../../../components/CheckOutScreen/RoomDetailsSection';
-import QuantitySelector from '../../../components/CheckOutScreen/QuantitySelector';
-import BookingDetailsSection from '../../../components/CheckOutScreen/BookingDetailsSection';
+import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
+import { fetchUserByAccount } from '../../../redux/slices/user.slice';
+import { fetchCreateBooking } from '../../../redux/slices/booking.slice';
+import { useAuth } from '../../../redux/hooks/useAuth';
+
 import GuestInfoSection from '../../../components/CheckOutScreen/GuestInfoSection';
 import PaymentMethodSection from '../../../components/CheckOutScreen/PaymentMethodSection';
 import CheckoutFooter from '../../../components/CheckOutScreen/CheckoutFooter';
 
 export default function CheckOutScreen() {
   const navigation = useNavigation();
-  
-  // State management
-  const [roomQuantity, setRoomQuantity] = useState(1);
-  const [phoneNumber, setPhoneNumber] = useState('+84 123456789');
-  const [guestName, setGuestName] = useState('Palm Thanh Toàn');
-  
-  // Room data - có thể được truyền từ API
-  const roomData = {
-    imageUrl: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    type: 'PHÒNG CƠ BẢN',
-    amenities: 'Giường đôi + cửa sổ + tivi + điều hòa + quạt trần',
-    price: 129000
-  };
+  const route = useRoute();
+  const dispatch = useDispatch();
+  const { user: authUser } = useAuth();
 
-  // Booking data - có thể được truyền từ API
-  const bookingData = {
-    type: 'Theo giờ | 03 giờ',
-    checkIn: '14:00, 20/03',
-    checkOut: '17:00, 20/03'
-  };
-  
-  const totalPrice = roomData.price * roomQuantity;
-  
-  // Handlers
-  const handleQuantityChange = (newQuantity) => {
-    setRoomQuantity(newQuantity);
-  };
-  
-  const handlePhoneNumberChange = (phone) => {
-    setPhoneNumber(phone);
-  };
-  
-  const handleGuestNameChange = (name) => {
-    setGuestName(name);
-  };
-  
-  const handleChangeBooking = () => {
-    navigation.navigate('PickTime');
-  };
-  
-  const handlePaymentMethod = () => {
-    navigation.navigate('PaymentMethod');
-  };
-  
+  const homestayId = route.params?.homestayId;
+  const accountId = authUser?.id;
+
+  const { homestay, loading: homestayLoading } = useSelector(state => state.homestay);
+  const { user } = useSelector(state => state.user);
+
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('CASH');
+
+  useEffect(() => {
+    if (accountId) dispatch(fetchUserByAccount(accountId));
+    if (homestayId) dispatch(fetchHomestayById(homestayId));
+  }, [accountId, homestayId]);
+
+  useEffect(() => {
+    if (user) {
+      setPhoneNumber(user.phone || '');
+      setGuestName(user.name || '');
+    }
+  }, [user]);
+
   const handleBooking = () => {
-    // Call API để đặt phòng
+    if (!accountId || !homestayId) {
+      Alert.alert('Lỗi', 'Thiếu thông tin người dùng hoặc homestay.');
+      return;
+    }
+
     const bookingRequest = {
-      roomQuantity,
+      accountId,
+      homestayId,
       phoneNumber,
-      guestName,
-      totalPrice,
-      ...bookingData
+      fullName: guestName,
+      checkIn: '2025-06-25T14:00:00',
+      checkOut: '2025-06-25T17:00:00',
+      paymentMethod,
+      totalPrice: homestay?.pricePerNight || 0,
     };
-    console.log('Booking request:', bookingRequest);
-    // API call here
+
+    dispatch(fetchCreateBooking(bookingRequest))
+      .unwrap()
+      .then(() => {
+        Alert.alert('Thành công', 'Đặt phòng thành công!');
+        navigation.navigate('SuccessScreen');
+      })
+      .catch((error) => {
+        Alert.alert('Lỗi', error || 'Đặt phòng thất bại!');
+      });
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <RoomImageSection imageUrl={roomData.imageUrl} />
-        
-        <RoomDetailsSection 
-          roomType={roomData.type}
-          amenities={roomData.amenities}
-        />
-        
-        <QuantitySelector
-          quantity={roomQuantity}
-          onQuantityChange={handleQuantityChange}
-        />
-        
-        <BookingDetailsSection
-          bookingType={bookingData.type}
-          checkIn={bookingData.checkIn}
-          checkOut={bookingData.checkOut}
-          onChangeBooking={handleChangeBooking}
-        />
-        
+        {homestayLoading ? (
+          <Text>Đang tải thông tin homestay...</Text>
+        ) : homestay ? (
+          <View style={styles.homestayContainer}>
+            <Image
+              source={{ uri: homestay.imageList[0] }}
+              style={styles.homestayImage}
+            />
+            <Text style={styles.homestayName}>{homestay.name}</Text>
+            <Text>Chủ nhà: {homestay.host?.name}</Text>
+            <Text>Giá/đêm: {homestay.pricePerNight.toLocaleString()} VND</Text>
+            <Text>Địa chỉ: {homestay.location?.address}</Text>
+            <Text>Đánh giá: {homestay.averageRating.toFixed(1)} ({homestay.reviewCount} đánh giá)</Text>
+          </View>
+        ) : (
+          <Text>Không tìm thấy thông tin homestay.</Text>
+        )}
+
         <GuestInfoSection
           phoneNumber={phoneNumber}
           guestName={guestName}
-          onPhoneNumberChange={handlePhoneNumberChange}
-          onGuestNameChange={handleGuestNameChange}
+          onPhoneNumberChange={setPhoneNumber}
+          onGuestNameChange={setGuestName}
+          phonePlaceholder="Số điện thoại (tự động điền)"
+          namePlaceholder="Họ tên (tự động điền)"
         />
-        
-        <PaymentMethodSection onPress={handlePaymentMethod} />
+
+        <PaymentMethodSection
+          selectedMethod={paymentMethod}
+          onSelectMethod={setPaymentMethod}
+          onPress={() => navigation.navigate('PaymentMethod')}
+        />
       </ScrollView>
-      
+
       <CheckoutFooter
-        totalPrice={totalPrice}
+        totalPrice={homestay?.pricePerNight || 0}
         onBooking={handleBooking}
       />
     </SafeAreaView>
@@ -120,5 +122,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',
+  },
+  homestayContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+  },
+  homestayImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  homestayName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
 });

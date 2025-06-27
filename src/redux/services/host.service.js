@@ -1,4 +1,4 @@
-// redux/services/user.service.js
+// redux/services/host.service.js
 import apiClient from '../../api/client';
 import { HostEndpoints } from '../../api/endpoint';
 

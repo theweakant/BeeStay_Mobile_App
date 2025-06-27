@@ -22,12 +22,21 @@ export const HostEndpoints = {
 
 };
 
-export const HomestayEndpoints = {
-  getAllStayCations: '/v1/stay-cation/all', //yy
-  getStayCationByHost: (accountId) => `/v1/stay-cation/get-by-host/${accountId}`,//yy
-  getStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`, //yy
+export const BookinEndpoints = {
+  createBooking: `/api/v1/booking/create`,
+  cancelBooking: (bookingId) => `/api/v1/booking/cancel/${bookingId}`,
 
-  addStayCationByAccountId: (accountId) => `/v1/stay-cation/add/${accountId}`, //yy
+
+};
+
+
+
+export const HomestayEndpoints = {
+  getAllStayCations: '/v1/stay-cation/all', 
+  getStayCationByHost: (accountId) => `/v1/stay-cation/get-by-host/${accountId}`,
+  getStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`, 
+
+  addStayCationByAccountId: (accountId) => `/v1/stay-cation/add/${accountId}`, 
 
   updateStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`,//y
 
