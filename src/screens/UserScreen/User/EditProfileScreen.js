@@ -24,7 +24,7 @@ import {
 
 const EditProfileScreen = ({ route }) => {
   const dispatch = useDispatch();
-  const { user } = useAuth(); // Lấy user từ useAuth hook
+  const { user } = useAuth(); 
   
   // Lấy accountId từ useAuth (ưu tiên) hoặc route params (fallback)
   const accountId = user?.accountId || route.params?.accountId;

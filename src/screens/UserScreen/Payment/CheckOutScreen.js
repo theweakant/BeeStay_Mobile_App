@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Alert, Text, View, Image } from 'react-native';
+import { 
+  SafeAreaView, 
+  ScrollView, 
+  StatusBar, 
+  StyleSheet, 
+  Alert, 
+  Text, 
+  View, 
+  Image, 
+  TextInput 
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,36 +19,41 @@ import { fetchCreateBooking } from '../../../redux/slices/booking.slice';
 import { useAuth } from '../../../redux/hooks/useAuth';
 
 import GuestInfoSection from '../../../components/CheckOutScreen/GuestInfoSection';
-import PaymentMethodSection from '../../../components/CheckOutScreen/PaymentMethodSection';
 import CheckoutFooter from '../../../components/CheckOutScreen/CheckoutFooter';
+import DateTimePickerField from '../../../components/CheckOutScreen/DateTimePickerField';
 
 export default function CheckOutScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  const { user: authUser } = useAuth();
+  const { user } = useAuth(); 
 
+  const accountId = user?.accountId || route.params?.accountId;
   const homestayId = route.params?.homestayId;
-  const accountId = authUser?.id;
 
-  const { homestay, loading: homestayLoading } = useSelector(state => state.homestay);
-  const { user } = useSelector(state => state.user);
+  const { selectedHomestay, fetchingById } = useSelector(state => state.homestay);
+  const { user: userProfile } = useSelector(state => state.user);
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [guestName, setGuestName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('CASH');
+  const [checkInDate, setCheckInDate] = useState(new Date());
+  const [checkOutDate, setCheckOutDate] = useState(new Date());
+
 
   useEffect(() => {
     if (accountId) dispatch(fetchUserByAccount(accountId));
-    if (homestayId) dispatch(fetchHomestayById(homestayId));
+    if (homestayId) {
+      dispatch(fetchHomestayById(homestayId));
+    }
   }, [accountId, homestayId]);
 
   useEffect(() => {
-    if (user) {
-      setPhoneNumber(user.phone || '');
-      setGuestName(user.name || '');
+    if (userProfile) {
+      setPhoneNumber(userProfile.phone || '');
+      setGuestName(userProfile.name || '');
     }
-  }, [user]);
+  }, [userProfile]);
 
   const handleBooking = () => {
     if (!accountId || !homestayId) {
@@ -51,11 +66,13 @@ export default function CheckOutScreen() {
       homestayId,
       phoneNumber,
       fullName: guestName,
-      checkIn: '2025-06-25T14:00:00',
-      checkOut: '2025-06-25T17:00:00',
+      checkIn: checkInDate.toISOString().split('.')[0],
+      checkOut: checkOutDate.toISOString().split('.')[0],
       paymentMethod,
-      totalPrice: homestay?.pricePerNight || 0,
+      totalPrice: selectedHomestay?.pricePerNight || 0,
     };
+
+    console.log('Booking request body:', bookingRequest);
 
     dispatch(fetchCreateBooking(bookingRequest))
       .unwrap()
@@ -72,23 +89,44 @@ export default function CheckOutScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {homestayLoading ? (
+        {fetchingById ? (
           <Text>Đang tải thông tin homestay...</Text>
-        ) : homestay ? (
+        ) : selectedHomestay ? (
           <View style={styles.homestayContainer}>
             <Image
-              source={{ uri: homestay.imageList[0] }}
+              source={{ uri: selectedHomestay.imageList[0] }}
               style={styles.homestayImage}
             />
-            <Text style={styles.homestayName}>{homestay.name}</Text>
-            <Text>Chủ nhà: {homestay.host?.name}</Text>
-            <Text>Giá/đêm: {homestay.pricePerNight.toLocaleString()} VND</Text>
-            <Text>Địa chỉ: {homestay.location?.address}</Text>
-            <Text>Đánh giá: {homestay.averageRating.toFixed(1)} ({homestay.reviewCount} đánh giá)</Text>
+            <Text style={styles.homestayName}>{selectedHomestay.name}</Text>
+            <Text>Chủ nhà: {selectedHomestay.host?.name}</Text>
+            <Text>Giá/đêm: {selectedHomestay.pricePerNight.toLocaleString()} VND</Text>
+            <Text>Địa chỉ: {selectedHomestay.location?.address}</Text>
           </View>
         ) : (
           <Text>Không tìm thấy thông tin homestay.</Text>
         )}
+
+        <DateTimePickerField
+          label="Check-in"
+          value={checkInDate}
+          onChange={setCheckInDate}
+        />
+
+        <DateTimePickerField
+          label="Check-out"
+          value={checkOutDate}
+          onChange={setCheckOutDate}
+        />
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Phương thức thanh toán</Text>
+          <TextInput
+            value={paymentMethod}
+            onChangeText={setPaymentMethod}
+            placeholder="Nhập phương thức thanh toán"
+            style={styles.input}
+          />
+        </View>
 
         <GuestInfoSection
           phoneNumber={phoneNumber}
@@ -98,16 +136,10 @@ export default function CheckOutScreen() {
           phonePlaceholder="Số điện thoại (tự động điền)"
           namePlaceholder="Họ tên (tự động điền)"
         />
-
-        <PaymentMethodSection
-          selectedMethod={paymentMethod}
-          onSelectMethod={setPaymentMethod}
-          onPress={() => navigation.navigate('PaymentMethod')}
-        />
       </ScrollView>
 
       <CheckoutFooter
-        totalPrice={homestay?.pricePerNight || 0}
+        totalPrice={selectedHomestay?.pricePerNight || 0}
         onBooking={handleBooking}
       />
     </SafeAreaView>
@@ -139,5 +171,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 4,
+  },
+  inputContainer: {
+    marginVertical: 8,
+    paddingHorizontal: 16,
+  },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 12,
+    backgroundColor: '#fff',
   },
 });

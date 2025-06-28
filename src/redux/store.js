@@ -17,7 +17,7 @@ const store = configureStore({
     host: hostReducer,
     homestay: homestayReducer,
     upload: uploadReducer, 
-    booking: bookingReducer, // Assuming you have a booking slice
+    booking: bookingReducer, 
     // uploadImage: imageUploadReducer,
     // uploadVideo: videoUploadReducer,
     

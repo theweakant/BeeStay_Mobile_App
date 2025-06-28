@@ -20,7 +20,6 @@ import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
 
 //Payment
 import CheckOutScreen from '../../screens/UserScreen/Payment/CheckOutScreen';
-import PaymentMethodScreen from '../../screens/UserScreen/Payment/PaymentMethodScreen';
 import SuccessPaymentScreen from '../../screens/UserScreen/Payment/SuccessPaymentScreen';
 
 //Information
@@ -139,14 +138,6 @@ export default function UserStackNavigator() {
         component={CheckOutScreen}
         options={{
           title: 'Thanh toán',
-          headerBackTitleVisible: false,
-        }}
-      />
-      <Stack.Screen
-        name="PaymentMethod"
-        component={PaymentMethodScreen}
-        options={{
-          title: 'Phương thức thanh toán',
           headerBackTitleVisible: false,
         }}
       />

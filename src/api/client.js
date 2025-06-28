@@ -4,10 +4,12 @@ import axios from 'axios';
 import { REACT_APP_API_BASE } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const apiClient = axios.create({
   baseURL: REACT_APP_API_BASE,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+  },
   timeout: 15000,
 });
 
@@ -50,7 +52,7 @@ apiClient.interceptors.request.use(
         const token = await AsyncStorage.getItem('token');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
-          if (__DEV__) console.log('✅ Auth token added');
+          if (__DEV__) console.log('✅ Auth token added:', token);
         } else {
           if (__DEV__) console.warn('⚠️ No auth token found for protected endpoint');
         }
@@ -112,6 +114,7 @@ apiClient.interceptors.response.use(
           if (!refreshToken) throw new Error('No refresh token available');
 
           if (__DEV__) console.log('🔄 Attempting to refresh token...');
+          if (__DEV__) console.log('🔑 Refresh token used:', refreshToken);
           
           const refreshResponse = await refreshClient.post(
             '/v1/auth/refresh-token',
@@ -148,9 +151,6 @@ apiClient.interceptors.response.use(
           // Clear tokens
           await AsyncStorage.multiRemove(['token', 'refreshToken', 'accountId']);
           if (__DEV__) console.log('🧹 Cleared all auth tokens');
-
-          // // 🔥 Force logout
-          // store.dispatch(forceLogout());
 
           const authError = new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
           authError.isAuthError = true;

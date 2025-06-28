@@ -5,12 +5,20 @@ import { createBooking, cancelBooking } from '../services/booking.service';
 // Async thunk: Tạo booking
 export const fetchCreateBooking = createAsyncThunk(
   'booking/createBooking',
-  async (bookingData, thunkAPI) => {
+  async (bookingData, { rejectWithValue }) => {
     try {
       const data = await createBooking(bookingData);
       return data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      // Improved error handling
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          error.response?.data || 
+                          error.message || 
+                          'Có lỗi xảy ra khi tạo booking';
+      
+      console.error('❌ fetchCreateBooking error:', errorMessage);
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -18,12 +26,18 @@ export const fetchCreateBooking = createAsyncThunk(
 // Async thunk: Hủy booking
 export const fetchCancelBooking = createAsyncThunk(
   'booking/cancelBooking',
-  async (bookingId, thunkAPI) => {
+  async (bookingId, { rejectWithValue }) => {
     try {
       const data = await cancelBooking(bookingId);
       return data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          error.response?.data || 
+                          error.message || 
+                          'Có lỗi xảy ra khi hủy booking';
+      
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -32,14 +46,23 @@ const bookingSlice = createSlice({
   name: 'booking',
   initialState: {
     booking: null,
+    bookings: [], // Thêm list bookings
     loading: false,
     error: null,
+    success: false, // Thêm success flag
   },
   reducers: {
     clearBooking: (state) => {
       state.booking = null;
       state.loading = false;
       state.error = null;
+      state.success = false;
+    },
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearSuccess: (state) => {
+      state.success = false;
     },
   },
   extraReducers: (builder) => {
@@ -48,14 +71,23 @@ const bookingSlice = createSlice({
       .addCase(fetchCreateBooking.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.success = false;
       })
       .addCase(fetchCreateBooking.fulfilled, (state, action) => {
         state.loading = false;
         state.booking = action.payload;
+        state.success = true;
+        state.error = null;
+        
+        // Thêm booking vào list nếu có
+        if (action.payload && !state.bookings.find(b => b.id === action.payload.id)) {
+          state.bookings.push(action.payload);
+        }
       })
       .addCase(fetchCreateBooking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.success = false;
       })
 
       // cancelBooking
@@ -66,6 +98,14 @@ const bookingSlice = createSlice({
       .addCase(fetchCancelBooking.fulfilled, (state, action) => {
         state.loading = false;
         state.booking = action.payload;
+        
+        // Update booking status in list
+        if (action.payload?.id) {
+          const index = state.bookings.findIndex(b => b.id === action.payload.id);
+          if (index !== -1) {
+            state.bookings[index] = action.payload;
+          }
+        }
       })
       .addCase(fetchCancelBooking.rejected, (state, action) => {
         state.loading = false;
@@ -74,6 +114,6 @@ const bookingSlice = createSlice({
   },
 });
 
-export const { clearBooking } = bookingSlice.actions;
+export const { clearBooking, clearError, clearSuccess } = bookingSlice.actions;
 
 export default bookingSlice.reducer;

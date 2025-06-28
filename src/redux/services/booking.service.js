@@ -1,21 +1,26 @@
 // redux/services/booking.service.js
 import apiClient from '../../api/client';
-import { BookinEndpoints } from '../../api/endpoint';
+import { BookingEndpoints } from '../../api/endpoint';
 
 export const createBooking = async (bookingData) => {
   try {
-    const response = await apiClient.post(BookinEndpoints.createBooking, bookingData);
+    console.log('📤 Sending booking request:', bookingData);
+    const response = await apiClient.post(BookingEndpoints.createBooking, bookingData);
+    console.log('📥 Booking response:', response.data);
     return response.data;
   } catch (error) {
+    console.error('❌ Booking service error:', error);
+    console.error('❌ Error response:', error.response?.data);
     throw error;
   }
 };
 
 export const cancelBooking = async (bookingId) => {
   try {
-    const response = await apiClient.put(BookinEndpoints.cancelBooking(bookingId));
+    const response = await apiClient.delete(`${BookingEndpoints.cancelBooking}/${bookingId}`);
     return response.data;
   } catch (error) {
+    console.error('❌ Cancel booking error:', error);
     throw error;
   }
 };
