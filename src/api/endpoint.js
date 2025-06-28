@@ -23,8 +23,8 @@ export const HostEndpoints = {
 };
 
 export const BookingEndpoints = {
-  createBooking: `/api/v1/booking/create`,
-  cancelBooking: (bookingId) => `/api/v1/booking/cancel/${bookingId}`,
+  createBooking: `/v1/booking/create`,
+  cancelBooking: (bookingId) => `/v1/booking/cancel/${bookingId}`,
 
 
 };

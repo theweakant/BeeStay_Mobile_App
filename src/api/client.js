@@ -8,7 +8,7 @@ const apiClient = axios.create({
   baseURL: REACT_APP_API_BASE,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': '*/*',
+    'Accept': 'application/json',
   },
   timeout: 15000,
 });
@@ -93,7 +93,7 @@ apiClient.interceptors.response.use(
       });
     }
 
-    if ((status === 401 || status === 403) && originalRequest && !originalRequest._retry) {
+    if (status === 401  && originalRequest && !originalRequest._retry) {
       const isPublic = isPublicEndpoint(originalRequest.url);
       if (!isPublic) {
         if (isRefreshing) {

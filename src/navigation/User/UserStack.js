@@ -20,7 +20,7 @@ import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
 
 //Payment
 import CheckOutScreen from '../../screens/UserScreen/Payment/CheckOutScreen';
-import SuccessPaymentScreen from '../../screens/UserScreen/Payment/SuccessPaymentScreen';
+import SuccessScreen from '../../screens/UserScreen/Payment/SuccessScreen';
 
 //Information
 import ContactScreen from '../../screens/UserScreen/Infomation/ContactScreen';
@@ -142,8 +142,8 @@ export default function UserStackNavigator() {
         }}
       />
       <Stack.Screen
-        name="SuccessPayment"
-        component={SuccessPaymentScreen}
+        name="SuccessScreen "
+        component={SuccessScreen}
         options={{
           title: 'Thanh toán thành công',
           headerBackTitleVisible: false,

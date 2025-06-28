@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function SuccessPaymentScreen() {
+export default function SuccessScreen() {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>SuccessPaymentScreen</Text>
+            <Text style={styles.title}>SuccessScreen</Text>
             {/* Add your dashboard components here */}
         </View>
     );
