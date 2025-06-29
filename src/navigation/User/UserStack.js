@@ -11,6 +11,7 @@ import ProfileScreen  from '../../screens/UserScreen/User/ProfileScreen';
 import ReviewScreen from '../../screens/UserScreen/User/ReviewScreen';
 import FavoriteScreen from '../../screens/UserScreen/User/FavoriteScreen';
 import MyOrderScreen from '../../screens/UserScreen/User/MyOrderScreen';
+import BookingDetailScreen from '../../screens/UserScreen/Booking/BookingDetailScreen';
 
 import DetailScreen from '../../screens/UserScreen/DetailScreen';
 
@@ -26,7 +27,7 @@ import SuccessScreen from '../../screens/UserScreen/Payment/SuccessScreen';
 import ContactScreen from '../../screens/UserScreen/Infomation/ContactScreen';
 import PolicyScreen from '../../screens/UserScreen/Infomation/PolicyScreen';
 import QAScreen from '../../screens/UserScreen/Infomation/QAScreen';
-import { Check } from 'lucide-react-native';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -97,6 +98,14 @@ export default function UserStackNavigator() {
           headerBackTitleVisible: false,
         }}
       />
+      <Stack.Screen
+        name="BookingDetail"
+        component={BookingDetailScreen}
+        options={{
+          title: 'Đơn hàng chi tiết của tôi',
+          headerBackTitleVisible: false,
+        }}
+      />
         
       <Stack.Screen
         name="Notifications"
@@ -149,6 +158,8 @@ export default function UserStackNavigator() {
           headerBackTitleVisible: false,
         }}
       />
+
+
 
 
       <Stack.Screen

@@ -58,14 +58,14 @@ const HomeScreen = () => {
   };
 
   // Handle card press
-const handleCardPress = (item) => {
-  navigation.navigate('Booking', { homestayId: item.id });
-};
+  const handleCardPress = (item) => {
+    navigation.navigate('Booking', { homestayId: item.id });
+  };
 
   // Handle search
   const handleSearch = (text) => {
     console.log('Search text:', text);
-    // Implement search logic here
+
   };
 
   // Handle banner press
@@ -77,6 +77,11 @@ const handleCardPress = (item) => {
       console.log('Navigate to:', banner.link);
     }
   };
+
+  const handleViewAllPress = () => {
+    navigation.navigate('Search');
+  };
+
 
 
 
@@ -147,7 +152,7 @@ const handleCardPress = (item) => {
               <FontAwesome name="bolt" size={18} color="#FF6B00" />
               <Text style={styles.sectionTitle}>Flash Sale</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleViewAllPress}>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
           </View>
@@ -173,16 +178,12 @@ const handleCardPress = (item) => {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Availables</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleViewAllPress}>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
           </View>
 
-          {/* <TabSelector 
-            tabs={tabOptions}
-            activeTabIndex={availableActiveTab}
-            onTabPress={handleAvailableTabPress}
-          /> */}
+
 
           <ScrollView
             horizontal
@@ -203,7 +204,7 @@ const handleCardPress = (item) => {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Homestay mới</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleViewAllPress}>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
           </View>

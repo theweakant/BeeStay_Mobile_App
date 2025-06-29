@@ -115,6 +115,6 @@ const styles = StyleSheet.create({
   },
   navActiveText: {
     fontSize: 12,
-    color: "#facc15", // yellow-500
+    color: "#facc15",
   },
 })

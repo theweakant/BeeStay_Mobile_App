@@ -52,7 +52,7 @@ apiClient.interceptors.request.use(
         const token = await AsyncStorage.getItem('token');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
-          if (__DEV__) console.log('✅ Auth token added:', token);
+          if (__DEV__) console.log('✅ Token added', token);
         } else {
           if (__DEV__) console.warn('⚠️ No auth token found for protected endpoint');
         }

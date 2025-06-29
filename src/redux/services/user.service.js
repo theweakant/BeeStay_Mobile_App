@@ -25,13 +25,24 @@ export const updateUserByAccount = async (accountId, userData) => {
 export const updateUserAvatar = async (accountId, imageData) => {
   try {
     const formData = new FormData();
-    formData.append('image', imageData); // imageData phải là File object
+    formData.append('image', imageData); 
     
     const response = await apiClient.put(UserEndpoints.updateUserAvatar(accountId), formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+export const getBooking = async (accountId) => {
+  try {
+    const response = await apiClient.get(UserEndpoints.getBooking(accountId));
     return response.data;
   } catch (error) {
     throw error;

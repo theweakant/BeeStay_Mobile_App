@@ -1,6 +1,6 @@
 // redux/slices/user.slice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserByAccount, updateUserByAccount, updateUserAvatar } from '../services/user.service';
+import { getUserByAccount, updateUserByAccount, updateUserAvatar, getBooking } from '../services/user.service';
 
 // Async thunk for fetching user by account ID
 export const fetchUserByAccount = createAsyncThunk(
@@ -53,6 +53,22 @@ export const updateUserAvatarByAccount = createAsyncThunk(
   }
 );
 
+export const fetchUserBooking = createAsyncThunk(
+  'user/fetchUserBooking',
+  async (accountId, { rejectWithValue }) => {
+    try {
+      const data = await getBooking(accountId);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 
+        error.message || 
+        'Có lỗi xảy ra khi tải booking của người dùng'
+      );
+    }
+  }
+);
+
 // Initial state
 const initialState = {
   profile: null,
@@ -62,6 +78,11 @@ const initialState = {
   updateError: null,
   avatarUpdateLoading: false,
   avatarUpdateError: null,
+
+  //booking
+  booking: null,
+  bookingLoading: false,
+  bookingError: null,
 };
 
 const userSlice = createSlice({
@@ -145,6 +166,22 @@ const userSlice = createSlice({
       .addCase(updateUserAvatarByAccount.rejected, (state, action) => {
         state.avatarUpdateLoading = false;
         state.avatarUpdateError = action.payload;
+      })
+
+      // Fetch user booking
+      .addCase(fetchUserBooking.pending, (state) => {
+        state.bookingLoading = true;
+        state.bookingError = null;
+      })
+      .addCase(fetchUserBooking.fulfilled, (state, action) => {
+        state.bookingLoading = false;
+        state.booking = action.payload;
+        state.bookingError = null;
+      })
+      .addCase(fetchUserBooking.rejected, (state, action) => {
+        state.bookingLoading = false;
+        state.bookingError = action.payload;
+        state.booking = null;
       });
   },
 });
@@ -170,6 +207,11 @@ export const selectUpdateError = (state) => state.user.updateError;
 // updateUserAvatarByAccount
 export const selectAvatarUpdateLoading = (state) => state.user.avatarUpdateLoading;
 export const selectAvatarUpdateError = (state) => state.user.avatarUpdateError;
+
+// fetchUserBooking
+export const selectUserBooking = (state) => state.user.booking;
+export const selectBookingLoading = (state) => state.user.bookingLoading;
+export const selectBookingError = (state) => state.user.bookingError;
 
 // Export reducer
 export default userSlice.reducer;

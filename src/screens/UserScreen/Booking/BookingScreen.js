@@ -6,6 +6,7 @@ import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
 import { convertToHotelImages, formatPrice, getStarRating } from '../../../utils/bookingUtils';
 import { openGoogleMaps } from '../../../utils/mapUtil';
 import { PolicyData } from '../../../data/MockData';
+
 // BookingScreen components
 import BookingImages from '../../../components/BookingScreen/BookingImages';
 import BookingInfo from '../../../components/BookingScreen/BookingInfo';

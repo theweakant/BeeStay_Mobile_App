@@ -12,6 +12,8 @@ export const UserEndpoints = {
   updateUserByAccount: (accountId) => `/v1/user/update/${accountId}`, 
   updateUserAvatar: (accountId) => `/v1/user/update-avatar/${accountId}`,
 
+  getBooking: (accountId) => `/v1/user/booking?accountId=${accountId}`,
+
 };
 
 export const HostEndpoints = {
@@ -19,7 +21,7 @@ export const HostEndpoints = {
   updateAccountHost: (accountId) => `/v1/host/update/${accountId}`,
   updateAvatarHost: (accountId) => `/v1/host/update-avatar/${accountId}`,
 
-
+  checkInBooking: (bookingId) => `/v1/host/booking/check-in/${bookingId}`,
 };
 
 export const BookingEndpoints = {

@@ -1,8 +1,7 @@
 // redux/slices/booking.slice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createBooking, cancelBooking } from '../services/booking.service';
+import { createBooking, cancelBooking, checkInBooking } from '../services/booking.service';
 
-// Async thunk: Tạo booking
 export const fetchCreateBooking = createAsyncThunk(
   'booking/createBooking',
   async (bookingData, { rejectWithValue }) => {
@@ -23,7 +22,6 @@ export const fetchCreateBooking = createAsyncThunk(
   }
 );
 
-// Async thunk: Hủy booking
 export const fetchCancelBooking = createAsyncThunk(
   'booking/cancelBooking',
   async (bookingId, { rejectWithValue }) => {
@@ -42,14 +40,33 @@ export const fetchCancelBooking = createAsyncThunk(
   }
 );
 
+
+export const fetchCheckInBooking = createAsyncThunk(
+  'booking/checkInBooking',
+  async (bookingId, { rejectWithValue }) => {
+    try {
+      const data = await checkInBooking(bookingId);
+      return data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.error ||
+                          error.response?.data ||
+                          error.message ||
+                          'Có lỗi xảy ra khi check-in booking';
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+
 const bookingSlice = createSlice({
   name: 'booking',
   initialState: {
     booking: null,
-    bookings: [], // Thêm list bookings
+    bookings: [], 
     loading: false,
     error: null,
-    success: false, // Thêm success flag
+    success: false, 
   },
   reducers: {
     clearBooking: (state) => {
@@ -108,6 +125,29 @@ const bookingSlice = createSlice({
         }
       })
       .addCase(fetchCancelBooking.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+
+      // checkInBooking
+      .addCase(fetchCheckInBooking.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCheckInBooking.fulfilled, (state, action) => {
+        state.loading = false;
+        state.booking = action.payload;
+        
+        // Update booking in list if needed
+        const updatedBooking = action.payload;
+        const index = state.bookings.findIndex(b => b.id === updatedBooking.id);
+        if (index !== -1) {
+          state.bookings[index] = updatedBooking;
+        }
+
+      })
+      .addCase(fetchCheckInBooking.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

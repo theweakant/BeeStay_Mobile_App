@@ -24,3 +24,14 @@ export const cancelBooking = async (bookingId) => {
     throw error;
   }
 };
+
+
+export const checkInBooking = async (bookingId) => {
+  try {
+    const response = await apiClient.put(BookingEndpoints.checkInBooking(bookingId));
+    return response.data;
+  } catch (error) {
+    console.error('❌ Check-in booking error:', error);
+    throw error;
+  }
+};

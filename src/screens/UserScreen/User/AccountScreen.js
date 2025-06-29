@@ -23,7 +23,7 @@
   import { logout } from "../../../redux/slices/auth.slice"
   import { fetchUserByAccount, clearUserProfile } from "../../../redux/slices/user.slice"
 
-  const AccountScreen = () => {
+  const AccountScreen = () => { 
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
@@ -32,12 +32,9 @@
     // Fetch user profile when component mounts
     useEffect(() => {
       if (isAuthenticated && authUser?.accountId) {
-        console.log('✅ AccountScreen: Fetching user with accountId:', authUser.accountId);
         dispatch(fetchUserByAccount(authUser.accountId));
       } else {
         console.log('❌ AccountScreen: Missing isAuthenticated or accountId');
-        console.log('- isAuthenticated:', isAuthenticated);
-        console.log('- authUser:', authUser);
       }
     }, [dispatch, isAuthenticated, authUser?.accountId]);
 
@@ -161,6 +158,7 @@
               <Ionicons name="notifications-outline" size={20} color="#F5B041" />
               <Text style={styles.itemText}>Thông báo</Text>
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('MyOrder')}>
               <AntDesign name="clockcircleo" size={20} color="#F5B041" />
               <Text style={styles.itemText}>Homestay đã đặt</Text>
@@ -170,7 +168,8 @@
                 </View>
               )}
             </TouchableOpacity>
-            <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Favorite')}>
+
+            {/* <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Favorite')}>
               <AntDesign name="heart" size={20} color="#F5B041" />
               <Text style={styles.itemText}>Homestay yêu thích</Text>
               {userProfile?.favoriteHomestay?.length > 0 && (
@@ -178,7 +177,8 @@
                   <Text style={styles.badgeText}>{userProfile.favoriteHomestay.length}</Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
             <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('Review')}>
               <AntDesign name="retweet" size={20} color="#F5B041" />
               <Text style={styles.itemText}>Đánh giá của tôi</Text>
@@ -193,16 +193,16 @@
           {/* Settings Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Cài đặt</Text>
-            <TouchableOpacity style={styles.itemRow}>
+            {/* <TouchableOpacity style={styles.itemRow}>
               <Ionicons name="language" size={20} color="#F5B041" />
               <Text style={styles.itemText}>Ngôn ngữ</Text>
               <Text style={styles.highlight}>Tiếng Việt</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.itemRow}>
               <Feather name="send" size={20} color="#F5B041" />
               <Text style={styles.itemText}>Khu vực</Text>
               <Text style={styles.highlight}>
-                {userProfile?.addressResponse?.city || "Nha Trang"}
+                {userProfile?.addressResponse?.city || "N/A"}
               </Text>
             </TouchableOpacity>
           </View>
