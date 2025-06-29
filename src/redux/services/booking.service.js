@@ -17,7 +17,7 @@ export const createBooking = async (bookingData) => {
 
 export const cancelBooking = async (bookingId) => {
   try {
-    const response = await apiClient.delete(`${BookingEndpoints.cancelBooking}/${bookingId}`);
+    const response = await apiClient.put(BookingEndpoints.cancelBooking(bookingId));
     return response.data;
   } catch (error) {
     console.error('❌ Cancel booking error:', error);
