@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, StyleSheet, ScrollView, ActivityIndicator, Text, TouchableOpacity, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHostByAccount, clearHost } from '../../../redux/slices/host.slice';
 import Header from '../../../components/HostHomeScreen/Header';
@@ -9,13 +9,12 @@ import Dashboard from '../../../components/HostHomeScreen/Dashboard';
 import Schedule from '../../../components/HostHomeScreen/Schedule';
 import Section from '../../../components/HostHomeScreen/Section';
 
-import AddStaycationForm from '../../../components/Form/AddStaycationForm';
 import { DashboardStats } from '../../../data/MockData';
 
 const HostHomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [showAddForm, setShowAddForm] = useState(false);
+
   
   // Get data from Redux store
   const { user } = useSelector(state => state.auth); 
@@ -40,12 +39,10 @@ const HostHomeScreen = () => {
   };
 
 
-  const handleCloseForm = () => {
-    setShowAddForm(false);
-  };
+
 
   const handleNavigateMyHostBooking = () => {
-  navigation.navigate('MyHostBooking');
+  navigation.navigate('HostBooking');
 };
 
 
@@ -163,25 +160,6 @@ const HostHomeScreen = () => {
         </Section>
       </ScrollView>
 
-      {/* Add Homestay Modal */}
-      <Modal
-        visible={showAddForm}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={handleCloseForm}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Thêm Homestay Mới</Text>
-            <TouchableOpacity onPress={handleCloseForm} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>×</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView style={styles.modalContent}>
-            <AddStaycationForm onSuccess={handleCloseForm} />
-          </ScrollView>
-        </View>
-      </Modal>
     </View>
   );
 };

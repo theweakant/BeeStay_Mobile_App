@@ -250,6 +250,7 @@ const homestaySlice = createSlice({
 });
 
 export const { 
+  resetCreateState,
   clearHomestays, 
   clearSelectedHomestay, 
   setSelectedHomestay, 

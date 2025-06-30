@@ -1,19 +1,20 @@
-import React from 'react';
+//HostTab
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 
 //Manage
-import HostHomeScreen from '../../screens/HostScreen/Manage/HostHomeScreen';
-import EarningScreen from '../../screens/HostScreen/Manage/EarningScreen';
-import ManageReviewScreen from '../../screens/HostScreen/Manage/ManageReviewScreen';
-import MyHomestayScreen from '../../screens/HostScreen/Manage/MyHomestayScreen';
-import HostProfileScren from '../../screens/HostScreen/HostProfileScreen';
+import HostHomeScreen from '../../screens/HostScreen/Tab/HostHomeScreen';
+import EarningScreen from '../../screens/HostScreen/Tab/EarningScreen';
+import ManageReviewScreen from '../../screens/HostScreen/Tab/ManageReviewScreen';
+import HostHomestayScreen from '../../screens/HostScreen/Tab/HostHomestayScreen';
+import HostProfileScreen from '../../screens/HostScreen/Tab/HostProfileScreen';
 
 import { Home, Search, Calendar, Gift, User } from 'lucide-react-native'; 
 
 const Tab = createBottomTabNavigator();
 
 export default function HostTabNavigator() {
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -33,7 +34,7 @@ export default function HostTabNavigator() {
     />
     <Tab.Screen
       name="Homestays"
-      component={MyHomestayScreen}
+      component={HostHomestayScreen}
       options={{
         tabBarLabel: "Chỗ Ở",
         tabBarIcon: ({ color }) => <Search size={22} color={color} />,
@@ -57,7 +58,7 @@ export default function HostTabNavigator() {
     />
     <Tab.Screen
       name="HostProfile"
-      component={HostProfileScren}
+      component={HostProfileScreen}
       options={{
         tabBarLabel: "Hồ Sơ",
         tabBarIcon: ({ color }) => <User size={22} color={color} />,

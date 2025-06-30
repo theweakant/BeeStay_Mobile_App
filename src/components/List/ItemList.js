@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
-import InfoCard from '../Card/InfoCard'; // Changed from ItemCard to InfoCard
+import InfoCard from '../Card/InfoCard'; 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 45) / 2;
 
-const ItemList = ({ homestays, toggleHomestayStatus, viewDetails, formatCurrency }) => {
+const ItemList = ({ homestays, viewDetails }) => {
   const renderItem = ({ item, index }) => (
     <InfoCard
       item={item}

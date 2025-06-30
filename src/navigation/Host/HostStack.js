@@ -1,4 +1,4 @@
-// src/navigation/UserStackNavigator.js
+// HostStack.js
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HostTab from './HostTab';
@@ -6,11 +6,11 @@ import HostTab from './HostTab';
 import HostNotificationScreen from '../../screens/HostScreen/HostNotificationScreen';
 import HostHomestayDetailScreen from '../../screens/HostScreen/Manage/HostHomestayDetailScreen';
 
-import MyHostBookingScreen from '../../screens/HostScreen/Manage/MyBookingHomestayScreen';
+import HostBookingScreen from '../../screens/HostScreen/Manage/HostBookingHomestayScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function UserStackNavigator() {
+export default function HostStackNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -43,8 +43,8 @@ export default function UserStackNavigator() {
       />
 
       <Stack.Screen
-        name="MyHostBooking"
-        component={MyHostBookingScreen}
+        name="HostBooking"
+        component={HostBookingScreen}
         options={{
           title: 'Các đặt phòng của tôi',
           headerBackTitleVisible: false,

@@ -5,25 +5,17 @@ import { ScrollView, Alert, StyleSheet, ActivityIndicator, View, Text, Touchable
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/slices/auth.slice";
-import { clearUserProfile } from "../../redux/slices/user.slice";
-import { fetchHostByAccount, clearHost } from "../../redux/slices/host.slice";
+import { logout } from "../../../redux/slices/auth.slice";
+import { clearUserProfile } from "../../../redux/slices/user.slice";
+import { fetchHostByAccount, clearHost } from "../../../redux/slices/host.slice";
 
 // Import components
-import { CoverPhoto } from '../../components/HostProfileScreen/CoverPhoto';
-import { ProfileHeader } from '../../components/HostProfileScreen/ProfileHeader';
-import { HostStats } from '../../components/HostProfileScreen/HostStats';
-import { BioSection } from '../../components/HostProfileScreen/BioSection';
-import { ContactInformation } from '../../components/HostProfileScreen/ContactInformation';
-import { LanguageSection } from '../../components/HostProfileScreen/LanguageSection';
-import { PaymentMethods } from '../../components/HostProfileScreen/PaymentMethods';
-import { NotificationSettings } from '../../components/HostProfileScreen/NotificationSettings';
-import { ActionButtons } from '../../components/HostProfileScreen/ActionButtons';
+import { CoverPhoto } from '../../../components/HostProfileScreen/CoverPhoto';
+import { ContactInformation } from '../../../components/HostProfileScreen/ContactInformation';
+import { ActionButtons } from '../../../components/HostProfileScreen/ActionButtons';
 
 // Import modals
-import { PaymentMethodModal } from '../../components/HostProfileScreen/PaymentMethodModal';
-import { LanguageModal } from '../../components/HostProfileScreen/LanguageModal';
-import { LogoutConfirmModal } from '../../components/HostProfileScreen/LogoutConfirmModal';
+import { LogoutConfirmModal } from '../../../components/HostProfileScreen/LogoutConfirmModal';
 
 export default function HostProfileScreen() {
   const dispatch = useDispatch();

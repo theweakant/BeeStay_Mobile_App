@@ -17,14 +17,14 @@ import { useDispatch, useSelector } from "react-redux"
 
 import SearchFilter from "../../../components/SearchFilter"
 import ItemList from "../../../components/List/ItemList"
-import AddStaycationForm from "../../../components/Form/AddStaycationForm"
+import AddStaycationForm from "../../../components/AddStaycationForm/AddStaycationForm"
 import { useAuth } from "../../../redux/hooks/useAuth"
 import { fetchHomestaysByHost, clearHostHomestays } from "../../../redux/slices/homestay.slice"
 import { formatCurrency } from "../../../utils/textUtils"
 
 const { width } = Dimensions.get("window")
 
-export default function MyHomestayScreen({ navigation }) {
+export default function HostHomestayScreen({ navigation }) {
   const { user } = useAuth()
   const dispatch = useDispatch()
   const accountId = user?.accountId
@@ -320,6 +320,7 @@ export default function MyHomestayScreen({ navigation }) {
             </View>
           </View>
         </View>
+        </ScrollView>
 
         {/* Search and Filter */}
         <View style={styles.searchContainer}>
@@ -350,7 +351,6 @@ export default function MyHomestayScreen({ navigation }) {
             onRefresh={handleRefresh}
           />
         </View>
-      </ScrollView>
 
       {/* Add Modal */}
       <Modal

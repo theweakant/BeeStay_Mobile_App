@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity  } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../../../redux/hooks/useAuth';
 import { fetchBookingByHost } from '../../../redux/slices/host.slice';
 import { fetchDiscardBooking } from '../../../redux/slices/booking.slice';
 
-export default function MyHostBookingScreen() {
+export default function HostBookingScreen() {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const accountId = user?.accountId;
@@ -13,17 +13,26 @@ export default function MyHostBookingScreen() {
   const { bookings, bookingLoading, bookingError } = useSelector((state) => state.host);
 
   const handleDiscardBooking = (bookingId) => {
-    dispatch(fetchDiscardBooking(bookingId))
-      .unwrap()
-      .then(() => {
-        // Reload list sau khi discard thành công
-        if (accountId) {
-          dispatch(fetchBookingByHost(accountId));
-        }
-      })
-      .catch((error) => {
-        console.error('❌ Discard booking failed:', error);
-      });
+    Alert.alert(
+      'Xác nhận',
+      'Bạn có chắc muốn discard booking này?',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        { text: 'Đồng ý', onPress: () => {
+            dispatch(fetchDiscardBooking(bookingId))
+              .unwrap()
+              .then(() => {
+                if (accountId) {
+                  dispatch(fetchBookingByHost(accountId));
+                }
+              })
+              .catch((error) => {
+                console.error('❌ DISCARD booking failed:', error);
+              });
+          }
+        },
+      ]
+    );
   };
 
   useEffect(() => {
