@@ -1,18 +1,26 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const SectionHeader = ({ title }) => {
+const SectionHeader = ({ title, rightComponent }) => {
   return (
-    <Text style={styles.sectionTitle}>{title}</Text>
+    <View style={styles.header}>
+      <Text style={styles.title}>{title}</Text>
+      {rightComponent}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 16,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
   },
 });
 

@@ -1,12 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getHostByAccount } from '../services/host.service';
+import { getHostByAccount, getBookingByHost } from '../services/host.service';
 
-// Async thunk: Lấy thông tin Host theo accountId
+
 export const fetchHostByAccount = createAsyncThunk(
   'host/fetchHostByAccount',
   async (accountId, thunkAPI) => {
     try {
       const data = await getHostByAccount(accountId);
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
+
+export const fetchBookingByHost = createAsyncThunk(
+  'host/fetchBookingByHost',
+  async (accountId, thunkAPI) => {
+    try {
+      const data = await getBookingByHost(accountId);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
@@ -20,12 +34,22 @@ const hostSlice = createSlice({
     host: null,
     loading: false,
     error: null,
+
+    bookings: [], // Thêm state để lưu trữ booking 
+    bookingLoading: false, // Thêm state để theo dõi trạng thái loading của booking
+    bookingError: null, // Thêm state để lưu trữ lỗi khi lấy booking
   },
   reducers: {
     clearHost: (state) => {
       state.host = null;
       state.loading = false;
       state.error = null;
+    },
+
+        clearBooking: (state) => {
+      state.bookings = [];
+      state.bookingLoading = false;
+      state.bookingError = null;
     },
   },
   extraReducers: (builder) => {
@@ -41,6 +65,21 @@ const hostSlice = createSlice({
       .addCase(fetchHostByAccount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      });
+
+          // Fetch Booking By Host
+    builder
+      .addCase(fetchBookingByHost.pending, (state) => {
+        state.bookingLoading = true;
+        state.bookingError = null;
+      })
+      .addCase(fetchBookingByHost.fulfilled, (state, action) => {
+        state.bookingLoading = false;
+        state.bookings = action.payload;
+      })
+      .addCase(fetchBookingByHost.rejected, (state, action) => {
+        state.bookingLoading = false;
+        state.bookingError = action.payload;
       });
   },
 });

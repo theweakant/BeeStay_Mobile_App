@@ -15,12 +15,23 @@ export const createBooking = async (bookingData) => {
   }
 };
 
+
+export const discardBooking = async (bookingId) => {
+  try {
+    const response = await apiClient.put(BookingEndpoints.discardBooking(bookingId));
+    return response.data;
+  } catch (error) {
+    console.error('DISCARD booking error:', error);
+    throw error;
+  }
+};
+
 export const cancelBooking = async (bookingId) => {
   try {
     const response = await apiClient.put(BookingEndpoints.cancelBooking(bookingId));
     return response.data;
   } catch (error) {
-    console.error('❌ Cancel booking error:', error);
+    console.error('CANCEL booking error:', error);
     throw error;
   }
 };

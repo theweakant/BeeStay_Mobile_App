@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, ScrollView, ActivityIndicator, Text, TouchableOpacity, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHostByAccount, clearHost } from '../../../redux/slices/host.slice';
@@ -9,9 +10,10 @@ import Schedule from '../../../components/HostHomeScreen/Schedule';
 import Section from '../../../components/HostHomeScreen/Section';
 
 import AddStaycationForm from '../../../components/Form/AddStaycationForm';
-import { DashboardStats, DashboardItems, DashboardSchedule } from '../../../data/MockData';
+import { DashboardStats } from '../../../data/MockData';
 
 const HostHomeScreen = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const [showAddForm, setShowAddForm] = useState(false);
   
@@ -41,6 +43,53 @@ const HostHomeScreen = () => {
   const handleCloseForm = () => {
     setShowAddForm(false);
   };
+
+  const handleNavigateMyHostBooking = () => {
+  navigation.navigate('MyHostBooking');
+};
+
+
+    const DashboardItems = [
+      { 
+        id: 1, 
+        title: 'Quản Lý Phòng', 
+        subtitle: '8 phòng đang đặt\n2 phòng cần bảo trì', 
+        color: '#E3F2FD', 
+        textColor: '#1976D2', 
+        icon: '🏠' 
+      },
+      { 
+        id: 2, 
+        title: 'Khách Sắp Tới', 
+        subtitle: '5 lượt check-in hôm nay', 
+        color: '#F3E5F5', 
+        textColor: '#7B1FA2', 
+        icon: '👥' 
+      },
+      { 
+        id: 3, 
+        title: 'Đánh Giá', 
+        subtitle: '5 đánh giá tốt\n2 đang chờ phản hồi', 
+        color: '#E8F5E8', 
+        textColor: '#388E3C', 
+        icon: '⭐' 
+      },
+      { 
+        id: 4, 
+        title: 'Đơn Chờ Xử Lý', 
+        subtitle: '2 đơn đặt chờ xác nhận', 
+        color: '#FFF3E0', 
+        textColor: '#F57C00', 
+        icon: '📋' 
+      },
+    ];
+
+
+      const DashboardSchedule = [
+        { guestName: 'Thu Hà', time: '09:00', people: '5 người', status: 'check-in' },
+        { guestName: 'Anh Thy', time: '14:30', people: '2 người', status: 'check-in' },
+        { guestName: 'Minh Tuấn', time: '11:00', people: '3 người', status: 'check-out' },
+      ];
 
   // Loading state
   if (loading && !host) {
@@ -102,7 +151,14 @@ const HostHomeScreen = () => {
           <Dashboard items={DashboardItems} />
         </Section>
 
-        <Section title="Lịch Hôm Nay">
+        <Section
+          title="Lịch Hôm Nay"
+          rightComponent={
+            <TouchableOpacity onPress={handleNavigateMyHostBooking}>
+              <Text style={styles.seeAllText}>Xem tất cả</Text>
+            </TouchableOpacity>
+          }
+        >
           <Schedule schedule={DashboardSchedule} />
         </Section>
       </ScrollView>
@@ -228,6 +284,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
   },
+  seeAllText: {
+  color: '#1976D2', // Màu xanh hoặc màu chủ đạo của app
+  fontSize: 14,
+  fontWeight: '500',
+},
 });
 
 export default HostHomeScreen;

@@ -21,11 +21,14 @@ export const HostEndpoints = {
   updateAccountHost: (accountId) => `/v1/host/update/${accountId}`,
   updateAvatarHost: (accountId) => `/v1/host/update-avatar/${accountId}`,
 
+  getBookingByHost: (accountId) => `/v1/host/booking?accountId=${accountId}`,
   checkInBooking: (bookingId) => `/v1/host/booking/check-in/${bookingId}`,
 };
 
 export const BookingEndpoints = {
   createBooking: `/v1/booking/create`,
+
+  discardBooking: (bookingId) => `/v1/booking/discard/${bookingId}`,
   cancelBooking: (bookingId) => `/v1/booking/cancel/${bookingId}`,
 
 

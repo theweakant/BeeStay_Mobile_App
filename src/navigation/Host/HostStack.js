@@ -5,7 +5,8 @@ import HostTab from './HostTab';
 
 import HostNotificationScreen from '../../screens/HostScreen/HostNotificationScreen';
 import HostHomestayDetailScreen from '../../screens/HostScreen/Manage/HostHomestayDetailScreen';
-import { Check } from 'lucide-react-native';
+
+import MyHostBookingScreen from '../../screens/HostScreen/Manage/MyBookingHomestayScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,15 @@ export default function UserStackNavigator() {
         component={HostHomestayDetailScreen}
         options={{
           title: 'Thông báo',
+          headerBackTitleVisible: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="MyHostBooking"
+        component={MyHostBookingScreen}
+        options={{
+          title: 'Các đặt phòng của tôi',
           headerBackTitleVisible: false,
         }}
       />
