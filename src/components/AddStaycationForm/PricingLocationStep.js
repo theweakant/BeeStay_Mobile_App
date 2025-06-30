@@ -8,7 +8,6 @@ const PricingLocationStep = ({ formData, onChange, errors }) => {
   return (
     <View>
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-        <Text style={{ fontSize: 24, marginRight: 12 }}>💰</Text>
         <Text style={{ fontSize: 20, fontWeight: "700", color: "#1F2937" }}>Giá cả & Địa điểm</Text>
       </View>
 
@@ -111,7 +110,7 @@ const PricingLocationStep = ({ formData, onChange, errors }) => {
       </View>
 
       {/* Hình ảnh & Video */}
-      <View
+      {/* <View
         style={{
           backgroundColor: "#F5F3FF",
           borderRadius: 12,
@@ -135,7 +134,7 @@ const PricingLocationStep = ({ formData, onChange, errors }) => {
           onChangeText={(value) => onChange("videoTourUrl", value)}
           keyboardType="url"
         />
-      </View>
+      </View> */}
     </View>
   )
 }

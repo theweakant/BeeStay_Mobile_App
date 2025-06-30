@@ -16,6 +16,9 @@ import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
 import { getFullLocation } from '../../../utils/textUtils'; 
 import HomestayUpdateModal from '../../../components/Modal/HomestayDetail/HomestayUpdateModal';
 
+import defaultHomestayImage from '../../../../assets/AvailableImage/default_homestay_image.png'; 
+
+
 export default function HostHomestayDetailScreen({ 
   route,
   navigation,
@@ -45,11 +48,6 @@ export default function HostHomestayDetailScreen({
     }
   };
 
-  // Handle back navigation
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
-
   // Handle toggle status
   const handleToggleStatus = () => {
     if (!selectedHomestay) return;
@@ -76,7 +74,6 @@ export default function HostHomestayDetailScreen({
 
   // Handle edit - Navigate to update modal
   const handleEdit = () => {
-    console.log('➡️ Nút chỉnh sửa được nhấn');
     if (!selectedHomestay) {
       Alert.alert('Lỗi', 'Không tìm thấy thông tin homestay để chỉnh sửa');
       return;
@@ -133,13 +130,15 @@ export default function HostHomestayDetailScreen({
     return (
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Main Image */}
-        {selectedHomestay.images && selectedHomestay.images.length > 0 && (
-          <Image 
-            source={{ uri: selectedHomestay.images[0] }}
-            style={styles.mainImage}
-            resizeMode="cover"
-          />
-        )}
+<Image
+  source={
+    selectedHomestay.images && selectedHomestay.images.length > 0 && selectedHomestay.images[0]
+      ? { uri: selectedHomestay.images[0] }
+      : defaultHomestayImage
+  }
+  style={styles.mainImage}
+  resizeMode="cover"
+/>
 
         {/* Basic Info */}
         <View style={styles.section}>
@@ -272,19 +271,6 @@ export default function HostHomestayDetailScreen({
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={handleGoBack}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Chi tiết Homestay</Text>
-        <View style={styles.headerRight} />
-      </View>
-
       {/* Content */}
       {renderContent()}
 

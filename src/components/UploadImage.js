@@ -22,7 +22,6 @@ import {
 
 export default function UploadImage({ homestayId }) {
   const dispatch = useDispatch();
-
   const isUploading = useSelector(selectIsUploadingImage);
   const uploadProgress = useSelector(selectImageUploadProgress);
   const uploadError = useSelector(selectImageUploadError);
@@ -31,41 +30,37 @@ export default function UploadImage({ homestayId }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUris, setPreviewUris] = useState([]);
 
-    const requestPermission = async () => {
+  const requestPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-        Alert.alert(
-        'Permission Denied',
-        'Ứng dụng cần quyền truy cập ảnh để chọn ảnh từ thư viện.'
-        );
-        return false;
+      Alert.alert('Lỗi', 'Cần quyền truy cập thư viện ảnh');
+      return false;
     }
     return true;
-    };
+  };
 
-    const pickImages = async () => {
+  const pickImages = async () => {
     const granted = await requestPermission();
     if (!granted) return;
 
     const result = await ImagePicker.launchImageLibraryAsync({
-        allowsMultipleSelection: true,
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
+      allowsMultipleSelection: true,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
     });
 
     if (!result.canceled) {
-        const assets = result.assets || [result];
-        const files = assets.map(asset => ({
+      const assets = result.assets || [result];
+      const files = assets.map(asset => ({
         uri: asset.uri,
         name: asset.fileName || `image_${Date.now()}.jpg`,
         type: 'image/jpeg'
-        }));
+      }));
 
-        setSelectedFiles(prev => [...prev, ...files]);
-        setPreviewUris(prev => [...prev, ...files.map(file => file.uri)]);
+      setSelectedFiles(prev => [...prev, ...files]);
+      setPreviewUris(prev => [...prev, ...files.map(file => file.uri)]);
     }
-    };
-
+  };
 
   const removeFile = (index) => {
     const newFiles = selectedFiles.filter((_, i) => i !== index);
@@ -76,7 +71,7 @@ export default function UploadImage({ homestayId }) {
 
   const handleUpload = async () => {
     if (!homestayId || selectedFiles.length === 0) {
-      Alert.alert('Missing Data', 'Please select images and provide homestay ID');
+      Alert.alert('Lỗi', 'Vui lòng chọn ảnh');
       return;
     }
 
@@ -85,6 +80,7 @@ export default function UploadImage({ homestayId }) {
         homestayId,
         imageFiles: selectedFiles
       })).unwrap();
+      
       setSelectedFiles([]);
       setPreviewUris([]);
     } catch (error) {
@@ -92,86 +88,87 @@ export default function UploadImage({ homestayId }) {
     }
   };
 
-  const handleClearState = () => {
-    dispatch(clearUploadState());
+  const handleClear = () => {
+    dispatch(clearImageUploadState());
     setSelectedFiles([]);
     setPreviewUris([]);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Upload Homestay Images</Text>
-
-      <TouchableOpacity
-        onPress={pickImages}
-        style={[styles.button, styles.pickButton]}
-        disabled={isUploading}
-      >
-        <Text style={styles.buttonText}>Select Images</Text>
-      </TouchableOpacity>
-
-      {previewUris.length > 0 && (
-        <FlatList
-          data={previewUris}
-          horizontal
-          keyExtractor={(uri, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <View style={styles.imageWrapper}>
-              <Image source={{ uri: item }} style={styles.image} />
-              <TouchableOpacity
-                style={styles.removeButton}
-                onPress={() => removeFile(index)}
-                disabled={isUploading}
-              >
-                <Text style={styles.removeButtonText}>×</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          contentContainerStyle={styles.previewList}
-        />
+      <Text style={styles.title}>Tải ảnh homestay</Text>
+      
+      {previewUris.length > 0 ? (
+        <View style={styles.imageSection}>
+          <FlatList
+            data={previewUris}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(uri, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <View style={styles.imageWrapper}>
+                <Image source={{ uri: item }} style={styles.image} />
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={() => removeFile(index)}
+                  disabled={isUploading}
+                >
+                  <Text style={styles.removeText}>×</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          <Text style={styles.imageCount}>{previewUris.length} ảnh</Text>
+        </View>
+      ) : (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>Chưa chọn ảnh</Text>
+        </View>
       )}
 
       {isUploading && (
-        <View style={styles.progressWrapper}>
-          <ActivityIndicator size="small" color="#2563eb" />
-          <Text style={styles.progressText}>Uploading... {uploadProgress}%</Text>
+        <View style={styles.progressContainer}>
+          <ActivityIndicator size="small" color="#007AFF" />
+          <Text style={styles.progressText}>Đang tải... {uploadProgress}%</Text>
         </View>
       )}
 
       {uploadError && (
-        <Text style={styles.errorText}>Error: {uploadError}</Text>
+        <Text style={styles.errorText}>{uploadError}</Text>
       )}
 
       {uploadSuccess && (
-        <Text style={styles.successText}>{uploadSuccess}</Text>
+        <Text style={styles.successText}>Tải thành công</Text>
       )}
 
-      <View style={styles.actions}>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={pickImages}
+          style={[styles.button, styles.selectButton]}
+          disabled={isUploading}
+        >
+          <Text style={styles.buttonText}>Chọn ảnh</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={handleUpload}
           disabled={isUploading || selectedFiles.length === 0 || !homestayId}
           style={[
-            styles.button,
+            styles.button, 
             styles.uploadButton,
             (isUploading || selectedFiles.length === 0 || !homestayId) && styles.disabledButton
           ]}
         >
           <Text style={styles.buttonText}>
-            {isUploading ? 'Uploading...' : 'Upload Images'}
+            {isUploading ? 'Đang tải...' : 'Tải lên'}
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleClearState}
-          disabled={isUploading}
-          style={[styles.button, styles.clearButton, isUploading && styles.disabledButton]}
-        >
-          <Text style={styles.buttonText}>Clear</Text>
         </TouchableOpacity>
       </View>
 
       {selectedFiles.length > 0 && (
-        <Text style={styles.infoText}>Selected: {selectedFiles.length} file(s)</Text>
+        <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
+          <Text style={styles.clearText}>Xóa tất cả</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -179,98 +176,126 @@ export default function UploadImage({ homestayId }) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 12,
+    padding: 16,
     margin: 16,
-    elevation: 3
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
+    color: '#333',
     marginBottom: 16,
-    color: '#1f2937'
+    textAlign: 'center',
   },
-  button: {
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-    marginBottom: 12
-  },
-  pickButton: {
-    backgroundColor: '#3b82f6'
-  },
-  uploadButton: {
-    backgroundColor: '#2563eb',
-    flex: 1
-  },
-  clearButton: {
-    backgroundColor: '#4b5563',
-    flex: 1,
-    marginLeft: 8
-  },
-  disabledButton: {
-    opacity: 0.5
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '500'
-  },
-  previewList: {
-    marginBottom: 16
+  imageSection: {
+    marginBottom: 16,
   },
   imageWrapper: {
-    marginRight: 12,
-    position: 'relative'
+    marginRight: 8,
+    position: 'relative',
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ccc'
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    backgroundColor: '#f5f5f5',
   },
   removeButton: {
     position: 'absolute',
     top: -6,
     right: -6,
-    backgroundColor: '#ef4444',
-    borderRadius: 12,
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#ff4444',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  removeButtonText: {
+  removeText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold'
+    fontSize: 14,
+    fontWeight: 'bold',
   },
-  progressWrapper: {
+  imageCount: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  emptyState: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 24,
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    borderStyle: 'dashed',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12
+    justifyContent: 'center',
+    marginBottom: 12,
   },
   progressText: {
     marginLeft: 8,
-    color: '#4b5563',
-    fontSize: 14
+    fontSize: 14,
+    color: '#007AFF',
   },
   errorText: {
-    color: '#dc2626',
-    marginBottom: 12
+    color: '#ff4444',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   successText: {
-    color: '#16a34a',
-    marginBottom: 12
-  },
-  actions: {
-    flexDirection: 'row',
-    marginTop: 8
-  },
-  infoText: {
-    marginTop: 12,
+    color: '#00aa44',
     fontSize: 14,
-    color: '#4b5563'
-  }
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  selectButton: {
+    backgroundColor: '#007AFF',
+  },
+  uploadButton: {
+    backgroundColor: '#34C759',
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  clearButton: {
+    marginTop: 12,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  clearText: {
+    color: '#666',
+    fontSize: 14,
+  },
 });

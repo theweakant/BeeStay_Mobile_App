@@ -36,7 +36,6 @@ const AmenitiesPoliciesStep = ({ formData, onChange }) => {
   return (
     <View>
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-        <Text style={{ fontSize: 24, marginRight: 12 }}>✨</Text>
         <Text style={{ fontSize: 20, fontWeight: "700", color: "#1F2937" }}>Tiện nghi & Chính sách</Text>
       </View>
 

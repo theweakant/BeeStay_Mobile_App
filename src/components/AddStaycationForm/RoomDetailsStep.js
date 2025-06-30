@@ -7,7 +7,6 @@ const RoomDetailsStep = ({ formData, onChange, errors }) => {
   return (
     <View>
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-        <Text style={{ fontSize: 24, marginRight: 12 }}>🛏️</Text>
         <Text style={{ fontSize: 20, fontWeight: "700", color: "#1F2937" }}>Chi tiết phòng</Text>
       </View>
 

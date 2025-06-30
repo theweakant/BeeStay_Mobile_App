@@ -401,13 +401,11 @@ export default function HomestayUpdateModal({
               <UploadImage homestayId={homestay.id} />
             </View>
             
-            {renderInput('Hình ảnh URL (tùy chọn)', 'image', 'https://example.com/image.jpg')}
             
-                      <View style={styles.uploadSection}>
+           <View style={styles.uploadSection}>
             <Text style={styles.inputLabel}>Video homestay</Text>
             <UploadVideo homestayId={homestay.id} />
           </View>
-            {renderInput('Video tour URL', 'videoTourUrl', 'https://example.com/video.mp4')}
           </View>
 
           {/* Pricing */}

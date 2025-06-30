@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import {
   View,
@@ -8,8 +6,7 @@ import {
   StyleSheet,
   FlatList,
   Alert,
-  ActivityIndicator,
-  Dimensions
+  ActivityIndicator
 } from 'react-native';
 import { Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
@@ -23,16 +20,8 @@ import {
   clearVideoUploadState
 } from '../redux/slices/upload.slice';
 
-const { width } = Dimensions.get('window');
-console.log('All selectors:', {
-  selectIsUploadingVideo,
-  selectVideoUploadProgress,
-  selectVideoUploadError,
-  selectVideoUploadSuccess
-});
 export default function UploadVideo({ homestayId }) {
   const dispatch = useDispatch();
-
   const isUploading = useSelector(selectIsUploadingVideo);
   const uploadProgress = useSelector(selectVideoUploadProgress);
   const uploadError = useSelector(selectVideoUploadError);
@@ -44,10 +33,7 @@ export default function UploadVideo({ homestayId }) {
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(
-        'Permission Denied',
-        'Ứng dụng cần quyền truy cập thư viện để chọn video.'
-      );
+      Alert.alert('Lỗi', 'Cần quyền truy cập thư viện video');
       return false;
     }
     return true;
@@ -60,21 +46,17 @@ export default function UploadVideo({ homestayId }) {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsMultipleSelection: true,
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      quality: 1,
-      videoMaxDuration: 300, // 5 phút
+      quality: 0.8,
+      videoMaxDuration: 300,
     });
 
     if (!result.canceled) {
       const assets = result.assets || [result];
       
-      // Validate file size (100MB limit)
       const validAssets = [];
       for (const asset of assets) {
         if (asset.fileSize && asset.fileSize > 100 * 1024 * 1024) {
-          Alert.alert(
-            'File quá lớn',
-            `Video ${asset.fileName || 'không tên'} vượt quá giới hạn 100MB`
-          );
+          Alert.alert('Lỗi', 'Video quá lớn (tối đa 100MB)');
           continue;
         }
         validAssets.push(asset);
@@ -105,7 +87,7 @@ export default function UploadVideo({ homestayId }) {
 
   const handleUpload = async () => {
     if (!homestayId || selectedFiles.length === 0) {
-      Alert.alert('Missing Data', 'Please select videos and provide homestay ID');
+      Alert.alert('Lỗi', 'Vui lòng chọn video');
       return;
     }
 
@@ -115,18 +97,14 @@ export default function UploadVideo({ homestayId }) {
         videoFiles: selectedFiles
       })).unwrap();
       
-      // Clear after successful upload
       setSelectedFiles([]);
       setPreviewUris([]);
-      
-      Alert.alert('Success', 'Videos uploaded successfully!');
     } catch (error) {
       console.error('Upload failed:', error);
-      Alert.alert('Upload Failed', error.message || 'Please try again');
     }
   };
 
-  const handleClearState = () => {
+  const handleClear = () => {
     dispatch(clearVideoUploadState());
     setSelectedFiles([]);
     setPreviewUris([]);
@@ -139,104 +117,90 @@ export default function UploadVideo({ homestayId }) {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const renderVideoItem = ({ item, index }) => (
-    <View style={styles.videoWrapper}>
-      <Video
-        source={{ uri: item.uri }}
-        style={styles.video}
-        resizeMode="cover"
-        shouldPlay={false}
-        isLooping={false}
-        useNativeControls
-      />
-      <TouchableOpacity
-        style={styles.removeButton}
-        onPress={() => removeFile(index)}
-        disabled={isUploading}
-      >
-        <Text style={styles.removeButtonText}>×</Text>
-      </TouchableOpacity>
-      <View style={styles.videoInfo}>
-        <Text style={styles.videoName} numberOfLines={1}>
-          {item.name}
-        </Text>
-        <Text style={styles.videoDuration}>
-          {formatDuration(item.duration)}
-        </Text>
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Upload Homestay Videos</Text>
-
-      <TouchableOpacity
-        onPress={pickVideos}
-        style={[styles.button, styles.pickButton]}
-        disabled={isUploading}
-      >
-        <Text style={styles.buttonText}>Select Videos</Text>
-      </TouchableOpacity>
-
-      {previewUris.length > 0 && (
-        <FlatList
-          data={previewUris}
-          horizontal
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderVideoItem}
-          contentContainerStyle={styles.previewList}
-          showsHorizontalScrollIndicator={false}
-        />
+      <Text style={styles.title}>Tải video homestay</Text>
+      
+      {previewUris.length > 0 ? (
+        <View style={styles.videoSection}>
+          <FlatList
+            data={previewUris}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <View style={styles.videoWrapper}>
+                <Video
+                  source={{ uri: item.uri }}
+                  style={styles.video}
+                  resizeMode="cover"
+                  shouldPlay={false}
+                  useNativeControls
+                />
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={() => removeFile(index)}
+                  disabled={isUploading}
+                >
+                  <Text style={styles.removeText}>×</Text>
+                </TouchableOpacity>
+                <Text style={styles.videoDuration}>
+                  {formatDuration(item.duration)}
+                </Text>
+              </View>
+            )}
+          />
+          <Text style={styles.videoCount}>{previewUris.length} video</Text>
+        </View>
+      ) : (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>Chưa chọn video</Text>
+        </View>
       )}
 
       {isUploading && (
-        <View style={styles.progressWrapper}>
-          <ActivityIndicator size="small" color="#16a34a" />
-          <Text style={styles.progressText}>Uploading... {uploadProgress}%</Text>
+        <View style={styles.progressContainer}>
+          <ActivityIndicator size="small" color="#007AFF" />
+          <Text style={styles.progressText}>Đang tải... {uploadProgress}%</Text>
         </View>
       )}
 
       {uploadError && (
-        <View style={styles.errorWrapper}>
-          <Text style={styles.errorText}>Error: {uploadError}</Text>
-        </View>
+        <Text style={styles.errorText}>{uploadError}</Text>
       )}
 
       {uploadSuccess && (
-        <View style={styles.successWrapper}>
-          <Text style={styles.successText}>{uploadSuccess}</Text>
-        </View>
+        <Text style={styles.successText}>Tải thành công</Text>
       )}
 
-      <View style={styles.actions}>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={pickVideos}
+          style={[styles.button, styles.selectButton]}
+          disabled={isUploading}
+        >
+          <Text style={styles.buttonText}>Chọn video</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={handleUpload}
           disabled={isUploading || selectedFiles.length === 0 || !homestayId}
           style={[
-            styles.button,
+            styles.button, 
             styles.uploadButton,
             (isUploading || selectedFiles.length === 0 || !homestayId) && styles.disabledButton
           ]}
         >
           <Text style={styles.buttonText}>
-            {isUploading ? 'Uploading...' : 'Upload Videos'}
+            {isUploading ? 'Đang tải...' : 'Tải lên'}
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleClearState}
-          disabled={isUploading}
-          style={[styles.button, styles.clearButton, isUploading && styles.disabledButton]}
-        >
-          <Text style={styles.buttonText}>Clear</Text>
         </TouchableOpacity>
       </View>
 
       {selectedFiles.length > 0 && (
-        <Text style={styles.infoText}>
-          Selected: {selectedFiles.length} video(s)
-        </Text>
+        <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
+          <Text style={styles.clearText}>Xóa tất cả</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -244,141 +208,138 @@ export default function UploadVideo({ homestayId }) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 12,
+    padding: 16,
     margin: 16,
-    elevation: 3
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
+    color: '#333',
     marginBottom: 16,
-    color: '#1f2937'
+    textAlign: 'center',
   },
-  button: {
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-    marginBottom: 12
-  },
-  pickButton: {
-    backgroundColor: '#16a34a'
-  },
-  uploadButton: {
-    backgroundColor: '#15803d',
-    flex: 1
-  },
-  clearButton: {
-    backgroundColor: '#4b5563',
-    flex: 1,
-    marginLeft: 8
-  },
-  disabledButton: {
-    opacity: 0.5
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '500'
-  },
-  previewList: {
+  videoSection: {
     marginBottom: 16,
-    paddingRight: 16
   },
   videoWrapper: {
-    marginRight: 12,
+    marginRight: 8,
     position: 'relative',
-    width: width * 0.4,
+    width: 120,
   },
   video: {
-    width: '100%',
-    height: 120,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#000'
+    width: 120,
+    height: 80,
+    borderRadius: 8,
+    backgroundColor: '#000',
   },
   removeButton: {
     position: 'absolute',
     top: -6,
     right: -6,
-    backgroundColor: '#ef4444',
-    borderRadius: 12,
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#ff4444',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1
   },
-  removeButtonText: {
+  removeText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  videoInfo: {
-    marginTop: 4,
-    width: '100%'
-  },
-  videoName: {
-    fontSize: 12,
-    color: '#374151',
-    fontWeight: '500'
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   videoDuration: {
+    position: 'absolute',
+    bottom: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    color: '#fff',
     fontSize: 10,
-    color: '#6b7280',
-    marginTop: 2
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
-  progressWrapper: {
+  videoCount: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  emptyState: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 24,
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    borderStyle: 'dashed',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 12,
-    padding: 12,
-    backgroundColor: '#f0fdf4',
-    borderRadius: 6,
-    borderLeft: 4,
-    borderLeftColor: '#16a34a'
   },
   progressText: {
     marginLeft: 8,
-    color: '#15803d',
     fontSize: 14,
-    fontWeight: '500'
-  },
-  errorWrapper: {
-    backgroundColor: '#fef2f2',
-    padding: 12,
-    borderRadius: 6,
-    borderLeft: 4,
-    borderLeftColor: '#dc2626',
-    marginBottom: 12
+    color: '#007AFF',
   },
   errorText: {
-    color: '#dc2626',
-    fontSize: 14
-  },
-  successWrapper: {
-    backgroundColor: '#f0fdf4',
-    padding: 12,
-    borderRadius: 6,
-    borderLeft: 4,
-    borderLeftColor: '#16a34a',
-    marginBottom: 12
+    color: '#ff4444',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   successText: {
-    color: '#16a34a',
+    color: '#00aa44',
     fontSize: 14,
-    fontWeight: '500'
-  },
-  actions: {
-    flexDirection: 'row',
-    marginTop: 8
-  },
-  infoText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#4b5563',
     textAlign: 'center',
-    fontStyle: 'italic'
-  }
+    marginBottom: 12,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  selectButton: {
+    backgroundColor: '#007AFF',
+  },
+  uploadButton: {
+    backgroundColor: '#34C759',
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  clearButton: {
+    marginTop: 12,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  clearText: {
+    color: '#666',
+    fontSize: 14,
+  },
 });

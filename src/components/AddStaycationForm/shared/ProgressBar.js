@@ -1,5 +1,3 @@
-// components/AddStaycationForm/shared/ProgressBar.js
-
 import React from "react"
 import { View, Text, StyleSheet } from "react-native"
 
@@ -42,15 +40,15 @@ const ProgressBar = ({ steps, currentStep }) => {
 const styles = StyleSheet.create({
   progressContainer: {
     backgroundColor: "#FFFFFF",
-    paddingVertical: 20,
+    paddingVertical: 16,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: "#F3F4F6",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
   },
   progressBar: {
     flexDirection: "row",
@@ -60,37 +58,45 @@ const styles = StyleSheet.create({
   progressStep: {
     alignItems: "center",
     flex: 1,
+    paddingHorizontal: 4,
   },
   progressDot: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 6,
+    borderWidth: 2,
   },
   progressDotActive: {
     backgroundColor: "#3B82F6",
+    borderColor: "#3B82F6",
     shadowColor: "#3B82F6",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   progressDotInactive: {
-    backgroundColor: "#E5E7EB",
+    backgroundColor: "#F9FAFB",
+    borderColor: "#E5E7EB",
   },
   progressDotText: {
-    fontSize: 20,
+    fontSize: 16,
+    color: "#9CA3AF",
   },
   progressDotTextActive: {
     color: "#FFFFFF",
+    fontWeight: "600",
   },
   progressLabel: {
-    fontSize: 12,
-    color: "#6B7280",
+    fontSize: 11,
+    color: "#9CA3AF",
     textAlign: "center",
     fontWeight: "500",
+    lineHeight: 14,
+    maxWidth: 80,
   },
   progressLabelActive: {
     color: "#3B82F6",

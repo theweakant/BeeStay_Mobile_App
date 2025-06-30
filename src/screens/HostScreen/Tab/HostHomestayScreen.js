@@ -15,8 +15,7 @@ import {
 } from "react-native"
 import { useDispatch, useSelector } from "react-redux"
 
-import SearchFilter from "../../../components/SearchFilter"
-import ItemList from "../../../components/List/ItemList"
+import ItemList from "../../../components/Host/HostHomestay/ItemList"
 import AddStaycationForm from "../../../components/AddStaycationForm/AddStaycationForm"
 import { useAuth } from "../../../redux/hooks/useAuth"
 import { fetchHomestaysByHost, clearHostHomestays } from "../../../redux/slices/homestay.slice"
@@ -33,11 +32,6 @@ export default function HostHomestayScreen({ navigation }) {
   const { hostHomestays, fetchingByHost, fetchByHostError, hostHomestaysCount } = useSelector((state) => state.homestay)
 
   // Local state management
-  const [filteredHomestays, setFilteredHomestays] = useState([])
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [filterRating, setFilterRating] = useState("all")
-  const [searchText, setSearchText] = useState("")
-  const [filterModalVisible, setFilterModalVisible] = useState(false)
   const [addModalVisible, setAddModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -67,43 +61,10 @@ export default function HostHomestayScreen({ navigation }) {
     }
   }, [dispatch, accountId])
 
-  // Filter logic
-  const applyFilters = () => {
-    const validatedHomestays = validateHomestayData(hostHomestays || [])
-    let filtered = validatedHomestays
-
-    if (filterStatus !== "all") {
-      filtered = filtered.filter((h) => h.status === filterStatus)
-    }
-
-    if (filterRating !== "all") {
-      const minRating = Number.parseFloat(filterRating)
-      filtered = filtered.filter((h) => h.rating >= minRating)
-    }
-
-    if (searchText) {
-      const searchLower = searchText.toLowerCase()
-      filtered = filtered.filter(
-        (h) =>
-          (h.name && h.name.toLowerCase().includes(searchLower)) ||
-          (h.location && h.location.toLowerCase().includes(searchLower)),
-      )
-    }
-
-    setFilteredHomestays(filtered)
-  }
-
-  useEffect(() => {
-    applyFilters()
-  }, [filterStatus, filterRating, searchText, hostHomestays])
-
-  // Check if filters are active
-  const hasActiveFilters = filterStatus !== "all" || filterRating !== "all"
-
   // Toggle homestay status
   const toggleHomestayStatus = (id) => {
     const homestayToUpdate = hostHomestays.find((h) => h.id === id)
-    if (homestayToUpdate) {
+    if (homestayToUpdate && accountId) {
       dispatch(fetchHomestaysByHost(accountId))
     }
   }
@@ -114,15 +75,6 @@ export default function HostHomestayScreen({ navigation }) {
       homestayId: homestay.id,
       formatCurrency: formatCurrency
     })
-  }
-
-  // Handle filter modal
-  const handleFilterPress = () => {
-    setFilterModalVisible(true)
-  }
-
-  const handleFilterClose = () => {
-    setFilterModalVisible(false)
   }
 
   // Handle add modal
@@ -217,7 +169,7 @@ export default function HostHomestayScreen({ navigation }) {
               </View>
 
               <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
-                <Text style={styles.addButtonText}>+ Thêm</Text>
+                <Text style={styles.addButtonText}>ADD</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -268,7 +220,7 @@ export default function HostHomestayScreen({ navigation }) {
       <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#007AFF"]} tintColor="#007AFF" />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       >
         {/* Header */}
@@ -282,7 +234,7 @@ export default function HostHomestayScreen({ navigation }) {
                 <View style={styles.headerTextContainer}>
                   <Text style={styles.title}>Quản Lý Homestay</Text>
                   <Text style={styles.subtitle}>
-                    {filteredHomestays.length} / {hostHomestaysCount || validatedHomestays.length} homestay
+                    {validatedHomestays.length} / {hostHomestaysCount || validatedHomestays.length} homestay
                   </Text>
                 </View>
               </View>
@@ -320,30 +272,11 @@ export default function HostHomestayScreen({ navigation }) {
             </View>
           </View>
         </View>
-        </ScrollView>
-
-        {/* Search and Filter */}
-        <View style={styles.searchContainer}>
-          <SearchFilter
-            searchValue={searchText}
-            onSearchChange={setSearchText}
-            searchPlaceholder="Tìm kiếm homestay..."
-            filterVisible={filterModalVisible}
-            onFilterClose={handleFilterClose}
-            filterStatus={filterStatus}
-            setFilterStatus={setFilterStatus}
-            filterRating={filterRating}
-            setFilterRating={setFilterRating}
-            onFilterPress={handleFilterPress}
-            hasActiveFilters={hasActiveFilters}
-            showLogo={false}
-          />
-        </View>
 
         {/* Homestay List */}
         <View style={styles.listContainer}>
           <ItemList
-            homestays={filteredHomestays}
+            homestays={validatedHomestays}
             toggleHomestayStatus={toggleHomestayStatus}
             viewDetails={viewDetails}
             formatCurrency={formatCurrency}
@@ -351,6 +284,7 @@ export default function HostHomestayScreen({ navigation }) {
             onRefresh={handleRefresh}
           />
         </View>
+      </ScrollView>
 
       {/* Add Modal */}
       <Modal
@@ -368,15 +302,9 @@ export default function HostHomestayScreen({ navigation }) {
               </TouchableOpacity>
             </View>
           </View>
-
           <AddStaycationForm accountId={accountId} onSuccess={handleAddSuccess} />
         </View>
       </Modal>
-
-      {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={handleRefresh} disabled={fetchingByHost}>
-        <Text style={[styles.fabText, fetchingByHost && styles.fabTextRotating]}>↻</Text>
-      </TouchableOpacity>
 
       {/* Error Badge */}
       {fetchByHostError && (
@@ -531,16 +459,11 @@ const styles = StyleSheet.create({
     color: "#92400E",
   },
 
-  // Search Container
-  searchContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-
   // List Container
   listContainer: {
     paddingHorizontal: 20,
     paddingBottom: 100,
+    marginTop: 24,
   },
 
   // Loading Styles
@@ -754,35 +677,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#64748B",
     fontWeight: "600",
-  },
-
-  // Floating Action Button
-  fab: {
-    position: "absolute",
-    right: 20,
-    bottom: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#007AFF",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#007AFF",
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 12,
-  },
-  fabText: {
-    color: "#FFFFFF",
-    fontSize: 24,
-    fontWeight: "600",
-  },
-  fabTextRotating: {
-    transform: [{ rotate: "180deg" }],
   },
 
   // Error Badge

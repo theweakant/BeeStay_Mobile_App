@@ -37,7 +37,7 @@ export default function HostStackNavigator() {
         name="HostHomestayDetail"
         component={HostHomestayDetailScreen}
         options={{
-          title: 'Thông báo',
+          title: 'Chi tiết homestay',
           headerBackTitleVisible: false,
         }}
       />

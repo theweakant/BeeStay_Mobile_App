@@ -53,10 +53,6 @@
             onPress: () => {
               dispatch(logout());
               dispatch(clearUserProfile());
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Login' }],
-              });
             }
           }
         ]

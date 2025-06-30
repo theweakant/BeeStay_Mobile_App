@@ -73,10 +73,10 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
   const [validationErrors, setValidationErrors] = useState({})
 
   const formSteps = [
-    { title: "Thông tin cơ bản", icon: "🏠" },
-    { title: "Giá cả & Địa điểm", icon: "💰" },
-    { title: "Chi tiết phòng", icon: "🛏️" },
-    { title: "Tiện nghi & Chính sách", icon: "✨" },
+    { title: "Thông tin", icon: "🏠" },
+    { title: "Địa điểm", icon: "💰" },
+    { title: "Chi tiết", icon: "🛏️" },
+    { title: "Khác", icon: "✨" },
   ]
 
   // Reset form on success
@@ -270,12 +270,6 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
       {/* Scrollable Form Content */}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ padding: 20, paddingBottom: 100 }}>
-          <View style={{ backgroundColor: "#EBF4FF", padding: 16, borderRadius: 12, marginBottom: 24 }}>
-            <Text style={{ color: "#1E40AF", fontSize: 14, fontWeight: "500" }}>
-              👤 Account ID: {accountId}
-            </Text>
-          </View>
-
           {renderStepContent()}
         </View>
       </ScrollView>

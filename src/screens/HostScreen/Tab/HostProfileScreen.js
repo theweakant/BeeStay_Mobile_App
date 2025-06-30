@@ -49,10 +49,6 @@ export default function HostProfileScreen() {
     dispatch(logout());
     dispatch(clearUserProfile());
     dispatch(clearHost());
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Login' }],
-    });
   };
 
 
@@ -242,9 +238,3 @@ const styles = StyleSheet.create({
   },
 });
 
-// HƯỚNG DẪN DEBUG:
-// 1. Chạy code này trước - chỉ có CoverPhoto và ProfileHeader
-// 2. Nếu không còn lỗi -> lỗi từ component khác
-// 3. Nếu vẫn lỗi -> uncomment từng component một để tìm ra thủ phạm
-// 4. Từng bước uncomment: HostStats -> BioSection -> ContactInformation -> ...
-// 5. Component nào gây lỗi thì báo cho tôi để fix

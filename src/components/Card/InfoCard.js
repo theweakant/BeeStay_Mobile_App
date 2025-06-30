@@ -85,27 +85,30 @@ const styles = StyleSheet.create({
   homestayCard: {
     width: 200,
     marginRight: 15,
-    backgroundColor: "#fff",
+    backgroundColor: "transparent", // Thay đổi từ "#fff" thành "transparent"
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    // Loại bỏ shadow để tránh background hiển thị
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
+    // elevation: 3,
   },
   imageContainer: {
     position: "relative",
     width: "100%",
     height: 120,
+    backgroundColor: "transparent", // Đảm bảo container cũng transparent
   },
   homestayImage: {
     width: "100%",
     height: "100%",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
+    backgroundColor: "transparent", // Đảm bảo image cũng transparent
   },
   discountBadge: {
     position: "absolute",
@@ -137,6 +140,9 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 12,
+    backgroundColor: "#fff", // Chỉ content phần dưới có background trắng
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
   },
   homestayName: {
     fontSize: 14,
