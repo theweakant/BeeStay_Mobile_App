@@ -155,7 +155,7 @@
               <Text style={styles.itemText}>Thông báo</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('MyOrder')}>
+            <TouchableOpacity style={styles.itemRow} onPress={() => navigation.navigate('OrderBooking')}>
               <AntDesign name="clockcircleo" size={20} color="#F5B041" />
               <Text style={styles.itemText}>Homestay đã đặt</Text>
               {userProfile?.currentBooking > 0 && (

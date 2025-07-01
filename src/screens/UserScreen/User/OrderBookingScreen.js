@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../redux/hooks/useAuth';
 import { fetchUserBooking, selectUserBooking, selectBookingLoading, selectBookingError } from '../../../redux/slices/user.slice';
 
-export default function MyOrderScreen() {
+export default function OrderBookingScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { user } = useAuth();

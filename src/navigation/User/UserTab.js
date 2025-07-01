@@ -5,7 +5,6 @@ import { StyleSheet } from 'react-native';
 
 import HomeScreen from '../../screens/UserScreen/HomeScreen';
 import AccountScreen from '../../screens/UserScreen/User/AccountScreen';
-import OrderBookingScreen from '../../screens/UserScreen/Booking/OrderBookingScreen';
 import DealScreen from '../../screens/UserScreen/DealScreen';
 import SearchScreen from '../../screens/UserScreen/SearchScreen';
 
@@ -37,13 +36,7 @@ export default function UserTabNavigator() {
           tabBarIcon: ({ color }) => <Search size={22} color={color} />,
         }}
       />
-      <Tab.Screen
-        name="OrderBooking"
-        component={OrderBookingScreen}
-        options={{
-          tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
-        }}
-      />
+
       <Tab.Screen
         name="Deal"
         component={DealScreen}

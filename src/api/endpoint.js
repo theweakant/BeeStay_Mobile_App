@@ -50,6 +50,11 @@ export const HomestayEndpoints = {
 
 };
 
+export const ReviewEndpoints = {
+  addReview: (accountId, stayCationId) => `/v1/review/add?accountId=${accountId}&stayCationId=${stayCationId}`,
+
+};
+
 
 
 

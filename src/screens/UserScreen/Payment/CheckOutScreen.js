@@ -72,13 +72,11 @@ export default function CheckOutScreen() {
       totalPrice: selectedHomestay?.pricePerNight || 0,
     };
 
-    console.log('Booking request body:', bookingRequest);
-
     dispatch(fetchCreateBooking(bookingRequest))
       .unwrap()
       .then(() => {
         Alert.alert('Thành công', 'Đặt phòng thành công!');
-        navigation.navigate('SuccessScreen');
+        navigation.navigate('SuccessBooking');
       })
       .catch((error) => {
         Alert.alert('Lỗi', error || 'Đặt phòng thất bại!');

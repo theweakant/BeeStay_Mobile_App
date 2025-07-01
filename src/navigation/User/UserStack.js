@@ -10,23 +10,24 @@ import NotificationScreen from '../../screens/UserScreen/User/NotificationScreen
 import ProfileScreen  from '../../screens/UserScreen/User/ProfileScreen';
 import ReviewScreen from '../../screens/UserScreen/User/ReviewScreen';
 import FavoriteScreen from '../../screens/UserScreen/User/FavoriteScreen';
-import MyOrderScreen from '../../screens/UserScreen/User/MyOrderScreen';
-import BookingDetailScreen from '../../screens/UserScreen/Booking/BookingDetailScreen';
 
 import DetailScreen from '../../screens/UserScreen/DetailScreen';
 
 //Booking
 import BookingScreen from '../../screens/UserScreen/Booking/BookingScreen';
 import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
+import BookingDetailScreen from '../../screens/UserScreen/Booking/BookingDetailScreen';
+import OrderBookingScreen from '../../screens/UserScreen/User/OrderBookingScreen';
 
 //Payment
 import CheckOutScreen from '../../screens/UserScreen/Payment/CheckOutScreen';
-import SuccessScreen from '../../screens/UserScreen/Payment/SuccessScreen';
+import SuccessBookingScreen from '../../screens/UserScreen/Booking/SuccessBookingScreen';
 
 //Information
 import ContactScreen from '../../screens/UserScreen/Infomation/ContactScreen';
 import PolicyScreen from '../../screens/UserScreen/Infomation/PolicyScreen';
 import QAScreen from '../../screens/UserScreen/Infomation/QAScreen';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -45,8 +46,6 @@ export default function UserStackNavigator() {
         options={{ headerShown: false }} 
       />
       
-
-
 
       {/* Các màn hình phụ */}
       <Stack.Screen
@@ -90,14 +89,7 @@ export default function UserStackNavigator() {
           headerBackTitleVisible: false,
         }}
       />
-      <Stack.Screen
-        name="MyOrder"
-        component={MyOrderScreen}
-        options={{
-          title: 'Đơn hàng của tôi',
-          headerBackTitleVisible: false,
-        }}
-      />
+
       <Stack.Screen
         name="BookingDetail"
         component={BookingDetailScreen}
@@ -151,15 +143,21 @@ export default function UserStackNavigator() {
         }}
       />
       <Stack.Screen
-        name="SuccessScreen "
-        component={SuccessScreen}
+        name="OrderBooking"
+        component={OrderBookingScreen}
         options={{
-          title: 'Thanh toán thành công',
+          title: 'Phòng đã đặt',
           headerBackTitleVisible: false,
         }}
       />
-
-
+      <Stack.Screen
+        name="SuccessBooking"
+        component={SuccessBookingScreen}
+        options={{
+          title: 'Đăt phòng thành công',
+          headerBackTitleVisible: false,
+        }}
+      />
 
 
       <Stack.Screen

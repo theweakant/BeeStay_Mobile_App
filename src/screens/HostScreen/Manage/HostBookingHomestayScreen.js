@@ -1,9 +1,18 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../../../redux/hooks/useAuth';
 import { fetchBookingByHost } from '../../../redux/slices/host.slice';
 import { fetchDiscardBooking } from '../../../redux/slices/booking.slice';
+import CheckInButton from '../../../components/Host/shared/CheckInButton'; // adjust path
 
 export default function HostBookingScreen() {
   const dispatch = useDispatch();
@@ -11,6 +20,13 @@ export default function HostBookingScreen() {
   const accountId = user?.accountId;
 
   const { bookings, bookingLoading, bookingError } = useSelector((state) => state.host);
+  const { loading: checkInLoading } = useSelector((state) => state.booking);
+
+  useEffect(() => {
+    if (accountId) {
+      dispatch(fetchBookingByHost(accountId));
+    }
+  }, [dispatch, accountId]);
 
   const handleDiscardBooking = (bookingId) => {
     Alert.alert(
@@ -18,7 +34,9 @@ export default function HostBookingScreen() {
       'Bạn có chắc muốn discard booking này?',
       [
         { text: 'Hủy', style: 'cancel' },
-        { text: 'Đồng ý', onPress: () => {
+        {
+          text: 'Đồng ý',
+          onPress: () => {
             dispatch(fetchDiscardBooking(bookingId))
               .unwrap()
               .then(() => {
@@ -28,18 +46,13 @@ export default function HostBookingScreen() {
               })
               .catch((error) => {
                 console.error('❌ DISCARD booking failed:', error);
+                Alert.alert('Lỗi', error?.message || 'Discard booking thất bại');
               });
-          }
+          },
         },
       ]
     );
   };
-
-  useEffect(() => {
-    if (accountId) {
-      dispatch(fetchBookingByHost(accountId));
-    }
-  }, [dispatch, accountId]);
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -52,9 +65,21 @@ export default function HostBookingScreen() {
       <Text>Payment: {item.paymentMethod}</Text>
       <Text>Total: {item.totalPrice?.toLocaleString()} VND</Text>
 
+      {/* Check-in Button */}
+      <CheckInButton
+        bookingId={item.bookingId}
+        onSuccess={() => {
+          if (accountId) {
+            dispatch(fetchBookingByHost(accountId));
+          }
+        }}
+      />
+
+      {/* Discard Button */}
       <TouchableOpacity
         style={styles.discardButton}
         onPress={() => handleDiscardBooking(item.bookingId)}
+        disabled={checkInLoading}
       >
         <Text style={styles.discardButtonText}>Discard Booking</Text>
       </TouchableOpacity>
@@ -76,9 +101,15 @@ export default function HostBookingScreen() {
       {!bookingLoading && !bookingError && (
         <FlatList
           data={bookings}
-          keyExtractor={(item) => item.bookingId} 
+          keyExtractor={(item) => item.bookingId}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
+          refreshing={bookingLoading}
+          onRefresh={() => {
+            if (accountId) {
+              dispatch(fetchBookingByHost(accountId));
+            }
+          }}
         />
       )}
     </View>
@@ -108,6 +139,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   itemContainer: {
     padding: 16,
@@ -122,8 +154,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginBottom: 4,
   },
-
-    discardButton: {
+  discardButton: {
     marginTop: 10,
     backgroundColor: '#FF5C5C',
     paddingVertical: 8,
@@ -133,5 +164,5 @@ const styles = StyleSheet.create({
   discardButtonText: {
     color: '#fff',
     fontWeight: 'bold',
-},
+  },
 });

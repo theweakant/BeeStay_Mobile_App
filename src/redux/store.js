@@ -6,6 +6,7 @@ import hostReducer from './slices/host.slice';
 import homestayReducer from './slices/homestay.slice'; 
 import uploadReducer from './slices/upload.slice';
 import bookingReducer from './slices/booking.slice';
+import reviewReducer from './slices/review.slice';
 // import imageUploadReducer from './slices/imageUpload.slice'; 
 // import videoUploadReducer from './slices/videoUpload.slice'; 
 
@@ -18,6 +19,7 @@ const store = configureStore({
     homestay: homestayReducer,
     upload: uploadReducer, 
     booking: bookingReducer, 
+    review: reviewReducer, 
     // uploadImage: imageUploadReducer,
     // uploadVideo: videoUploadReducer,
     
