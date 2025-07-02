@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ActivityIndicator, Text, View, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAuth } from '../../../redux/hooks/useAuth';
+
 import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
 import { convertToHotelImages, formatPrice, getStarRating } from '../../../utils/bookingUtils';
 import { openGoogleMaps } from '../../../utils/mapUtil';
@@ -17,10 +19,15 @@ import BookingDescription from '../../../components/BookingScreen/BookingDescrip
 import BookingHostInfo from '../../../components/BookingScreen/BookingHostInfo';
 import BookingPolicies from '../../../components/BookingScreen/BookingPolicies';
 
+import ReviewListSection from '../../../components/BookingScreen/ReviewSection/ReviewListSection';
+import AddReviewSection from '../../../components/BookingScreen/ReviewSection/AddReviewSection';
+
 export default function BookingScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
+  const { user } = useAuth();
+  const accountId = user?.accountId;;
   const { homestayId } = route.params || {};
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { selectedHomestay: homestayData, fetchingById: loading, fetchByIdError: error } = useSelector(state => state.homestay);
@@ -149,8 +156,28 @@ export default function BookingScreen() {
         <BookingAmenities amenities={amenities} />
         <BookingFeatures features={homestayData.features} />
         <BookingDescription description={homestayData.description} />
+
+
+
         <BookingHostInfo host={homestayData.host} />
         <BookingPolicies homestayPolicies={homestayData.policies} policyData={PolicyData} />
+
+        {accountId && homestayData && (
+          <AddReviewSection
+            accountId={accountId}
+            stayCationId={homestayData.id}
+            onReviewSubmitted={() => {
+              dispatch(fetchHomestayById(homestayData.id)); 
+            }}
+          />
+        )}
+
+        <ReviewListSection 
+          reviews={homestayData.reviews} 
+          averageRating={homestayData.averageRating}
+          reviewCount={homestayData.reviewCount}
+        />
+
         <View style={styles.bottomPadding} />
       </ScrollView>
     </SafeAreaView>
