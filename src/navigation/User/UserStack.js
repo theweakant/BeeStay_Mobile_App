@@ -16,7 +16,7 @@ import DetailScreen from '../../screens/UserScreen/DetailScreen';
 //Booking
 import BookingScreen from '../../screens/UserScreen/Booking/BookingScreen';
 import PickTimeScreen from '../../screens/UserScreen/Booking/PickTimeScreen';
-import BookingDetailScreen from '../../screens/UserScreen/Booking/BookingDetailScreen';
+import BookingDetailScreen from '../../screens/UserScreen/User/BookingDetailScreen';
 import OrderBookingScreen from '../../screens/UserScreen/User/OrderBookingScreen';
 
 //Payment
