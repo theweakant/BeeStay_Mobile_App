@@ -1,3 +1,4 @@
+
 // api/client.js
 import { Alert } from 'react-native';
 import axios from 'axios';
@@ -41,18 +42,44 @@ const isPublicEndpoint = (url) => {
   return PUBLIC_ENDPOINTS.some(endpoint => url.includes(endpoint));
 };
 
+// Helper function to decode JWT token
+const decodeToken = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload;
+  } catch (error) {
+    if (__DEV__) console.error('❌ Token decode error:', error);
+    return null;
+  }
+};
+
+// Helper function to check if token is expired
+const isTokenExpired = (token) => {
+  try {
+    const decoded = decodeToken(token);
+    if (!decoded || !decoded.exp) return true;
+    const now = Math.floor(Date.now() / 1000);
+    return decoded.exp < now;
+  } catch (error) {
+    if (__DEV__) console.error('❌ Token expiry check error:', error);
+    return true;
+  }
+};
+
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      const method = config.method?.toUpperCase() || 'UNKNOWN';
       const isPublic = isPublicEndpoint(config.url);
-      if (__DEV__) console.log(`🚀 ${method} ${config.url} - ${isPublic ? 'Public' : 'Protected'}`);
-
+      
       if (!isPublic) {
         const token = await AsyncStorage.getItem('token');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
-          if (__DEV__) console.log('✅ Token added', token);
+          
+          // Only log if token is expired (potential issue)
+          if (isTokenExpired(token)) {
+            if (__DEV__) console.warn('⚠️ Using expired token - will attempt refresh on error');
+          }
         } else {
           if (__DEV__) console.warn('⚠️ No auth token found for protected endpoint');
         }
@@ -72,11 +99,7 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => {
-    if (__DEV__) {
-      const status = response?.status || 'UNKNOWN';
-      const url = response?.config?.url || 'UNKNOWN';
-      console.log(`✅ API Response: ${status} ${url}`);
-    }
+    // Only log errors, not every successful response
     return response;
   },
   async (error) => {
@@ -84,16 +107,22 @@ apiClient.interceptors.response.use(
     const status = error.response?.status;
     const url = originalRequest?.url;
 
-    if (__DEV__) {
+    // Only log errors that matter
+    if (__DEV__ && status >= 400) {
       console.error(`❌ API Error: ${status} ${url}`);
-      console.error('📋 Error Details:', {
-        status,
-        data: error.response?.data,
-        message: error.message,
-      });
+      
+      // Only log detailed info for critical errors
+      if (status >= 500 || !error.response) {
+        console.error('📋 Error Details:', {
+          status,
+          data: error.response?.data,
+          message: error.message,
+        });
+      }
     }
 
-    if (status === 401  && originalRequest && !originalRequest._retry) {
+    // Handle both 401 and 403 errors (some servers return 403 for expired tokens)
+    if ((status === 401 || status === 403) && originalRequest && !originalRequest._retry) {
       const isPublic = isPublicEndpoint(originalRequest.url);
       if (!isPublic) {
         if (isRefreshing) {
@@ -113,8 +142,7 @@ apiClient.interceptors.response.use(
           const refreshToken = await AsyncStorage.getItem('refreshToken');
           if (!refreshToken) throw new Error('No refresh token available');
 
-          if (__DEV__) console.log('🔄 Attempting to refresh token...');
-          if (__DEV__) console.log('🔑 Refresh token used:', refreshToken);
+          if (__DEV__) console.log('🔄 Refreshing expired token...');
           
           const refreshResponse = await refreshClient.post(
             '/v1/auth/refresh-token',
@@ -133,24 +161,23 @@ apiClient.interceptors.response.use(
           await AsyncStorage.setItem('token', newToken);
           if (newRefreshToken) {
             await AsyncStorage.setItem('refreshToken', newRefreshToken);
-            if (__DEV__) console.log('✅ Tokens refreshed & saved');
           }
+
+          if (__DEV__) console.log('✅ Token refreshed successfully');
 
           processQueue(null, newToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return apiClient(originalRequest);
 
         } catch (refreshError) {
-          if (__DEV__) console.error('❌ Refresh Token Failed:', refreshError);
+          if (__DEV__) console.error('❌ Token refresh failed:', refreshError.message);
 
-          // ❗️Reset `isRefreshing` early to avoid locking queue
           isRefreshing = false;
-
           processQueue(refreshError, null);
 
           // Clear tokens
           await AsyncStorage.multiRemove(['token', 'refreshToken', 'accountId']);
-          if (__DEV__) console.log('🧹 Cleared all auth tokens');
+          if (__DEV__) console.log('🧹 Cleared expired tokens');
 
           const authError = new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
           authError.isAuthError = true;
@@ -163,6 +190,8 @@ apiClient.interceptors.response.use(
 
     // Network error
     if (!error.response) {
+      if (__DEV__) console.error('🌐 Network connection error:', error.message);
+      
       const networkError = new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
       networkError.isNetworkError = true;
       throw networkError;
