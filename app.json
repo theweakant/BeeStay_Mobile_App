@@ -32,7 +32,13 @@
       },
       "package": "com.theweakant.beestaymobile",
       "runtimeVersion": "1.0.0",
-      "permissions": ["READ_MEDIA_IMAGES", "READ_EXTERNAL_STORAGE"]
+      "permissions": [
+        "READ_MEDIA_IMAGES", 
+        "READ_EXTERNAL_STORAGE",
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -54,6 +60,13 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.75416150561-t3ia9i1stka3ve3fki5l413gm1or82a1"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Ứng dụng cần quyền truy cập ảnh để bạn có thể chọn và tải ảnh lên.",
+          "cameraPermission": "Ứng dụng cần quyền truy cập camera để chụp ảnh."
         }
       ]
     ],
