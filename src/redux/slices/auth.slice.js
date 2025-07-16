@@ -61,6 +61,33 @@ export const verifyAndRegister = createAsyncThunk(
   }
 );
 
+// export const restoreAuthState = createAsyncThunk(
+//   'auth/restoreAuthState',
+//   async (_, thunkAPI) => {
+//     try {
+//       const token = await AsyncStorage.getItem('token');
+//       const refreshToken = await AsyncStorage.getItem('refreshToken');
+//       const accountId = await AsyncStorage.getItem('accountId');
+      
+//       if (token) {
+//         const decoded = jwtDecode(token);
+//         return {
+//           token,
+//           refreshToken,
+//           role: decoded.role,
+//           userName: decoded.sub,
+//           accountId: accountId ? parseInt(accountId) : null,
+//         };
+//       }
+//       return null;
+//     } catch (error) {
+//       await AsyncStorage.multiRemove(['token', 'refreshToken', 'accountId']);
+//       return thunkAPI.rejectWithValue('Failed to restore auth state');
+//     }
+//   }
+// );
+
+
 export const restoreAuthState = createAsyncThunk(
   'auth/restoreAuthState',
   async (_, thunkAPI) => {
@@ -68,19 +95,30 @@ export const restoreAuthState = createAsyncThunk(
       const token = await AsyncStorage.getItem('token');
       const refreshToken = await AsyncStorage.getItem('refreshToken');
       const accountId = await AsyncStorage.getItem('accountId');
-      
+
       if (token) {
-        const decoded = jwtDecode(token);
+        let decoded = null;
+        try {
+          decoded = jwtDecode(token);
+        } catch (err) {
+          console.warn("⚠️ Invalid token:", err);
+          // Nếu decode lỗi, xóa token để tránh crash
+          await AsyncStorage.multiRemove(['token', 'refreshToken', 'accountId']);
+          return null;
+        }
+
         return {
           token,
           refreshToken,
-          role: decoded.role,
-          userName: decoded.sub,
+          role: decoded?.role || null,
+          userName: decoded?.sub || null,
           accountId: accountId ? parseInt(accountId) : null,
         };
       }
+
       return null;
     } catch (error) {
+      console.error("🔴 restoreAuthState error:", error);
       await AsyncStorage.multiRemove(['token', 'refreshToken', 'accountId']);
       return thunkAPI.rejectWithValue('Failed to restore auth state');
     }
