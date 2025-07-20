@@ -33,7 +33,7 @@
       "package": "com.theweakant.beestaymobile",
       "runtimeVersion": "1.0.0",
       "permissions": [
-        "READ_MEDIA_IMAGES", 
+        "READ_MEDIA_IMAGES",
         "READ_EXTERNAL_STORAGE",
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE"
@@ -68,7 +68,8 @@
           "photosPermission": "Ứng dụng cần quyền truy cập ảnh để bạn có thể chọn và tải ảnh lên.",
           "cameraPermission": "Ứng dụng cần quyền truy cập camera để chụp ảnh."
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "updates": {
       "url": "https://u.expo.dev/6363cd6e-230c-4c7a-961b-28ded997e1b7"
