@@ -3,18 +3,18 @@ import { View, Text, TextInput, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const SearchBar = ({ 
-  placeholder = "Tên homestay, hotel, quận/huyện",
+  placeholder = "Bạn muốn đi đâu?",
   onChangeText,
   value,
   showLogo = true,
-logoSource = require('../../assets/Logo/beestay-logo.png'),
+  logoSource = require('../../assets/Logo/beestay-logo.png'),
   style,
   containerStyle
 }) => {
   return (
     <View style={[styles.searchContainer, containerStyle]}>
       <View style={[styles.searchBar, style]}>
-        <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
+        <Ionicons name="search" size={16} color="#999" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder={placeholder}
@@ -37,18 +37,18 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    paddingHorizontal: 16,
+    marginBottom: 12,
   },
   searchBar: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginRight: 15,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 12,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   searchIcon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   searchInput: {
     flex: 1,
@@ -67,9 +67,9 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   logo: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
 });
 

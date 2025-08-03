@@ -9,21 +9,14 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
     const { avatarUpdateLoading } = useSelector((state) => state.user);
     const [previewImage, setPreviewImage] = useState(null);
 
-    // ✅ THAY ĐỔI: Sử dụng Expo ImagePicker
     const showImagePicker = async () => {
         try {
-            // Request permission
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
-                Alert.alert(
-                    'Quyền truy cập',
-                    'Cần cấp quyền truy cập thư viện ảnh để chọn ảnh đại diện',
-                    [{ text: 'OK' }]
-                );
+                Alert.alert('Quyền truy cập', 'Cần cấp quyền truy cập thư viện ảnh để chọn ảnh đại diện');
                 return;
             }
 
-            // Launch image picker
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
@@ -32,66 +25,47 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
                 base64: false,
             });
 
-            if (!result.canceled && result.assets && result.assets.length > 0) {
+            if (!result.canceled && result.assets?.length > 0) {
                 const imageAsset = result.assets[0];
-                console.log('Selected image:', imageAsset);
-                
-                // Show preview
                 setPreviewImage(imageAsset.uri);
-                
-                // Show confirmation dialog
+
                 Alert.alert(
                     'Xác nhận',
                     'Bạn có muốn cập nhật ảnh đại diện này không?',
                     [
-                        {
-                            text: 'Hủy',
-                            style: 'cancel',
-                            onPress: () => setPreviewImage(null)
-                        },
-                        {
-                            text: 'Cập nhật',
-                            onPress: () => handleUpdateAvatar(imageAsset)
-                        }
+                        { text: 'Hủy', style: 'cancel', onPress: () => setPreviewImage(null) },
+                        { text: 'Cập nhật', onPress: () => handleUpdateAvatar(imageAsset) }
                     ]
                 );
             }
         } catch (error) {
-            console.error('Error opening image picker:', error);
             Alert.alert('Lỗi', 'Không thể mở thư viện ảnh');
         }
     };
 
     const handleUpdateAvatar = async (imageAsset) => {
         try {
-            // ✅ THAY ĐỔI: Tạo FormData cho Expo
             const formData = new FormData();
             formData.append('image', {
                 uri: imageAsset.uri,
                 type: imageAsset.type || 'image/jpeg',
                 name: imageAsset.fileName || 'avatar.jpg',
             });
-            
-            // Dispatch update avatar action với FormData
+
             const result = await dispatch(updateUserAvatarByAccount({
-                accountId: accountId,
-                imageData: formData // Gửi FormData
+                accountId,
+                imageData: formData
             })).unwrap();
 
-            console.log('Avatar updated successfully:', result);
-            
-            // Call callback if provided
             if (onAvatarUpdated) {
                 onAvatarUpdated(result.image);
             }
 
             setPreviewImage(null);
             Alert.alert('Thành công', 'Cập nhật ảnh đại diện thành công!');
-
         } catch (error) {
-            console.error('Error updating avatar:', error);
             setPreviewImage(null);
-            Alert.alert('Lỗi', error || 'Có lỗi xảy ra khi cập nhật ảnh đại diện');
+            Alert.alert('Lỗi', error?.message || 'Có lỗi xảy ra khi cập nhật ảnh đại diện');
         }
     };
 
@@ -103,9 +77,9 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
                     <Text style={styles.previewText}>Xem trước ảnh đại diện mới</Text>
                 </View>
             )}
-            
-            <TouchableOpacity 
-                style={[styles.uploadButton, avatarUpdateLoading && styles.disabledButton]} 
+
+            <TouchableOpacity
+                style={[styles.uploadButton, avatarUpdateLoading && styles.disabledButton]}
                 onPress={showImagePicker}
                 disabled={avatarUpdateLoading}
             >
@@ -116,7 +90,6 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
                     </View>
                 ) : (
                     <>
-                        <Text style={styles.buttonIcon}>📷</Text>
                         <Text style={styles.buttonText}>Cập nhật ảnh đại diện</Text>
                     </>
                 )}

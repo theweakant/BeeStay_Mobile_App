@@ -43,8 +43,14 @@ const InfoCard = ({ item, onPress, style, imageStyle, contentStyle, onFavoritePr
   return (
     <TouchableOpacity style={[styles.homestayCard, style]} onPress={handlePress}>
       <View style={styles.imageContainer}>
-        <Image source={item.image ? { uri: item.image } : defaultImage} style={[styles.homestayImage, imageStyle]} />
-
+      <Image
+        source={
+          item.imageList && item.imageList.length > 0
+            ? { uri: item.imageList[0] }
+            : defaultImage
+        }
+        style={[styles.homestayImage, imageStyle]}
+      />
         {/* Discount Badge */}
         {hasDiscount && (
           <View style={styles.discountBadge}>
@@ -88,14 +94,13 @@ const InfoCard = ({ item, onPress, style, imageStyle, contentStyle, onFavoritePr
         {/* Price Container - Vertical Layout */}
         <View style={styles.priceContainer}>
           <Text style={styles.currentPrice}>
-            {formatPrice(item.pricePerNight)}₫
+            {formatPrice(item.pricePerNight)}₫/ đêm
           </Text>
           {hasDiscount && (
             <Text style={styles.originalPrice}>
-              {formatPrice(item.originalPricePerNight)}₫
+              {formatPrice(item.originalPricePerNight)}₫/ đêm
             </Text>
           )}
-          <Text style={styles.priceUnit}>/đêm</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -217,7 +222,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   currentPrice: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "700",
     color: "#059669",
     letterSpacing: -0.2,

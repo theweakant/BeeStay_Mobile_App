@@ -43,10 +43,10 @@ export const HomestayEndpoints = {
 
   addStayCationByAccountId: (accountId) => `/v1/stay-cation/add/${accountId}`, 
 
-  updateStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`,//y
+  updateStayCationById: (homeStayId) => `/v1/stay-cation/${homeStayId}`,
 
-  addStayCationImage: (stayCationId) => `/v1/stay-cation/add-img/${stayCationId}`,//n
-  addStayCationVideo: (stayCationId) => `/v1/stay-cation/add-video/${stayCationId}`, //n
+  addStayCationImage: (stayCationId) => `/v1/stay-cation/add-img/${stayCationId}`,
+  addStayCationVideo: (stayCationId) => `/v1/stay-cation/add-video/${stayCationId}`, 
 
 };
 

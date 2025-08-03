@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../../../redux/hooks/useAuth';
 
 import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
-import { convertToHotelImages, formatPrice, getStarRating } from '../../../utils/bookingUtils';
+import { convertToHotelImages, getStarRating } from '../../../utils/bookingUtils';
 import { openGoogleMaps } from '../../../utils/mapUtil';
 import { PolicyData } from '../../../data/MockData';
 

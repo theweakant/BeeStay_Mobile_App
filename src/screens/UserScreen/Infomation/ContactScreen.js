@@ -155,59 +155,6 @@ export default function ContactScreen() {
             />
           </View>
         </View>
-
-        {/* Contact Form */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Gửi tin nhắn cho chúng tôi</Text>
-          <View style={styles.formContainer}>
-            <InputField
-              label="Họ và tên"
-              placeholder="Nhập họ và tên của bạn"
-              value={formData.name}
-              onChangeText={(value) => handleInputChange('name', value)}
-              required={true}
-              icon="person-outline"
-            />
-            
-            <InputField
-              label="Email"
-              placeholder="Nhập địa chỉ email của bạn"
-              value={formData.email}
-              onChangeText={(value) => handleInputChange('email', value)}
-              keyboardType="email-address"
-              required={true}
-              icon="mail-outline"
-            />
-            
-            <InputField
-              label="Chủ đề"
-              placeholder="Chủ đề tin nhắn (tùy chọn)"
-              value={formData.subject}
-              onChangeText={(value) => handleInputChange('subject', value)}
-              icon="document-text-outline"
-            />
-            
-            <InputField
-              label="Tin nhắn"
-              placeholder="Mô tả chi tiết vấn đề hoặc câu hỏi của bạn..."
-              value={formData.message}
-              onChangeText={(value) => handleInputChange('message', value)}
-              multiline={true}
-              required={true}
-              icon="chatbubble-outline"
-            />
-
-            <TouchableOpacity 
-              style={styles.submitButton} 
-              onPress={handleSubmit}
-              activeOpacity={0.8}
-            >
-              <MaterialIcons name="send" size={20} color="#fff" />
-              <Text style={styles.submitButtonText}>Gửi tin nhắn</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
         {/* FAQ Section */}
         <View style={styles.section}>
           <View style={styles.faqCard}>

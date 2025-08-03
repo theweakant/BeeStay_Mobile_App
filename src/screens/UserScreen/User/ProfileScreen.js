@@ -1,38 +1,30 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity  } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { fetchUserByAccount } from '../../../redux/slices/user.slice';
 import { formatDate, getFullAddress } from '../../../utils/textUtils';
-import UpdateAvatar from '../../../components/UpdateAvatar'; 
+import UpdateAvatar from '../../../components/UpdateAvatar';
 
 export default function ProfileScreen() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
-    
+
     const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
     const { profile: userProfile, loading: userLoading, error: userError } = useSelector((state) => state.user);
-    
+
     useEffect(() => {
         if (isAuthenticated && authUser?.accountId) {
-            console.log('✅ ProfileScreen: Fetching user with accountId:', authUser.accountId);
             dispatch(fetchUserByAccount(authUser.accountId));
-        } else {
-            console.log('❌ ProfileScreen: Missing isAuthenticated or accountId');
-            console.log('- isAuthenticated:', isAuthenticated);
-            console.log('- authUser:', authUser);
         }
     }, [dispatch, isAuthenticated, authUser?.accountId]);
 
-    // Callback function khi avatar được cập nhật thành công
-    const handleAvatarUpdated = (newAvatarUrl) => {
-        console.log('Avatar updated successfully:', newAvatarUrl);
-        // Có thể refresh lại user profile để lấy avatar mới
+    const handleAvatarUpdated = () => {
         if (authUser?.accountId) {
             dispatch(fetchUserByAccount(authUser.accountId));
         }
     };
-    
+
     if (userLoading && !userProfile) {
         return (
             <View style={[styles.container, styles.centerContent]}>
@@ -41,8 +33,7 @@ export default function ProfileScreen() {
             </View>
         );
     }
-    
-    // Error state
+
     if (userError) {
         return (
             <View style={[styles.container, styles.centerContent]}>
@@ -50,8 +41,7 @@ export default function ProfileScreen() {
             </View>
         );
     }
-    
-    // No user data
+
     if (!userProfile) {
         return (
             <View style={[styles.container, styles.centerContent]}>
@@ -62,13 +52,12 @@ export default function ProfileScreen() {
 
     return (
         <ScrollView style={styles.container}>
-            {/* Header Section */}
             <View style={styles.header}>
                 <View style={styles.avatarContainer}>
-                    <Image 
-                        source={{ uri: userProfile.avatar || userProfile.image || 'https://via.placeholder.com/100' }} 
+                    <Image
+                        source={{ uri: userProfile.avatar || userProfile.image || 'https://via.placeholder.com/100' }}
                         style={styles.avatar}
-                        defaultSource={require('../../../../assets/Avatar/default-avatar.jpg')} 
+                        defaultSource={require('../../../../assets/Avatar/default-avatar.jpg')}
                     />
                     {userProfile.verified && (
                         <View style={styles.verifiedBadge}>
@@ -76,27 +65,35 @@ export default function ProfileScreen() {
                         </View>
                     )}
                 </View>
-                
+
                 <Text style={styles.name}>{userProfile.name}</Text>
                 <Text style={styles.email}>{userProfile.email}</Text>
-                
+
                 <View style={styles.statusContainer}>
-                    <View style={[styles.statusBadge, userProfile.status === 'active' ? styles.activeStatus : styles.inactiveStatus]}>
-                        <Text style={[styles.statusText, userProfile.status === 'active' ? styles.activeStatusText : styles.inactiveStatusText]}>
+                    <View
+                        style={[
+                            styles.statusBadge,
+                            userProfile.status === 'active' ? styles.activeStatus : styles.inactiveStatus,
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.statusText,
+                                userProfile.status === 'active' ? styles.activeStatusText : styles.inactiveStatusText,
+                            ]}
+                        >
                             {userProfile.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
                         </Text>
                     </View>
                 </View>
 
-                {/* UpdateAvatar Component - Tích hợp component upload avatar */}
-                <UpdateAvatar 
+                <UpdateAvatar
                     accountId={authUser?.accountId}
                     currentAvatar={userProfile.avatar || userProfile.image}
                     onAvatarUpdated={handleAvatarUpdated}
                 />
             </View>
 
-            {/* Stats Section */}
             <View style={styles.statsContainer}>
                 <View style={styles.statItem}>
                     <Text style={styles.statNumber}>{userProfile.currentBooking || 0}</Text>
@@ -119,11 +116,10 @@ export default function ProfileScreen() {
                 </View>
             </View>
 
-            {/* Personal Information Section */}
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={() => navigation.navigate('EditProfile')}
                         style={styles.editButton}
                     >
@@ -133,34 +129,34 @@ export default function ProfileScreen() {
 
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Số điện thoại:</Text>
-                    <Text style={styles.infoValue}>{userProfile.phone || 'Chưa cập nhật'}</Text>
+                    <Text style={styles.infoValue}>{userProfile.phone || 'N/A'}</Text>
                 </View>
-                
+
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Giới tính:</Text>
                     <Text style={styles.infoValue}>
-                        {userProfile.gender === 'Female' ? 'Nữ' : userProfile.gender === 'Male' ? 'Nam' : 'Chưa cập nhật'}
+                        {userProfile.gender === 'female' ? 'Nữ' : userProfile.gender === 'male' ? 'Nam' : 'N/A'}
                     </Text>
                 </View>
-                
+
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Ngày sinh:</Text>
                     <Text style={styles.infoValue}>
-                        {userProfile.birthDate ? formatDate(userProfile.birthDate) : 'Chưa cập nhật'}
+                        {userProfile.birthDate ? formatDate(userProfile.birthDate) : 'N/A'}
                     </Text>
                 </View>
-                
+
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Địa chỉ:</Text>
                     <Text style={styles.infoValue}>
-                        {userProfile.addressResponse ? getFullAddress(userProfile.addressResponse) : 'Chưa cập nhật'}
+                        {userProfile.addressResponse ? getFullAddress(userProfile.addressResponse) : 'N/A'}
                     </Text>
                 </View>
-                
+
                 <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Ngày tham gia:</Text>
                     <Text style={styles.infoValue}>
-                        {userProfile.joinedDate ? formatDate(userProfile.joinedDate) : 'Chưa cập nhật'}
+                        {userProfile.joinedDate ? formatDate(userProfile.joinedDate) : 'N/A'}
                     </Text>
                 </View>
             </View>

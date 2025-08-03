@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
-import { truncateText } from "../../utils/textUtils"
+import { truncateText, formatCurrency } from "../../utils/textUtils"
 
 import defaultImage from "../../../assets/AvailableImage/default_homestay_image.png"
 
@@ -9,6 +9,11 @@ const InfoCard = ({ item, onPress, style, imageStyle, contentStyle, onFavoritePr
     if (onPress) {
       onPress(item)
     }
+  }
+
+  const formatPrice = (price) => {
+    if (!price) return "0"
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
   }
 
   const handleFavoritePress = () => {
@@ -37,12 +42,18 @@ const InfoCard = ({ item, onPress, style, imageStyle, contentStyle, onFavoritePr
   return (
     <TouchableOpacity style={[styles.homestayCard, style]} onPress={handlePress}>
       <View style={styles.imageContainer}>
-        <Image source={item.image ? { uri: item.image } : defaultImage} style={[styles.homestayImage, imageStyle]} />
-
+        <Image
+          source={
+            item.imageList && item.imageList.length > 0
+              ? { uri: item.imageList[0] }
+              : defaultImage
+          }
+          style={[styles.homestayImage, imageStyle]}
+        />
         {/* Discount Badge */}
         {discountPercentage > 0 && (
           <View style={styles.discountBadge}>
-            <FontAwesome name="cog" size={10} color="#fff" />
+            <FontAwesome name="tag" size={8} color="#fff" />
             <Text style={styles.discountText}>-{discountPercentage}%</Text>
           </View>
         )}
@@ -62,19 +73,27 @@ const InfoCard = ({ item, onPress, style, imageStyle, contentStyle, onFavoritePr
           {item.name}
         </Text>
 
-        {/* Price Container - Horizontal Layout */}
-        <View style={styles.priceContainer}>
-          <Text style={styles.price}>{item.pricePerNight}VND</Text>
-          {item.originalPricePerNight && item.originalPricePerNight !== item.pricePerNight && (
-            <Text style={styles.priceOriginalPerNight}>{item.originalPricePerNight}VND</Text>
-          )}
+        {/* Location and Rating Container - Horizontal */}
+        <View style={styles.locationRatingContainer}>
+          <Text style={styles.locationText} numberOfLines={1}>
+            📍 {getLocationText()}
+          </Text>
+          
+          <View style={styles.ratingContainer}>
+            <FontAwesome name="star" size={14} color="#FF9500" />
+            <Text style={styles.ratingText}>{item.averageRating}</Text>
+            <Text style={styles.reviewCount}>({item.reviewCount})</Text>
+          </View>
         </View>
 
-        {/* Rating Container */}
-        <View style={styles.ratingContainer}>
-          <FontAwesome name="star" size={14} color="#FF9500" />
-          <Text style={styles.ratingText}>{item.averageRating}</Text>
-          <Text style={styles.reviewCount}>({item.reviewCount})</Text>
+        {/* Price Container - Vertical Layout */}
+        <View style={styles.priceContainer}>
+          <Text style={styles.price}>{formatPrice(item.pricePerNight)}₫/ đêm</Text>
+          {discountPercentage > 0 && item.originalPricePerNight && (
+            <Text style={styles.priceOriginalPerNight}>
+              {formatPrice(item.originalPricePerNight)}₫/ đêm
+            </Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -85,30 +104,21 @@ const styles = StyleSheet.create({
   homestayCard: {
     width: 200,
     marginRight: 15,
-    backgroundColor: "transparent", // Thay đổi từ "#fff" thành "transparent"
+    backgroundColor: "transparent", 
     borderRadius: 12,
-    // Loại bỏ shadow để tránh background hiển thị
-    // shadowColor: "#000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
-    // elevation: 3,
   },
   imageContainer: {
     position: "relative",
     width: "100%",
     height: 120,
-    backgroundColor: "transparent", // Đảm bảo container cũng transparent
+    backgroundColor: "transparent", 
   },
   homestayImage: {
     width: "100%",
     height: "100%",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    backgroundColor: "transparent", // Đảm bảo image cũng transparent
+    backgroundColor: "transparent", 
   },
   discountBadge: {
     position: "absolute",
@@ -140,37 +150,34 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 12,
-    backgroundColor: "#fff", // Chỉ content phần dưới có background trắng
+    backgroundColor: "#fff", 
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
   },
   homestayName: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "500",
     color: "#333",
     marginBottom: 8,
     lineHeight: 18,
   },
-  priceContainer: {
+  locationRatingContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 6,
-    gap: 8,
   },
-  price: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#333",
-  },
-  priceOriginalPerNight: {
-    fontSize: 12,
-    color: "#999",
-    textDecorationLine: "line-through",
+  locationText: {
+    fontSize: 11,
+    color: "#6B7280",
+    fontWeight: "400",
+    flex: 1,
   },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
+    marginLeft: 8,
   },
   ratingText: {
     fontSize: 12,
@@ -180,6 +187,22 @@ const styles = StyleSheet.create({
   reviewCount: {
     fontSize: 12,
     color: "#666",
+  },
+  priceContainer: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    marginBottom: 6,
+    gap: 2,
+  },
+  price: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#059669",
+  },
+  priceOriginalPerNight: {
+    fontSize: 12,
+    color: "#999",
+    textDecorationLine: "line-through",
   },
 })
 

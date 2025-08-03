@@ -5,11 +5,11 @@ import InfoCard from './InfoCard';
 const { width } = Dimensions.get('window');
 
 const NUM_COLUMNS = 2;
-const GAP = 12; // Khoảng cách giữa 2 cột
-const PARENT_PADDING = 20; // Padding từ component cha
-const VERTICAL_GAP = 16; // Khoảng cách giữa các hàng
+const GAP = 12; 
+const PARENT_PADDING = 20; 
+const VERTICAL_GAP = 16; 
 
-// Tính width chính xác: trừ padding từ cha và gap
+
 const AVAILABLE_WIDTH = width - (PARENT_PADDING * 2);
 const CARD_WIDTH = (AVAILABLE_WIDTH - GAP) / NUM_COLUMNS;
 
@@ -64,14 +64,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    marginHorizontal: -20, // Âm để bù trừ padding của cha
+    marginHorizontal: -20, 
   },
   flatListContent: {
     paddingVertical: 0,
-    paddingHorizontal: 20, // Đặt lại padding
+    paddingHorizontal: 20, 
   },
   itemWrapper: {
-    // Width và margin được set động trong renderItem
   },
   card: {
     width: '100%',

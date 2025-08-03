@@ -9,20 +9,23 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+
 import ItemList from '../../components/User/SearchScreen/ItemList';
 import SearchFilter from '../../components/User/SearchScreen/SearchFilter';
 
 import { fetchAllHomestays } from '../../redux/slices/homestay.slice';
 import { formatCurrency } from '../../utils/formatUtils';
 
-
 export default function SearchScreen() {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const { homestays, loading, error } = useSelector(state => state.homestay);
-
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('');
+  const [cityFilter, setCityFilter] = useState('');
+  const [priceRangeFilter, setPriceRangeFilter] = useState('');
 
   useEffect(() => {
     if (!homestays || homestays.length === 0) {
@@ -30,35 +33,60 @@ export default function SearchScreen() {
     }
   }, [dispatch, homestays]);
 
-
   const getFilteredHomestays = () => {
-  if (!homestays || homestays.length === 0) return [];
+    if (!homestays || homestays.length === 0) return [];
 
-  let filtered = homestays.filter(item => 
-    (item.recommended || item.available) &&
-    item.available &&
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    let filtered = homestays.filter(item => 
+      (item.recommended || item.available) &&
+      item.available &&
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  if (sortOption === 'rating-asc') {
-    filtered.sort((a, b) => a.rating - b.rating);
-  } else if (sortOption === 'rating-desc') {
-    filtered.sort((a, b) => b.rating - a.rating);
-  } else if (sortOption === 'price-asc') {
-    filtered.sort((a, b) => a.pricePerNight - b.pricePerNight);
-  } else if (sortOption === 'price-desc') {
-    filtered.sort((a, b) => b.pricePerNight - a.pricePerNight);
-  }
+    // City filter
+    if (cityFilter) {
+      filtered = filtered.filter(item => {
+        const itemCity = item.city?.toLowerCase() || '';
+        if (cityFilter === 'hanoi') {
+          return itemCity.includes('hà nội') || itemCity.includes('hanoi');
+        } else if (cityFilter === 'hcm') {
+          return itemCity.includes('hồ chí minh') || itemCity.includes('ho chi minh') || itemCity.includes('hcm');
+        }
+        return true;
+      });
+    }
 
-  return filtered;
-};
+    // Price range filter
+    if (priceRangeFilter) {
+      const [minPrice, maxPrice] = priceRangeFilter.split('-').map(Number);
+      filtered = filtered.filter(item => {
+        const price = item.pricePerNight || 0;
+        return price >= minPrice && price <= maxPrice;
+      });
+    }
+
+    // Sorting
+    if (sortOption === 'rating-asc') {
+      filtered.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+    } else if (sortOption === 'rating-desc') {
+      filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sortOption === 'price-asc') {
+      filtered.sort((a, b) => (a.pricePerNight || 0) - (b.pricePerNight || 0));
+    } else if (sortOption === 'price-desc') {
+      filtered.sort((a, b) => (b.pricePerNight || 0) - (a.pricePerNight || 0));
+    }
+
+    return filtered;
+  };
 
   const toggleHomestayStatus = (id) => {
     console.log('Toggle homestay status for id:', id);
   };
 
   const viewDetails = (item) => {
-    console.log('View details for:', item.name);
+    navigation.navigate('Booking', { 
+      homestayId: item.id,
+      homestayData: item
+    });
   };
 
   const handleRefresh = () => {
@@ -95,37 +123,29 @@ export default function SearchScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <SearchFilter
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        sortOption={sortOption}
+        setSortOption={setSortOption}
+        cityFilter={cityFilter}
+        setCityFilter={setCityFilter}
+        priceRangeFilter={priceRangeFilter}
+        setPriceRangeFilter={setPriceRangeFilter}
+      />
+      
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
         }
       >
-        <SearchFilter
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-        />
-
         {/* Nearby Section */}
         <View style={styles.nearbySection}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>Gần bạn nhất</Text>
-              <Text style={styles.sectionSubtitle}>
-                Các homestay gần bạn có đánh giá tốt nhất ({filteredHomestays.length} kết quả)
-              </Text>
-            </View>
-            <TouchableOpacity 
-              style={styles.refreshButton}
-              onPress={handleRefresh}
-              disabled={loading}
-            >
-              <Text style={[styles.refreshText, loading && styles.refreshTextDisabled]}>
-                {loading ? 'Đang tải...' : 'Làm mới'}
-              </Text>
-            </TouchableOpacity>
+          <View style={styles.titleContainer}>
+            <Text style={styles.sectionTitle}>
+              Gần bạn nhất <Text style={styles.resultCount}>({filteredHomestays.length} kết quả)</Text>
+            </Text>
           </View>
           
           {filteredHomestays.length > 0 ? (
@@ -166,34 +186,10 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     flex: 1,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: '#666',
-  },
-  refreshButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    backgroundColor: '#F5B041',
-  },
-  refreshText: {
-    fontSize: 12,
-    color: 'white',
-    fontWeight: '500',
-  },
-  refreshTextDisabled: {
-    opacity: 0.6,
   },
   loadingContainer: {
     flex: 1,
@@ -227,5 +223,13 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginBottom: 16,
+  },
+  resultCount: {
+    fontSize: 16,
+    fontWeight: 'normal',
+    color: '#666',
+  },
+  titleContainer: {
+    flex: 1,
   },
 });

@@ -129,7 +129,7 @@ const HomeScreen = () => {
         {/* Search Bar */}
         <SearchBar 
           onChangeText={handleSearch}
-          placeholder="Tên homestay, hotel, quận/huyện"
+          placeholder="Bạn muốn đi đâu?"
         />
 
         {/* Banner Carousel */}

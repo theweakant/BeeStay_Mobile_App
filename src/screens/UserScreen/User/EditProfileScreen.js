@@ -46,7 +46,7 @@ const EditProfileScreen = ({ route }) => {
     gender: '',
     birthDate: '',
     addressResponse: {
-      street: '',
+      location: '',
       district: '',
       city: '',
       province: ''
@@ -72,7 +72,7 @@ const EditProfileScreen = ({ route }) => {
         gender: profile.gender || '',
         birthDate: profile.birthDate || '',
         addressResponse: {
-          street: profile.addressResponse?.street || '',
+          location: profile.addressResponse?.location || '',
           district: profile.addressResponse?.district || '',
           city: profile.addressResponse?.city || '',
           province: profile.addressResponse?.province || ''
@@ -171,7 +171,7 @@ const EditProfileScreen = ({ route }) => {
         <TouchableOpacity style={styles.retryButton} onPress={() => {
           handleClearError();
           if (accountId) {
-            dispatch(fetchUserByAccount(accountId));
+            dispatch(fetchUserByAccount(accountIFemaled));
           }
         }}>
           <Text style={styles.retryButtonText}>Thử lại</Text>
@@ -219,16 +219,16 @@ const EditProfileScreen = ({ route }) => {
         <Text style={styles.label}>Giới tính</Text>
         <View style={styles.genderContainer}>
           <TouchableOpacity 
-            style={[styles.genderButton, formData.gender === 'Male' && styles.selectedGender]}
-            onPress={() => handleInputChange('gender', 'Male')}
+            style={[styles.genderButton, formData.gender === 'male' && styles.selectedGender]}
+            onPress={() => handleInputChange('gender', 'male')}
           >
-            <Text style={[styles.genderText, formData.gender === 'Male' && styles.selectedGenderText]}>Nam</Text>
+            <Text style={[styles.genderText, formData.gender === 'male' && styles.selectedGenderText]}>Nam</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.genderButton, formData.gender === 'Female' && styles.selectedGender]}
-            onPress={() => handleInputChange('gender', 'Female')}
+            style={[styles.genderButton, formData.gender === 'female' && styles.selectedGender]}
+            onPress={() => handleInputChange('gender', 'female')}
           >
-            <Text style={[styles.genderText, formData.gender === 'Female' && styles.selectedGenderText]}>Nữ</Text>
+            <Text style={[styles.genderText, formData.gender === 'female' && styles.selectedGenderText]}>Nữ</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.genderButton, formData.gender === 'Other' && styles.selectedGender]}
@@ -256,8 +256,8 @@ const EditProfileScreen = ({ route }) => {
         <Text style={styles.label}>Đường</Text>
         <TextInput
           style={styles.input}
-          value={formData.addressResponse.street}
-          onChangeText={(text) => handleAddressChange('street', text)}
+          value={formData.addressResponse.location}
+          onChangeText={(text) => handleAddressChange('location', text)}
           placeholder="Nhập tên đường"
         />
       </View>
