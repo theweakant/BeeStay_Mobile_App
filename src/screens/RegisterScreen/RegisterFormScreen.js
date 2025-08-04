@@ -1,4 +1,4 @@
-// RegisterFormScreen.js - UPDATED VERSION
+// RegisterFormScreen.js - BEESTAY UI UPDATED VERSION
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -9,8 +9,24 @@ import {
   Alert,
   ActivityIndicator,
   ScrollView,
+  SafeAreaView,
+  Image
 } from 'react-native';
 import { useAuth } from '../../redux/hooks/useAuth';
+
+// BeeStay Color Palette
+const BeeStayColors = {
+  primary: "#FFA500",        // Cam chủ đạo
+  background: "#fff",        // Nền trắng
+  inputBg: "#f8f9fa",       // Input background
+  textPrimary: "#333",       // Text đậm
+  textSecondary: "#666",     // Text nhẹ
+  placeholder: "#999",       // Placeholder
+  border: "#e9ecef",        // Border nhẹ
+  error: "#ff4444",         // Error đỏ
+  success: "#28a745",       // Success xanh
+  successBg: "#d4edda",     // Success background
+};
 
 export default function RegisterFormScreen({ navigation }) {
   const { 
@@ -26,7 +42,7 @@ export default function RegisterFormScreen({ navigation }) {
     userName: '',
     password: '',
     confirmPassword: '',
-    email: registration.email || '', // ✅ Thêm email vào form state
+    email: registration.email || '', 
     role: 'USER', 
     otp: '',
   });
@@ -116,7 +132,6 @@ export default function RegisterFormScreen({ navigation }) {
     try {
       clearError();
       
-      // ✅ Request data theo đúng format JSON
       const requestData = {
         userName: formData.userName.trim(),
         password: formData.password,
@@ -152,261 +167,369 @@ export default function RegisterFormScreen({ navigation }) {
     !isOTPExpired;
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Hoàn tất đăng ký</Text>
-        <Text style={styles.subtitle}>
-          Điền thông tin và nhập mã OTP để hoàn tất đăng ký
-        </Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView 
+        style={styles.scrollView} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Logo Section */}
+      <View style={styles.logoContainer}>
+        <Image
+          source={require("../../../assets/Logo/beestay-logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
 
-      <View style={styles.form}>
-        {/* Email - Display only */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <View style={styles.emailDisplay}>
-            <Text style={styles.emailText}>{formData.email}</Text>
-            <Text style={styles.verifiedBadge}>✓ Đã xác thực</Text>
-          </View>
-        </View>
-
-        {/* Username */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Tên đăng nhập *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nhập tên đăng nhập"
-            value={formData.userName}
-            onChangeText={(value) => handleInputChange('userName', value)}
-            autoCapitalize="none"
-            editable={!registration.loading}
-          />
-        </View>
-
-        {/* Password */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Mật khẩu *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
-            value={formData.password}
-            onChangeText={(value) => handleInputChange('password', value)}
-            secureTextEntry
-            editable={!registration.loading}
-          />
-        </View>
-
-        {/* Confirm Password */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Xác nhận mật khẩu *</Text>
-          <TextInput
-            style={[
-              styles.input,
-              formData.confirmPassword && formData.password !== formData.confirmPassword && styles.inputError
-            ]}
-            placeholder="Nhập lại mật khẩu"
-            value={formData.confirmPassword}
-            onChangeText={(value) => handleInputChange('confirmPassword', value)}
-            secureTextEntry
-            editable={!registration.loading}
-          />
-          {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-            <Text style={styles.errorText}>Mật khẩu không khớp</Text>
-          )}
-        </View>
-
-        {/* Role */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Vai trò</Text>
-          <View style={styles.roleContainer}>
-            <TouchableOpacity
-              style={[
-                styles.roleButton,
-                formData.role === 'USER' && styles.roleButtonActive
-              ]}
-              onPress={() => handleInputChange('role', 'USER')}
-              disabled={registration.loading}
-            >
-              <Text style={[
-                styles.roleButtonText,
-                formData.role === 'USER' && styles.roleButtonTextActive
-              ]}>
-                Người dùng
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.roleButton,
-                formData.role === 'HOST' && styles.roleButtonActive
-              ]}
-              onPress={() => handleInputChange('role', 'HOST')}
-              disabled={registration.loading}
-            >
-              <Text style={[
-                styles.roleButtonText,
-                formData.role === 'HOST' && styles.roleButtonTextActive
-              ]}>
-                Chủ nhà
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* OTP */}
-        <View style={styles.inputContainer}>
-          <View style={styles.otpHeader}>
-            <Text style={styles.label}>Mã OTP *</Text>
-            <View style={styles.otpTimer}>
-              {otpTimer > 0 ? (
-                <Text style={styles.timerText}>
-                  Còn lại: {formatTime(otpTimer)}
-                </Text>
-              ) : (
-                <TouchableOpacity onPress={handleResendOTP} disabled={registration.loading}>
-                  <Text style={styles.resendText}>Gửi lại OTP</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-          <TextInput
-            style={[
-              styles.input,
-              isOTPExpired && styles.inputError
-            ]}
-            placeholder="Nhập mã OTP (6 số)"
-            value={formData.otp}
-            onChangeText={(value) => handleInputChange('otp', value)}
-            keyboardType="numeric"
-            maxLength={6}
-            editable={!registration.loading}
-          />
-          {isOTPExpired && (
-            <Text style={styles.errorText}>Mã OTP đã hết hạn</Text>
-          )}
-          <Text style={styles.helperText}>
-            OTP đã được gửi đến: {formData.email}
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Hoàn tất đăng ký</Text>
+          <Text style={styles.headerSubtitle}>
+            Điền thông tin và nhập mã OTP để hoàn tất đăng ký
           </Text>
         </View>
 
-        {/* Error Message */}
-        {registration.error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{registration.error}</Text>
+        {/* Content */}
+        <View style={styles.content}>
+          {/* Email - Display only */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.emailDisplay}>
+              <Text style={styles.emailText}>{formData.email}</Text>
+              <View style={styles.verifiedBadge}>
+                <Text style={styles.verifiedText}>✓ Đã xác thực</Text>
+              </View>
+            </View>
           </View>
-        )}
 
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            (!isFormValid || registration.loading) && styles.buttonDisabled
-          ]}
-          onPress={handleSubmit}
-          disabled={!isFormValid || registration.loading}
-        >
-          {registration.loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.submitButtonText}>Hoàn tất đăng ký</Text>
+          {/* Username */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Tên đăng nhập *</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập tên đăng nhập"
+              placeholderTextColor={BeeStayColors.placeholder}
+              value={formData.userName}
+              onChangeText={(value) => handleInputChange('userName', value)}
+              autoCapitalize="none"
+              editable={!registration.loading}
+            />
+          </View>
+
+          {/* Password */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Mật khẩu *</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
+              placeholderTextColor={BeeStayColors.placeholder}
+              value={formData.password}
+              onChangeText={(value) => handleInputChange('password', value)}
+              secureTextEntry
+              editable={!registration.loading}
+            />
+          </View>
+
+          {/* Confirm Password */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Xác nhận mật khẩu *</Text>
+            <TextInput
+              style={[
+                styles.textInput,
+                formData.confirmPassword && formData.password !== formData.confirmPassword && styles.inputError
+              ]}
+              placeholder="Nhập lại mật khẩu"
+              placeholderTextColor={BeeStayColors.placeholder}
+              value={formData.confirmPassword}
+              onChangeText={(value) => handleInputChange('confirmPassword', value)}
+              secureTextEntry
+              editable={!registration.loading}
+            />
+            {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+              <Text style={styles.errorText}>Mật khẩu không khớp</Text>
+            )}
+          </View>
+
+          {/* Role Selection */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Vai trò</Text>
+            <View style={styles.roleContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.roleButton,
+                  formData.role === 'USER' && styles.roleButtonActive
+                ]}
+                onPress={() => handleInputChange('role', 'USER')}
+                disabled={registration.loading}
+              >
+                <Text style={[
+                  styles.roleButtonText,
+                  formData.role === 'USER' && styles.roleButtonTextActive
+                ]}>
+                  Người dùng
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.roleButton,
+                  formData.role === 'HOST' && styles.roleButtonActive
+                ]}
+                onPress={() => handleInputChange('role', 'HOST')}
+                disabled={registration.loading}
+              >
+                <Text style={[
+                  styles.roleButtonText,
+                  formData.role === 'HOST' && styles.roleButtonTextActive
+                ]}>
+                  Chủ nhà
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* OTP */}
+          <View style={styles.inputContainer}>
+            <View style={styles.otpHeader}>
+              <Text style={styles.label}>Mã OTP *</Text>
+              <View style={styles.otpTimer}>
+                {otpTimer > 0 ? (
+                  <Text style={styles.timerText}>
+                    {formatTime(otpTimer)}
+                  </Text>
+                ) : (
+                  <TouchableOpacity 
+                    onPress={handleResendOTP} 
+                    disabled={registration.loading}
+                    style={styles.resendButton}
+                  >
+                    <Text style={styles.resendText}>Gửi lại</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+            <TextInput
+              style={[
+                styles.textInput,
+                styles.otpInput,
+                isOTPExpired && styles.inputError
+              ]}
+              placeholder="Nhập mã OTP (6 số)"
+              placeholderTextColor={BeeStayColors.placeholder}
+              value={formData.otp}
+              onChangeText={(value) => handleInputChange('otp', value)}
+              keyboardType="numeric"
+              maxLength={6}
+              editable={!registration.loading}
+            />
+            {isOTPExpired && (
+              <Text style={styles.errorText}>⚠️ Mã OTP đã hết hạn</Text>
+            )}
+            <Text style={styles.helperText}>
+              OTP đã được gửi đến: {formData.email}
+            </Text>
+          </View>
+
+          {/* Error Message */}
+          {registration.error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>⚠️ {registration.error}</Text>
+            </View>
           )}
-        </TouchableOpacity>
 
-        {/* Back Button */}
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={prevStep}
-          disabled={registration.loading}
-        >
-          <Text style={styles.backButtonText}>← Quay lại</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          {/* Submit Button */}
+          <TouchableOpacity
+            style={[
+              styles.primaryButton,
+              (!isFormValid || registration.loading) && styles.buttonDisabled
+            ]}
+            onPress={handleSubmit}
+            disabled={!isFormValid || registration.loading}
+          >
+            {registration.loading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.buttonText}>Đăng ký</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={prevStep}
+            disabled={registration.loading}
+          >
+            <Text style={styles.backButtonText}>← Quay lại</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  // Container
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: BeeStayColors.background,
   },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 20,
-    backgroundColor: '#fff',
+  scrollView: {
+    flex: 1,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+  },
+
+  // Logo Section
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 30,
+  },
+  logoPlaceholder: {
+    alignItems: 'center',
+  },
+  logoText: {
+    fontSize: 40,
     marginBottom: 8,
   },
-  subtitle: {
+  logoName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: BeeStayColors.primary,
+    letterSpacing: 1,
+  },
+
+  // Header
+  header: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: BeeStayColors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  headerSubtitle: {
     fontSize: 16,
-    color: '#666',
+    color: BeeStayColors.textSecondary,
+    textAlign: 'center',
     lineHeight: 22,
+    paddingHorizontal: 20,
   },
-  form: {
+
+  // Content
+  content: {
     flex: 1,
-    padding: 24,
   },
+
+  // Input Container
   inputContainer: {
     marginBottom: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: BeeStayColors.textPrimary,
     marginBottom: 8,
   },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e1e5e9',
+  textInput: {
+    backgroundColor: BeeStayColors.inputBg,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: BeeStayColors.border,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 16,
     fontSize: 16,
-    color: '#333',
+    color: BeeStayColors.textPrimary,
+    fontWeight: '500',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   inputError: {
-    borderColor: '#ff4757',
+    borderColor: BeeStayColors.error,
+    borderWidth: 1.5,
   },
-  errorText: {
-    color: '#ff4757',
+
+  // Email Display
+  emailDisplay: {
+    backgroundColor: BeeStayColors.inputBg,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: BeeStayColors.border,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  emailText: {
+    fontSize: 16,
+    color: BeeStayColors.textPrimary,
+    fontWeight: '500',
+    flex: 1,
+  },
+  verifiedBadge: {
+    backgroundColor: BeeStayColors.successBg,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  verifiedText: {
     fontSize: 12,
-    marginTop: 4,
+    color: BeeStayColors.success,
+    fontWeight: '600',
   },
-  helperText: {
-    color: '#666',
-    fontSize: 12,
-    marginTop: 4,
-  },
+
+  // Role Selection
   roleContainer: {
     flexDirection: 'row',
     gap: 12,
   },
   roleButton: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: BeeStayColors.inputBg,
     borderWidth: 1,
-    borderColor: '#e1e5e9',
+    borderColor: BeeStayColors.border,
     borderRadius: 12,
-    paddingVertical: 12,
+    paddingVertical: 16,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   roleButtonActive: {
-    backgroundColor: '#007bff',
-    borderColor: '#007bff',
+    backgroundColor: BeeStayColors.primary,
+    borderColor: BeeStayColors.primary,
+    shadowColor: BeeStayColors.primary,
+    shadowOpacity: 0.3,
   },
   roleButtonText: {
     fontSize: 16,
-    color: '#666',
+    color: BeeStayColors.textSecondary,
+    fontWeight: '500',
   },
   roleButtonTextActive: {
     color: '#fff',
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
+
+  // OTP Section
   otpHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -418,68 +541,94 @@ const styles = StyleSheet.create({
   },
   timerText: {
     fontSize: 14,
-    color: '#666',
+    color: BeeStayColors.textSecondary,
+    fontWeight: '500',
+  },
+  resendButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   resendText: {
     fontSize: 14,
-    color: '#007bff',
-    fontWeight: '600',
+    color: BeeStayColors.primary,
+    fontWeight: 'bold',
+  },
+  otpInput: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+  },
+
+  // Helper & Error Text
+  helperText: {
+    color: BeeStayColors.textSecondary,
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  errorText: {
+    color: BeeStayColors.error,
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: '500',
   },
   errorContainer: {
     backgroundColor: '#fff5f5',
     borderWidth: 1,
     borderColor: '#fecaca',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  submitButton: {
-    backgroundColor: '#007bff',
     borderRadius: 12,
-    paddingVertical: 16,
+    padding: 12,
+    marginBottom: 20,
+  },
+
+  // Primary Button
+  primaryButton: {
+    backgroundColor: BeeStayColors.primary,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 25,
     alignItems: 'center',
-    marginBottom: 12,
+    marginVertical: 30,
+    marginHorizontal: 40,
+    shadowColor: BeeStayColors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   buttonDisabled: {
     backgroundColor: '#ccc',
+    shadowOpacity: 0.1,
   },
-  submitButtonText: {
+  buttonText: {
     color: '#fff',
-    fontSize: 18,
     fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
+
+  // Footer
+  footer: {
+    alignItems: 'center',
+    paddingBottom: 20,
   },
   backButton: {
-    alignItems: 'center',
     paddingVertical: 12,
+    paddingHorizontal: 20,
   },
   backButtonText: {
-    color: '#666',
+    color: BeeStayColors.textSecondary,
     fontSize: 16,
+    fontWeight: '500',
   },
-  // Email display styles
-  emailDisplay: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e1e5e9',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    logoContainer: {
+    alignItems: "center",
+    marginTop: 40,
+    marginBottom: 30,
   },
-  emailText: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  verifiedBadge: {
-    fontSize: 12,
-    color: '#28a745',
-    fontWeight: '600',
-    backgroundColor: '#d4edda',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+  logo: {
+    width: 120,
+    height: 80,
   },
 });

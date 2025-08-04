@@ -8,6 +8,8 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import { useAuth } from '../../redux/hooks/useAuth';
 
@@ -47,146 +49,193 @@ export default function EmailStepScreen({ navigation }) {
   const isValidEmail = email && email.includes('@');
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {/* Logo Section - matching login theme */}
+      <View style={styles.logoContainer}>
+        <Image
+          source={require("../../../assets/Logo/beestay-logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
+
       <View style={styles.header}>
-        <Text style={styles.title}>Đăng ký tài khoản</Text>
-        <Text style={styles.subtitle}>
+        <Text style={styles.headerTitle}>Đăng ký tài khoản</Text>
+        <Text style={styles.headerSubtitle}>
           Nhập email của bạn để nhận mã xác thực
         </Text>
       </View>
 
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={[
-              styles.input,
-              registration.error && styles.inputError
-            ]}
-            placeholder="Nhập email của bạn"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            editable={!registration.loading}
-          />
-        </View>
-
-        {registration.error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{registration.error}</Text>
-          </View>
-        )}
-
-        <TouchableOpacity
+      {/* Input container matching login style */}
+      <View style={styles.inputContainer}>
+        <TextInput
           style={[
-            styles.button,
-            (!isValidEmail || registration.loading) && styles.buttonDisabled
+            styles.textInput,
+            registration.error && styles.inputError
           ]}
-          onPress={handleSendOTP}
-          disabled={!isValidEmail || registration.loading}
-        >
-          {registration.loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Gửi mã OTP</Text>
-          )}
-        </TouchableOpacity>
+          placeholder="Nhập email của bạn"
+          placeholderTextColor="#999"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+          editable={!registration.loading}
+        />
       </View>
 
-      <TouchableOpacity style={styles.backToLogin} onPress={handleBackToLogin}>
-        <Text style={styles.backToLoginText}>
-          Đã có tài khoản? {' '}
-          <Text style={styles.linkText}>Đăng nhập ngay</Text>
-        </Text>
+      {registration.error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{registration.error}</Text>
+        </View>
+      )}
+
+      {/* Button matching login theme */}
+      <TouchableOpacity
+        style={[
+          styles.sendButton,
+          (!isValidEmail || registration.loading) && styles.sendButtonDisabled
+        ]}
+        onPress={handleSendOTP}
+        disabled={!isValidEmail || registration.loading}
+      >
+        {registration.loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator color="#ffffff" size="small" />
+            <Text style={[styles.sendButtonText, { marginLeft: 8 }]}>
+              Đang gửi...
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.sendButtonText}>Gửi mã OTP</Text>
+        )}
       </TouchableOpacity>
-    </View>
+
+      <View style={styles.backToLoginContainer}>
+        <Text style={styles.backToLoginText}>Đã có tài khoản? </Text>
+        <TouchableOpacity onPress={handleBackToLogin}>
+          <Text style={styles.backToLoginLink}>Đăng nhập ngay</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginTop: 40,
+    marginBottom: 30,
+  },
+  logo: {
+    width: 120,
+    height: 80,
   },
   header: {
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#fff',
+    marginBottom: 40,
+    alignItems: "center",
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+    textAlign: "center",
   },
-  subtitle: {
+  headerSubtitle: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
+    textAlign: "center",
     lineHeight: 22,
-  },
-  form: {
-    padding: 20,
-    flex: 1,
   },
   inputContainer: {
     marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
+    backgroundColor: "#f8f9fa",
     borderRadius: 12,
-    padding: 18,
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+    paddingHorizontal: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  textInput: {
     fontSize: 16,
-    backgroundColor: '#f9f9f9',
+    paddingVertical: 16,
+    color: "#333",
+    fontWeight: "500",
   },
   inputError: {
-    borderColor: '#ff4444',
-    backgroundColor: '#fff5f5',
+    borderColor: "#ff4444",
+    backgroundColor: "#fff5f5",
   },
   errorContainer: {
-    backgroundColor: '#ffebee',
+    backgroundColor: "#ffebee",
     padding: 12,
     borderRadius: 8,
     marginBottom: 20,
+    marginHorizontal: 40,
   },
   errorText: {
-    color: '#d32f2f',
+    color: "#d32f2f",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
+    fontWeight: "500",
   },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 18,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 10,
+  sendButton: {
+    backgroundColor: "#FFA500",
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 25,
+    alignItems: "center",
+    marginVertical: 30,
+    marginHorizontal: 40,
+    shadowColor: "#FFA500",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
+  sendButtonDisabled: {
+    backgroundColor: "#ccc",
+    shadowOpacity: 0.1,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+  sendButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    letterSpacing: 0.5,
   },
-  backToLogin: {
-    padding: 20,
-    alignItems: 'center',
+  loadingContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  backToLoginContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
   },
   backToLoginText: {
-    fontSize: 16,
-    color: '#666',
+    color: "#666",
+    fontSize: 15,
   },
-  linkText: {
-    color: '#007bff',
-    fontWeight: '600',
+  backToLoginLink: {
+    color: "#FFA500",
+    fontWeight: "bold",
+    fontSize: 15,
   },
 });
