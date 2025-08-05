@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../../redux/hooks/useAuth';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import InfoCard from '../../components/Card/InfoCard';
-import SearchBar from '../../components/SearchBar';
 import BannerCarousel from '../../components/BannerCarousel';
 import Loading from '../../components/StateScreen/Loading';
 import Error from '../../components/StateScreen/Error';
@@ -15,9 +15,15 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { homestays, loading, error } = useSelector(state => state.homestay);
-  
+   const { name } = useAuth();
   const [flashSaleActiveTab, setFlashSaleActiveTab] = useState(0);
   const [availableActiveTab, setAvailableActiveTab] = useState(0);
+
+  // Refs for scrolling to sections
+  const scrollViewRef = useRef(null);
+  const flashSaleRef = useRef(null);
+  const availableRef = useRef(null);
+  const recommendedRef = useRef(null);
 
   // Tab data
   const tabOptions = ['On Sale', 'Book Now'];
@@ -57,23 +63,33 @@ const HomeScreen = () => {
     }
   };
 
+  // Function to scroll to specific section
+  const scrollToSection = (ref) => {
+    if (ref.current && scrollViewRef.current) {
+      ref.current.measureLayout(
+        scrollViewRef.current,
+        (x, y) => {
+          scrollViewRef.current.scrollTo({
+            y: y - 20, // Offset để không bị che bởi header
+            animated: true
+          });
+        },
+        () => {
+          console.log('Failed to measure layout');
+        }
+      );
+    }
+  };
+
   // Handle card press
   const handleCardPress = (item) => {
     navigation.navigate('Booking', { homestayId: item.id });
   };
 
-  // Handle search
-  const handleSearch = (text) => {
-    console.log('Search text:', text);
-
-  };
-
   // Handle banner press
   const handleBannerPress = (banner, index) => {
     console.log('Banner pressed:', banner.title, 'at index:', index);
-    // Navigate based on banner link or show promotion detail
     if (banner.link) {
-      // navigation.navigate('Promotion', { promotionId: banner.id });
       console.log('Navigate to:', banner.link);
     }
   };
@@ -82,8 +98,45 @@ const HomeScreen = () => {
     navigation.navigate('Search');
   };
 
+  // New header handlers
+  const handleLocationPress = () => {
+    console.log('Change location pressed');
+    // navigation.navigate('LocationPicker');
+  };
 
+  const handleNotificationPress = () => {
+    console.log('Notifications pressed');
+    // navigation.navigate('Notifications');
+  };
 
+  const handleProfilePress = () => {
+    console.log('Profile pressed');
+    // navigation.navigate('Profile');
+  };
+
+  // Updated quick action handler
+  const handleQuickAction = (action) => {
+    console.log('Quick action:', action);
+    
+    switch(action) {
+      case 'nearby':
+        // Scroll to BeeStay Gợi Ý section
+        scrollToSection(recommendedRef);
+        break;
+      case 'instant':
+        // Scroll to Available section
+        scrollToSection(availableRef);
+        break;
+      case 'deals':
+        // Scroll to Flash Sale section
+        scrollToSection(flashSaleRef);
+        break;
+      case 'all':
+        // Navigate to search screen
+        navigation.navigate('Search');
+        break;
+    }
+  };
 
   // Handle retry
   const handleRetry = () => {
@@ -117,20 +170,87 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8f8f8" />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Header */}
+      <ScrollView 
+        ref={scrollViewRef}
+        style={styles.container} 
+        showsVerticalScrollIndicator={false}
+      >
+        
+        {/* Redesigned Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.headerText}>Khám phá staycation và ưu đãi tại</Text>
-            <Text style={styles.locationText}>Nha Trang</Text>
+          {/* Top Row: Greeting + Actions */}
+          <View style={styles.headerTopRow}>
+            <View style={styles.greetingSection}>
+              <Text style={styles.greetingText}>Chào, {name}!</Text>
+              <TouchableOpacity style={styles.locationContainer} onPress={handleLocationPress}>
+                <Ionicons name="location-outline" size={16} color="#FF6B00" />
+                <Text style={styles.locationText}>TP. Hồ Chí Minh</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.headerActions}>
+              <TouchableOpacity style={styles.weatherContainer}>
+                <Ionicons name="sunny-outline" size={18} color="#FF6B00" />
+                <Text style={styles.weatherText}>28°C</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.actionButton} onPress={handleNotificationPress}>
+                <Ionicons name="notifications-outline" size={22} color="#333" />
+                <View style={styles.notificationDot} />
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.actionButton} onPress={handleProfilePress}>
+                <Image 
+                  source={{ uri: 'https://i.pravatar.cc/40' }}
+                  style={styles.avatar}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Quick Actions */}
+          <View style={styles.quickActionsContainer}>
+            <TouchableOpacity 
+              style={styles.quickActionItem}
+              onPress={() => handleQuickAction('nearby')}
+            >
+              <View style={styles.quickActionIcon}>
+                <Ionicons name="location" size={18} color="#FF6B00" />
+              </View>
+              <Text style={styles.quickActionText}>Gần tôi</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionItem}
+              onPress={() => handleQuickAction('instant')}
+            >
+              <View style={styles.quickActionIcon}>
+                <Ionicons name="flash" size={18} color="#FF6B00" />
+              </View>
+              <Text style={styles.quickActionText}>Đặt nhanh</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionItem}
+              onPress={() => handleQuickAction('deals')}
+            >
+              <View style={styles.quickActionIcon}>
+                <Ionicons name="pricetag" size={18} color="#FF6B00" />
+              </View>
+              <Text style={styles.quickActionText}>Ưu đãi</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.quickActionItem}
+              onPress={() => handleQuickAction('all')}
+            >
+              <View style={styles.quickActionIcon}>
+                <Ionicons name="grid" size={18} color="#FF6B00" />
+              </View>
+              <Text style={styles.quickActionText}>Tất cả</Text>
+            </TouchableOpacity>
           </View>
         </View>
-
-        {/* Search Bar */}
-        <SearchBar 
-          onChangeText={handleSearch}
-          placeholder="Bạn muốn đi đâu?"
-        />
 
         {/* Banner Carousel */}
         <BannerCarousel 
@@ -146,7 +266,7 @@ const HomeScreen = () => {
         />
 
         {/* Flash Sale Section */}
-        <View style={styles.sectionContainer}>
+        <View style={styles.sectionContainer} ref={flashSaleRef}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleContainer}>
               <FontAwesome name="bolt" size={18} color="#FF6B00" />
@@ -156,8 +276,6 @@ const HomeScreen = () => {
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
           </View>
-
-
 
           <ScrollView
             horizontal
@@ -174,23 +292,21 @@ const HomeScreen = () => {
           </ScrollView>
         </View>
 
-        {/* Available Section */}
-        <View style={styles.sectionContainer}>
+        {/* BeeStay Recommendations Section */}
+        <View style={styles.sectionContainer} ref={recommendedRef}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Availables</Text>
-            <TouchableOpacity onPress={handleViewAllPress}>
+            <Text style={styles.sectionTitle}>BeeStay Gợi Ý</Text>
+            <TouchableOpacity>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
           </View>
-
-
 
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {getFilteredHomestays('available', availableActiveTab).map((item) => (
+            {getFilteredHomestays('recommended').map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
@@ -240,7 +356,7 @@ const HomeScreen = () => {
           >
           <TouchableOpacity style={styles.programCard}>
             <Image
-              source={require('../../../assets/Banner/banner1.jpg')}
+              source={require('../../../assets/Banner/BannerSale/7.png')}
               style={styles.programImage}
               resizeMode="cover"
             />
@@ -248,7 +364,14 @@ const HomeScreen = () => {
 
           <TouchableOpacity style={styles.programCard}>
             <Image
-              source={require('../../../assets/Banner/banner2.jpg')}
+              source={require('../../../assets/Banner/BannerSale/3.png')}
+              style={styles.programImage}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+                    <TouchableOpacity style={styles.programCard}>
+            <Image
+              source={require('../../../assets/Banner/BannerSale/1.png')}
               style={styles.programImage}
               resizeMode="cover"
             />
@@ -256,11 +379,11 @@ const HomeScreen = () => {
           </ScrollView>
         </View>
 
-        {/* BeeStay Recommendations Section */}
-        <View style={styles.sectionContainer}>
+        {/* Available Section */}
+        <View style={styles.sectionContainer} ref={availableRef}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>BeeStay Gợi Ý</Text>
-            <TouchableOpacity>
+            <Text style={styles.sectionTitle}>Availables</Text>
+            <TouchableOpacity onPress={handleViewAllPress}>
               <Text style={styles.viewAllText}>Xem tất cả ›</Text>
             </TouchableOpacity>
           </View>
@@ -270,7 +393,7 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             style={styles.horizontalScrollView}
           >
-            {getFilteredHomestays('recommended').map((item) => (
+            {getFilteredHomestays('available', availableActiveTab).map((item) => (
               <InfoCard
                 key={item.id}
                 item={item}
@@ -295,21 +418,110 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  
+  // Redesigned Header Styles
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingTop: 10,
+    paddingBottom: 20,
     backgroundColor: '#f8f8f8',
   },
-  headerText: {
-    fontSize: 16,
+  headerTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  greetingSection: {
+    flex: 1,
+  },
+  greetingText: {
+    fontSize: 18,
+    fontWeight: '600',
     color: '#333',
+    marginBottom: 4,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
   },
   locationText: {
-    marginTop: 10,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#F4B63A',
+    fontSize: 14,
+    color: '#FF6B00',
+    fontWeight: '500',
+    marginHorizontal: 4,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  weatherContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF5E6',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  weatherText: {
+    fontSize: 12,
+    color: '#FF6B00',
+    fontWeight: '500',
+  },
+  actionButton: {
+    position: 'relative',
+    padding: 4,
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 8,
+    height: 8,
+    backgroundColor: '#FF4444',
+    borderRadius: 4,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#FF6B00',
+  },
+  
+  // Quick Actions
+  quickActionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 16,
+    elevation: 4,
+  },
+  quickActionItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  quickActionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFF5E6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  quickActionText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  
+  // Rest of the existing styles remain the same
   sectionContainer: {
     marginBottom: 25,
   },

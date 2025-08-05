@@ -25,6 +25,8 @@ export const useAuth = () => {
     loading: auth.loading,
     error: auth.error,
     isAuthenticated: auth.isAuthenticated,
+
+    name: auth.user?.name || auth.user?.userName || null,
     
     // Registration state
     registration: auth.registration,

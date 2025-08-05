@@ -16,7 +16,7 @@ const BannerCarousel = ({
   autoPlayInterval = 3000,
   onBannerPress,
   height = 180,
-  borderRadius = 12,
+  borderRadius = 8, 
   showDots = true,
   dotColor = '#FF6B00',
   inactiveDotColor = '#D1D5DB'
@@ -25,11 +25,12 @@ const BannerCarousel = ({
   const scrollViewRef = useRef(null);
   const intervalRef = useRef(null);
 
-  // Default banners if none provided
+  
   const defaultBanners = [
     { id: 1, image: require('../../assets/Banner/banner1.jpg'), title: 'Banner 1' },
     { id: 2, image: require('../../assets/Banner/banner2.jpg'), title: 'Banner 2' },
     { id: 3, image: require('../../assets/Banner/banner3.jpg'), title: 'Banner 3' },
+
   ];
 
   const displayBanners = banners.length > 0 ? banners : defaultBanners;
@@ -121,10 +122,9 @@ const BannerCarousel = ({
               <Image
                 source={typeof banner.image === 'string' ? { uri: banner.image } : banner.image}
                 style={[styles.bannerImage, { borderRadius }]}
-                resizeMode="cover"
+                resizeMode="contain" // Changed from "cover" to "contain" for full image
               />
-              {/* Optional overlay for better text visibility */}
-              <View style={[styles.overlay, { borderRadius }]} />
+              {/* Removed overlay for better image visibility */}
             </View>
           </TouchableOpacity>
         ))}
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bannerContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 8,
   },
   imageContainer: {
     position: 'relative',
@@ -172,21 +172,15 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
     elevation: 3,
+    overflow: 'hidden',
+    backgroundColor: 'white', 
   },
   bannerImage: {
     width: '100%',
     height: '100%',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
   dotsContainer: {
     flexDirection: 'row',
@@ -199,7 +193,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     marginHorizontal: 4,
-    transition: 'all 0.3s ease',
   },
 });
 
