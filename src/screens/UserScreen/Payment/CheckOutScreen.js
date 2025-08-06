@@ -111,10 +111,36 @@ export default function CheckOutScreen() {
       totalPrice: calculateTotal(),
     };
 
+    // try {
+    //   await dispatch(fetchCreateBooking(bookingRequest)).unwrap();
+    //   Alert.alert('Thành công', 'Đặt phòng thành công!');
+    //   navigation.navigate('SuccessBooking');
+    // } catch (error) {
+    //   Alert.alert('Lỗi', error || 'Đặt phòng thất bại!');
+    // } finally {
+    //   setIsBooking(false);
+    // }
+
+    // Thay thế dòng 96-110 trong CheckOutScreen:
     try {
-      await dispatch(fetchCreateBooking(bookingRequest)).unwrap();
-      Alert.alert('Thành công', 'Đặt phòng thành công!');
-      navigation.navigate('SuccessBooking');
+      const result = await dispatch(fetchCreateBooking(bookingRequest)).unwrap();
+      
+      const bookingData = {
+        ...result,
+        fullName: guestName,
+        phoneNumber: phoneNumber,
+        checkIn: bookingRequest.checkIn,
+        checkOut: bookingRequest.checkOut,
+        paymentMethod: paymentMethod,
+        totalPrice: calculateTotal(),
+      };
+            
+      Alert.alert('Thành công', 'Đặt phòng thành công!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('SuccessBooking', { booking: bookingData })
+        }
+      ]);
     } catch (error) {
       Alert.alert('Lỗi', error || 'Đặt phòng thất bại!');
     } finally {

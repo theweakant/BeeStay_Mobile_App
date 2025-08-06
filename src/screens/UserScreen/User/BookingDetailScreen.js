@@ -7,12 +7,13 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { fetchCancelBooking } from '../../../redux/slices/booking.slice';
 import { selectUserBooking } from '../../../redux/slices/user.slice';
+import {formatCurrency, formatDate} from '../../../utils/textUtils'
 
 export default function BookingDetailScreen() {
   const route = useRoute();
@@ -66,273 +67,301 @@ export default function BookingDetailScreen() {
 
   if (!booking) {
     return (
-      <View style={styles.centerContainer}>
-        <Ionicons name="alert-circle-outline" size={64} color="#ff6b6b" />
-        <Text style={styles.errorText}>Không tìm thấy thông tin booking</Text>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Quay lại</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorTitle}>Không tìm thấy booking</Text>
+          <Text style={styles.errorMessage}>
+            Thông tin booking không tồn tại hoặc đã bị xóa
+          </Text>
+          <TouchableOpacity 
+            style={styles.primaryButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.primaryButtonText}>Quay lại</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
-  const InfoRow = ({ icon, label, value, iconColor = "#666" }) => (
+  const InfoRow = ({ label, value }) => (
     <View style={styles.infoRow}>
-      <View style={styles.iconContainer}>
-        <Ionicons name={icon} size={20} color={iconColor} />
-      </View>
-      <View style={styles.infoContent}>
-        <Text style={styles.infoLabel}>{label}</Text>
-        <Text style={styles.infoValue}>{value}</Text>
-      </View>
-    </View>
-  );
-
-  const SectionCard = ({ title, icon, children, iconColor = "#4a90e2" }) => (
-    <View style={styles.sectionCard}>
-      <View style={styles.sectionHeader}>
-        <Ionicons name={icon} size={24} color={iconColor} />
-        <Text style={styles.sectionTitle}>{title}</Text>
-      </View>
-      {children}
+      <Text style={styles.infoLabel}>{label}:</Text>
+      <Text style={styles.infoValue}>{value}</Text>
     </View>
   );
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Ionicons name="home" size={32} color="#4a90e2" />
-        <Text style={styles.homestayName}>{booking.homestay}</Text>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Homestay Information */}
+        <View style={styles.homestayHeader}>
+          <Text style={styles.homestayName}></Text>
+        </View>
 
-      {/* Guest Information */}
-      <SectionCard title="Thông tin khách hàng" icon="person-outline">
-        <InfoRow
-          icon="person"
-          label="Họ và tên"
-          value={booking.fullName}
-          iconColor="#4a90e2"
-        />
-        <InfoRow
-          icon="call"
-          label="Số điện thoại"
-          value={booking.phoneNumber}
-          iconColor="#4a90e2"
-        />
-      </SectionCard>
-
-      {/* Booking Details */}
-      <SectionCard title="Chi tiết đặt phòng" icon="calendar-outline" iconColor="#28a745">
-        <InfoRow
-          icon="log-in"
-          label="Ngày nhận phòng"
-          value={booking.checkIn}
-          iconColor="#28a745"
-        />
-        <InfoRow
-          icon="log-out"
-          label="Ngày trả phòng"
-          value={booking.checkOut}
-          iconColor="#28a745"
-        />
-      </SectionCard>
-
-      {/* Payment Information */}
-      <SectionCard title="Thông tin thanh toán" icon="card-outline" iconColor="#ff9500">
-        <InfoRow
-          icon="wallet"
-          label="Phương thức thanh toán"
-          value={booking.paymentMethod}
-          iconColor="#ff9500"
-        />
-        <View style={styles.totalPriceContainer}>
-          <View style={styles.iconContainer}>
-            <MaterialIcons name="attach-money" size={24} color="#28a745" />
+        {/* Combined Information Section */}
+        <View style={styles.sectionCard}>
+          <View style={styles.sectionTitleRow}>
+            <Text style={styles.sectionTitle}>Thông tin chi tiết</Text>
+            <Text style={styles.bookingId}>#{booking.bookingId}</Text>
           </View>
-          <View style={styles.totalPriceContent}>
+          <InfoRow
+            label="Tên homestay"
+            value={booking.homestay}
+          />
+          {/* Guest Information */}
+          <InfoRow
+            label="Họ và tên"
+            value={booking.fullName}
+          />
+          <InfoRow
+            label="Số điện thoại"
+            value={booking.phoneNumber}
+          />
+      
+          <InfoRow
+            label="Ngày nhận phòng"
+            value={formatDate(booking.checkIn)}
+          />
+          <InfoRow
+            label="Ngày trả phòng"
+            value={formatDate(booking.checkOut)}
+          />
+          
+          {/* Payment Information */}
+          <InfoRow
+            label="Phương thức thanh toán"
+            value={booking.paymentMethod}
+          />
+          
+          {/* Total Price */}
+          <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceLabel}>Tổng tiền</Text>
             <Text style={styles.totalPriceValue}>
-              {booking.totalPrice.toLocaleString()} VND
+              {formatCurrency(booking.totalPrice)}
             </Text>
           </View>
         </View>
-      </SectionCard>
 
-      {/* Cancel Button */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[
-            styles.cancelButton,
-            isLoading && styles.cancelButtonDisabled
-          ]}
-          onPress={handleCancelBooking}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <Ionicons name="trash-outline" size={20} color="#fff" />
-          )}
-          <Text style={styles.cancelButtonText}>
-            {isLoading ? 'Đang xử lý...' : 'Hủy Booking'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Cancel Button */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.cancelButton,
+              isLoading && styles.cancelButtonDisabled
+            ]}
+            onPress={handleCancelBooking}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : null}
+            <Text style={styles.cancelButtonText}>
+              {isLoading ? 'Đang xử lý...' : 'Hủy Booking'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FFFFFF',
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-    padding: 20,
+    padding: 15,
   },
+  
+  // Header Styles
   header: {
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
+  },
+  logo: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFA500',
+    marginBottom: 8,
+  },
+  pageTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333333',
+  },
+
+  // Homestay Header
+  homestayHeader: {
     padding: 20,
     alignItems: 'center',
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
+    backgroundColor: '#FAFAFA',
   },
   homestayName: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#212529',
-    marginTop: 8,
+    color: '#333333',
     textAlign: 'center',
+    marginBottom: 8,
   },
+  bookingId: {
+    fontSize: 15,
+    color: '#FFA500',
+  },
+
+  // Section Styles
   sectionCard: {
-    backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginBottom: 20,
     borderRadius: 12,
-    padding: 16,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#F5F5F5',
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#212529',
-    marginLeft: 8,
-  },
+sectionTitle: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#333333',
+},
+
+  // Info Row Styles - Updated for same-line layout
   infoRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-  },
-  iconContainer: {
-    width: 32,
-    alignItems: 'center',
-  },
-  infoContent: {
-    flex: 1,
-    marginLeft: 12,
+    marginBottom: 12,
+    paddingVertical: 4,
   },
   infoLabel: {
     fontSize: 14,
-    color: '#6c757d',
-    marginBottom: 2,
+    color: '#666666',
+    flex: 1,
   },
   infoValue: {
     fontSize: 16,
-    color: '#212529',
+    color: '#333333',
     fontWeight: '500',
-  },
-  totalPriceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  totalPriceContent: {
     flex: 1,
-    marginLeft: 12,
+    textAlign: 'right',
+  },
+
+  // Total Price
+  totalPriceContainer: {
+    backgroundColor: '#F8F9FA',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 8,
+    alignItems: 'center',
   },
   totalPriceLabel: {
     fontSize: 14,
-    color: '#6c757d',
-    marginBottom: 2,
+    color: '#666666',
+    marginBottom: 4,
   },
   totalPriceValue: {
-    fontSize: 20,
-    color: '#28a745',
+    fontSize: 24,
+    color: '#FFA500',
     fontWeight: 'bold',
   },
+
+  // Buttons
   buttonContainer: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: 20,
+    paddingBottom: 40,
   },
-  cancelButton: {
-    backgroundColor: '#dc3545',
-    flexDirection: 'row',
+  primaryButton: {
+    backgroundColor: '#FFA500',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 12,
-    shadowColor: '#dc3545',
+    minHeight: 44,
+    shadowColor: '#FFA500',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
     shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    backgroundColor: '#DC3545',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    minHeight: 44,
+    shadowColor: '#DC3545',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   cancelButtonDisabled: {
-    backgroundColor: '#adb5bd',
+    backgroundColor: '#CCCCCC',
     shadowOpacity: 0.1,
   },
   cancelButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
   },
-  errorText: {
-    fontSize: 18,
-    color: '#6c757d',
+
+  // Error States
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333333',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 24,
+    marginBottom: 8,
   },
-  backButton: {
-    backgroundColor: '#4a90e2',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: '#fff',
+  errorMessage: {
     fontSize: 16,
-    fontWeight: '500',
+    color: '#666666',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
   },
+sectionTitleRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 16,
+  paddingBottom: 8,
+  borderBottomWidth: 1,
+  borderBottomColor: '#F5F5F5',
+},  
 });
