@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   policyText: {
     fontSize: 14,
-    color: '#666',
+    color: 'black',
     lineHeight: 20,
     marginBottom: 3,
   },

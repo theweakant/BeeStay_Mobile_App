@@ -28,9 +28,6 @@ const BookingAmenities = ({ amenities }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Tiện ích</Text>
-        <View style={styles.countBadge}>
-          <Text style={styles.countText}>{amenities.length}</Text>
-        </View>
       </View>
 
       {/* Grid Layout - 2 columns */}
@@ -59,7 +56,7 @@ const BookingAmenities = ({ amenities }) => {
           <Ionicons 
             name={showAll ? "chevron-up" : "chevron-down"} 
             size={16} 
-            color="#007AFF" 
+            color="#8e8e8eff" 
           />
         </TouchableOpacity>
       )}
@@ -72,8 +69,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
     backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
   },
   
   header: {
@@ -89,18 +84,9 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   
-  countBadge: {
-    backgroundColor: '#F0F8FF',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: '#007AFF',
-  },
   
   countText: {
     fontSize: 12,
-    fontWeight: '600',
     color: '#007AFF',
   },
   
@@ -111,15 +97,12 @@ const styles = StyleSheet.create({
   },
   
   amenityItem: {
-    width: '47%', // 2 columns with gap
+    width: '47%', 
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
+    backgroundColor: 'transparent',
     paddingVertical: 12,
     paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
     marginBottom: 8,
   },
   
@@ -144,17 +127,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     marginTop: 8,
-    backgroundColor: '#F0F8FF',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#007AFF',
   },
   
   toggleText: {
-    fontSize: 14,
-    color: '#007AFF',
+    fontSize: 12,
+    color: '#8e8e8eff',
     fontWeight: '600',
     marginRight: 6,
   },

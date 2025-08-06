@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 14,
-    color: '#333',
+    color: 'black',
     marginLeft: 8,
   },
 });

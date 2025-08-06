@@ -9,28 +9,16 @@ const BookingInfo = ({ homestayData, locationRender, handleMapPress }) => (
       <Text style={localStyles.hotelName} numberOfLines={2}>
         {homestayData.name || 'Chưa có tên'}
       </Text>
-      
-      {/* Badges nằm ngang */}
-      <View style={localStyles.badgeRow}>
-        {homestayData.flashSale && (
-          <View style={localStyles.flashSaleBadge}>
-            <Text style={localStyles.badgeText}>⚡{homestayData.discountPercentage || 0}%</Text>
-          </View>
-        )}
-        {homestayData.instantBook && (
-          <View style={localStyles.instantBookBadge}>
-            <Text style={localStyles.badgeText}>🚀</Text>
-          </View>
-        )}
-        {homestayData.recommended && (
-          <View style={localStyles.recommendedBadge}>
-            <Text style={localStyles.badgeText}>⭐</Text>
-          </View>
-        )}
-      </View>
-    </View>
 
-    {/* Location và rating trong 1 hàng */}
+
+      {/* Address */}
+      <View style={localStyles.addressContainer}>
+        <Text style={localStyles.addressText} numberOfLines={1}>
+          {locationRender(homestayData.location)}
+        </Text>
+      </View>
+
+          {/* Location và rating trong 1 hàng */}
     <View style={localStyles.locationRatingRow}>
       <View style={localStyles.locationInfo}>
         <Ionicons name="location-outline" size={14} color="#666666" />
@@ -50,35 +38,52 @@ const BookingInfo = ({ homestayData, locationRender, handleMapPress }) => (
         <Ionicons name="map-outline" size={14} color="#007AFF" />
       </TouchableOpacity>
     </View>
-
-    {/* Address */}
-    <View style={localStyles.addressContainer}>
-      <Text style={localStyles.addressText} numberOfLines={1}>
-        {locationRender(homestayData.location)}
-      </Text>
+      
+      {/* Badges nằm ngang */}
+      <View style={localStyles.badgeRow}>
+        {homestayData.flashSale && (
+          <View style={localStyles.flashSaleBadge}>
+            <Text style={localStyles.badgeText}>Sale</Text>
+          </View>
+        )}
+        {homestayData.instantBook && (
+          <View style={localStyles.instantBookBadge}>
+            <Text style={localStyles.badgeText}>Available</Text>
+          </View>
+        )}
+        {homestayData.recommended && (
+          <View style={localStyles.recommendedBadge}>
+            <Text style={localStyles.badgeText}>Recommend</Text>
+          </View>
+        )}
+      </View>
     </View>
+
+
+
+
 
     {/* Room Details - 2x2 grid */}
     <View style={localStyles.roomGrid}>
       <View style={localStyles.roomGridRow}>
         <View style={localStyles.roomDetailItem}>
           <MaterialIcons name="people" size={16} color="#007AFF" />
-          <Text style={localStyles.roomDetailText}>{homestayData.maxGuests || 0}</Text>
+          <Text style={localStyles.roomDetailText}>{homestayData.maxGuests || 0} người</Text>
         </View>
         <View style={localStyles.roomDetailItem}>
           <MaterialIcons name="bed" size={16} color="#007AFF" />
-          <Text style={localStyles.roomDetailText}>{homestayData.bedCount || 0}</Text>
+          <Text style={localStyles.roomDetailText}>{homestayData.bedCount || 0} giường</Text>
         </View>
       </View>
       
       <View style={localStyles.roomGridRow}>
         <View style={localStyles.roomDetailItem}>
           <MaterialIcons name="bathtub" size={16} color="#007AFF" />
-          <Text style={localStyles.roomDetailText}>{homestayData.bathroomCount || 0}</Text>
+          <Text style={localStyles.roomDetailText}>{homestayData.bathroomCount || 0} bồn tắm</Text>
         </View>
         <View style={localStyles.roomDetailItem}>
           <MaterialIcons name="home" size={16} color="#007AFF" />
-          <Text style={localStyles.roomDetailText}>{homestayData.roomCount || 0}</Text>
+          <Text style={localStyles.roomDetailText}>{homestayData.roomCount || 0} phòng</Text>
         </View>
       </View>
     </View>
@@ -89,8 +94,6 @@ const localStyles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
   },
   
   header: {
@@ -144,18 +147,17 @@ const localStyles = StyleSheet.create({
     color: '#333333',
   },
   
-  locationRatingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-    paddingHorizontal: 4,
-  },
+locationRatingRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 8,
+  paddingHorizontal: 4,
+},
   
   locationInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    flex: 0,
   },
   
   distanceText: {
@@ -165,12 +167,11 @@ const localStyles = StyleSheet.create({
     fontWeight: '500',
   },
   
-  ratingInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
+ratingInfo: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginLeft: 16, // Khoảng cách cố định từ locationInfo
+},
   
   ratingText: {
     fontSize: 13,
@@ -185,10 +186,12 @@ const localStyles = StyleSheet.create({
     backgroundColor: '#F0F8FF',
     borderWidth: 1,
     borderColor: '#007AFF',
+      marginLeft: 'auto', // Đẩy về phía bên phải
+
   },
   
   addressContainer: {
-    marginBottom: 16,
+    marginVertical: 8,
     paddingHorizontal: 4,
   },
   
@@ -211,19 +214,16 @@ const localStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
+    backgroundColor: 'transparent',
     paddingVertical: 12,
     paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
+
   },
   
   roomDetailText: {
     fontSize: 14,
-    color: '#333333',
+    color: 'black',
     marginLeft: 8,
-    fontWeight: '600',
   },
 });
 

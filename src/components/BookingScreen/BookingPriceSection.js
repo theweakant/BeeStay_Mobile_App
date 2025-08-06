@@ -15,7 +15,7 @@ const BookingPriceSection = ({ homestayData, onChooseRoom }) => {
       {/* Price Section */}
       <View style={localStyles.priceContainer}>
         <View style={localStyles.priceHeader}>
-          <Text style={localStyles.priceLabel}>Chỉ từ</Text>
+          <Text style={localStyles.priceLabel}>Giá phòng</Text>
           {hasDiscount && (
             <View style={localStyles.discountBadge}>
               <Text style={localStyles.discountText}>-{discountPercentage}%</Text>
@@ -48,7 +48,6 @@ const BookingPriceSection = ({ homestayData, onChooseRoom }) => {
         activeOpacity={0.85}
       >
         <Text style={localStyles.buttonText}>Chọn phòng</Text>
-        <MaterialIcons name="arrow-forward" size={18} color="#FFFFFF" />
       </TouchableOpacity>
     </View>
   );
@@ -62,9 +61,6 @@ const localStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#F1F3F4',
-    // Sticky bottom effect
     shadowColor: '#000000',
     shadowOffset: {
       width: 0,
@@ -119,9 +115,9 @@ const localStyles = StyleSheet.create({
   },
   
   currentPrice: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '800',
-    color: '#DC2626',
+    color: '#059669',
     letterSpacing: -0.5,
   },
   
@@ -147,7 +143,7 @@ const localStyles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 20,
     minWidth: 120,
     shadowColor: '#F97316',
     shadowOffset: {

@@ -16,8 +16,6 @@ import BookingPriceSection from '../../../components/BookingScreen/BookingPriceS
 import BookingAmenities from '../../../components/BookingScreen/BookingAmenities';
 import BookingFeatures from '../../../components/BookingScreen/BookingFeatures';
 import BookingDescription from '../../../components/BookingScreen/BookingDescription';
-import BookingHostInfo from '../../../components/BookingScreen/BookingHostInfo';
-import BookingPolicies from '../../../components/BookingScreen/BookingPolicies';
 
 import ReviewListSection from '../../../components/BookingScreen/ReviewSection/ReviewListSection';
 import AddReviewSection from '../../../components/BookingScreen/ReviewSection/AddReviewSection';
@@ -136,7 +134,11 @@ export default function BookingScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          style={styles.container} 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >       
         <BookingImages 
           hotelImages={hotelImages} 
           selectedImageIndex={selectedImageIndex} 
@@ -149,13 +151,11 @@ export default function BookingScreen() {
           locationRender={locationRender} 
           handleMapPress={handleMapPress}
         />
-        <BookingPriceSection 
-          homestayData={homestayData} 
-          onChooseRoom={handleChooseRoom}
-        />
+
         <BookingAmenities amenities={amenities} />
-        <BookingFeatures features={homestayData.features} />
         <BookingDescription description={homestayData.description} />
+
+        <BookingFeatures features={homestayData.features} />
 
 
 
@@ -177,9 +177,14 @@ export default function BookingScreen() {
           averageRating={homestayData.averageRating}
           reviewCount={homestayData.reviewCount}
         />
-
         <View style={styles.bottomPadding} />
       </ScrollView>
+
+      
+        <BookingPriceSection 
+          homestayData={homestayData} 
+          onChooseRoom={handleChooseRoom}
+        />
     </SafeAreaView>
   );
 }
