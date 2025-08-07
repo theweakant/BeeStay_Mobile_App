@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserAvatarByAccount } from '../redux/slices/user.slice';
 
@@ -84,13 +85,11 @@ const UpdateAvatar = ({ accountId, currentAvatar, onAvatarUpdated }) => {
                 disabled={avatarUpdateLoading}
             >
                 {avatarUpdateLoading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="small" color="#fff" />
-                        <Text style={styles.buttonText}>Đang cập nhật...</Text>
-                    </View>
+                    <ActivityIndicator size="small" color="#FFA500" />
                 ) : (
                     <>
-                        <Text style={styles.buttonText}>Cập nhật ảnh đại diện</Text>
+                        <AntDesign name="camera" size={16} style={styles.buttonIcon} />
+                        <Text style={styles.buttonText}> Chọn ảnh</Text>
                     </>
                 )}
             </TouchableOpacity>
@@ -125,32 +124,26 @@ const styles = StyleSheet.create({
     },
     uploadButton: {
         flexDirection: 'row',
-        backgroundColor: '#FF6B6B',
-        paddingHorizontal: 20,
+        backgroundColor: 'transparent',
+        paddingHorizontal: 12,
         paddingVertical: 10,
         borderRadius: 20,
         alignItems: 'center',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        borderWidth: 1,
+        borderColor: '#FFA500',
+        elevation: 0,
     },
     disabledButton: {
-        backgroundColor: '#ccc',
-    },
-    loadingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        borderColor: '#ccc',
+        opacity: 0.7,
     },
     buttonIcon: {
-        fontSize: 16,
-        marginRight: 8,
+        fontSize: 12,
+        color: '#FFA500',
     },
     buttonText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: '600',
+        color: '#FFA500',
+        fontSize: 12,
         marginLeft: 4,
     },
 });

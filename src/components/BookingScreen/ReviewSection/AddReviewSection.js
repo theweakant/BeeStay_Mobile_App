@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAddReview, clearError, clearSuccess } from '../../../redux/slices/review.slice';
 
@@ -64,11 +64,15 @@ export default function AddReviewSection({ accountId, stayCationId, onReviewSubm
         onChangeText={setComment}
       />
 
-      {loading ? (
-        <ActivityIndicator size="small" color="#0000ff" />
-      ) : (
-        <Button title="Gửi review" onPress={handleSubmit} />
-      )}
+      <View style={styles.buttonContainer}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#FFA500" />
+        ) : (
+          <TouchableOpacity style={styles.sendButton} onPress={handleSubmit}>
+            <Text style={styles.sendButtonText}>Gửi</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       {error && <Text style={styles.error}>Lỗi: {error}</Text>}
       {success && <Text style={styles.success}>Review thành công!</Text>}
@@ -79,33 +83,49 @@ export default function AddReviewSection({ accountId, stayCationId, onReviewSubm
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    marginVertical: 10,
     elevation: 2,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 12
+    marginBottom: 12,
+    color: '#333333',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 6,
+    borderRadius: 10,
     padding: 10,
-    marginBottom: 12
+    marginBottom: 12,
+    color: '#333333',
   },
   commentInput: {
     height: 80,
     textAlignVertical: 'top'
   },
+  buttonContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  sendButton: {
+    backgroundColor: '#FFA500',
+    paddingHorizontal: 50,
+    paddingVertical: 12,
+    borderRadius: 20,
+  },
+  sendButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   error: {
-    color: 'red',
+    color: '#DC3545',
     marginTop: 8
   },
   success: {
-    color: 'green',
+    color: '#28A745',
     marginTop: 8
   },
 });

@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { formatPrice } from '../../utils/bookingUtils';
+import { formatCurrency } from '../../utils/textUtils';
 
 const BookingPriceSection = ({ homestayData, onChooseRoom }) => {
   const hasDiscount = homestayData.originalPricePerNight && 
@@ -27,14 +26,14 @@ const BookingPriceSection = ({ homestayData, onChooseRoom }) => {
           <View>
             <View style={localStyles.mainPriceRow}>
               <Text style={localStyles.currentPrice}>
-                {formatPrice(homestayData.pricePerNight || 0)}
+                {formatCurrency(homestayData.pricePerNight || 0)}
               </Text>
               <Text style={localStyles.priceUnit}>/đêm</Text>
             </View>
             
             {hasDiscount && (
               <Text style={localStyles.originalPrice}>
-                {formatPrice(homestayData.originalPricePerNight)}
+                {formatCurrency(homestayData.originalPricePerNight)}
               </Text>
             )}
           </View>

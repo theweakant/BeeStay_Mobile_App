@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { fetchUserByAccount } from '../../../redux/slices/user.slice';
@@ -9,7 +10,6 @@ import UpdateAvatar from '../../../components/UpdateAvatar';
 export default function ProfileScreen() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
-
     const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
     const { profile: userProfile, loading: userLoading, error: userError } = useSelector((state) => state.user);
 
@@ -27,180 +27,169 @@ export default function ProfileScreen() {
 
     if (userLoading && !userProfile) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
-                <ActivityIndicator size="large" color="#F5B041" />
+            <SafeAreaView style={[styles.container, styles.centerContent]}>
+                <ActivityIndicator size="large" color="#FFA500" />
                 <Text style={styles.loadingText}>Đang tải thông tin...</Text>
-            </View>
+            </SafeAreaView>
         );
     }
 
     if (userError) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
+            <SafeAreaView style={[styles.container, styles.centerContent]}>
                 <Text style={styles.errorText}>Có lỗi xảy ra: {userError}</Text>
-            </View>
+            </SafeAreaView>
         );
     }
 
     if (!userProfile) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
+            <SafeAreaView style={[styles.container, styles.centerContent]}>
                 <Text style={styles.errorText}>Không có dữ liệu người dùng</Text>
-            </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.avatarContainer}>
-                    <Image
-                        source={{ uri: userProfile.avatar || userProfile.image || 'https://via.placeholder.com/100' }}
-                        style={styles.avatar}
-                        defaultSource={require('../../../../assets/Avatar/default-avatar.jpg')}
-                    />
-                    {userProfile.verified && (
-                        <View style={styles.verifiedBadge}>
-                            <Text style={styles.verifiedText}>✓</Text>
-                        </View>
-                    )}
-                </View>
-
-                <Text style={styles.name}>{userProfile.name}</Text>
-                <Text style={styles.email}>{userProfile.email}</Text>
-
-                <View style={styles.statusContainer}>
+        <SafeAreaView style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.header}>
+                    <View style={styles.avatarContainer}>
+                        <Image
+                            source={{ uri: userProfile.avatar || userProfile.image || 'https://via.placeholder.com/100' }}
+                            style={styles.avatar}
+                            defaultSource={require('../../../../assets/Avatar/default-avatar.jpg')}
+                        />
                     <View
                         style={[
-                            styles.statusBadge,
-                            userProfile.status === 'active' ? styles.activeStatus : styles.inactiveStatus,
+                            styles.statusDot,
+                            userProfile.status === 'active'
+                                ? styles.statusDotActive
+                                : styles.statusDotInactive,
                         ]}
-                    >
-                        <Text
-                            style={[
-                                styles.statusText,
-                                userProfile.status === 'active' ? styles.activeStatusText : styles.inactiveStatusText,
-                            ]}
-                        >
-                            {userProfile.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
-                        </Text>
+                    />
+                    </View>
+                    <Text style={styles.userName}>{userProfile.name}</Text>
+                    <View style={styles.updateAvatar}>
+                        <UpdateAvatar
+                            accountId={authUser?.accountId}
+                            currentAvatar={userProfile.avatar || userProfile.image}
+                            onAvatarUpdated={handleAvatarUpdated}
+                        />
                     </View>
                 </View>
 
-                <UpdateAvatar
-                    accountId={authUser?.accountId}
-                    currentAvatar={userProfile.avatar || userProfile.image}
-                    onAvatarUpdated={handleAvatarUpdated}
-                />
-            </View>
-
-            <View style={styles.statsContainer}>
-                <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{userProfile.currentBooking || 0}</Text>
-                    <Text style={styles.statLabel}>Đang đặt</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{userProfile.totalBookingSuccess || 0}</Text>
-                    <Text style={styles.statLabel}>Đã hoàn thành</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{userProfile.favoriteHomestay?.length || 0}</Text>
-                    <Text style={styles.statLabel}>Yêu thích</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{userProfile.reviewCount || 0}</Text>
-                    <Text style={styles.statLabel}>Đánh giá</Text>
-                </View>
-            </View>
-
-            <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('EditProfile')}
-                        style={styles.editButton}
-                    >
-                        <Text style={styles.editText}>Edit</Text>
-                    </TouchableOpacity>
+                <View style={styles.statsContainer}>
+                    <View style={styles.statItem}>
+                        <Text style={styles.statNumber}>{userProfile.currentBooking || 0}</Text>
+                        <Text style={styles.statLabel}>Đang đặt</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={styles.statNumber}>{userProfile.totalBookingSuccess || 0}</Text>
+                        <Text style={styles.statLabel}>Hoàn thành</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={styles.statNumber}>{userProfile.favoriteHomestay?.length || 0}</Text>
+                        <Text style={styles.statLabel}>Yêu thích</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={styles.statNumber}>{userProfile.reviewCount || 0}</Text>
+                        <Text style={styles.statLabel}>Đánh giá</Text>
+                    </View>
                 </View>
 
-                <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>Số điện thoại:</Text>
-                    <Text style={styles.infoValue}>{userProfile.phone || 'N/A'}</Text>
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('EditProfile')}
+                            style={styles.editButton}
+                        >
+                            <AntDesign name="edit" size={16} color="#FFA500" />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.infoContainer}>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Email</Text>
+                            <Text style={styles.infoValue}>{userProfile.email || 'Chưa cập nhật'}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Số điện thoại</Text>
+                            <Text style={styles.infoValue}>{userProfile.phone || 'Chưa cập nhật'}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Giới tính</Text>
+                            <Text style={styles.infoValue}>
+                                {userProfile.gender === 'female' ? 'Nữ' : userProfile.gender === 'male' ? 'Nam' : 'Chưa cập nhật'}
+                            </Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Ngày sinh</Text>
+                            <Text style={styles.infoValue}>
+                                {userProfile.birthDate ? formatDate(userProfile.birthDate) : 'Chưa cập nhật'}
+                            </Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Địa chỉ</Text>
+                            <Text style={styles.infoValue}>
+                                {userProfile.addressResponse ? getFullAddress(userProfile.addressResponse) : 'Chưa cập nhật'}
+                            </Text>
+                        </View>
+                        <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
+                            <Text style={styles.infoLabel}>Ngày tham gia</Text>
+                            <Text style={styles.infoValue}>
+                                {userProfile.joinedDate ? formatDate(userProfile.joinedDate) : 'Chưa cập nhật'}
+                            </Text>
+                        </View>
+                    </View>
                 </View>
-
-                <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>Giới tính:</Text>
-                    <Text style={styles.infoValue}>
-                        {userProfile.gender === 'female' ? 'Nữ' : userProfile.gender === 'male' ? 'Nam' : 'N/A'}
-                    </Text>
-                </View>
-
-                <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>Ngày sinh:</Text>
-                    <Text style={styles.infoValue}>
-                        {userProfile.birthDate ? formatDate(userProfile.birthDate) : 'N/A'}
-                    </Text>
-                </View>
-
-                <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>Địa chỉ:</Text>
-                    <Text style={styles.infoValue}>
-                        {userProfile.addressResponse ? getFullAddress(userProfile.addressResponse) : 'N/A'}
-                    </Text>
-                </View>
-
-                <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>Ngày tham gia:</Text>
-                    <Text style={styles.infoValue}>
-                        {userProfile.joinedDate ? formatDate(userProfile.joinedDate) : 'N/A'}
-                    </Text>
-                </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#FFFFFF',
     },
     centerContent: {
         justifyContent: 'center',
         alignItems: 'center',
     },
     loadingText: {
-        marginTop: 10,
+        marginTop: 16,
         fontSize: 16,
-        color: '#666',
+        color: '#666666',
+        fontWeight: '500',
     },
     errorText: {
         fontSize: 16,
         color: '#FF6B6B',
         textAlign: 'center',
         marginHorizontal: 20,
+        fontWeight: '500',
     },
     header: {
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
-        paddingVertical: 30,
+        paddingVertical: 32,
         paddingHorizontal: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
+        borderBottomColor: '#F5F5F5',
     },
     avatarContainer: {
         position: 'relative',
-        marginBottom: 15,
+        marginBottom: 16,
     },
     avatar: {
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: '#e0e0e0',
+        backgroundColor: '#F5F5F5',
     },
     verifiedBadge: {
         position: 'absolute',
@@ -213,32 +202,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 3,
-        borderColor: '#fff',
+        borderColor: '#FFFFFF',
     },
     verifiedText: {
-        color: '#fff',
+        color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '700',
     },
-    name: {
+    userName: {
         fontSize: 24,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 5,
-    },
-    email: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 10,
+        fontWeight: '700',
+        color: '#132e9bff',
+        textAlign: 'center',
     },
     statusContainer: {
-        marginTop: 5,
-        marginBottom: 15,
+        marginVertical: 8,
     },
     statusBadge: {
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 6,
+        borderRadius: 25,
     },
     activeStatus: {
         backgroundColor: '#E8F5E8',
@@ -247,7 +230,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFE8E8',
     },
     statusText: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '600',
     },
     activeStatusText: {
@@ -257,17 +240,17 @@ const styles = StyleSheet.create({
         color: '#FF6B6B',
     },
     statsContainer: {
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
         flexDirection: 'row',
-        paddingVertical: 20,
-        marginTop: 10,
-        marginHorizontal: 15,
-        borderRadius: 10,
-        elevation: 2,
-        shadowColor: '#000',
+        paddingVertical: 16,
+        marginTop: 8,
+        marginHorizontal: 20,
+        borderRadius: 12,
+        shadowColor: '#000000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
     },
     statItem: {
         flex: 1,
@@ -275,76 +258,102 @@ const styles = StyleSheet.create({
     },
     statNumber: {
         fontSize: 24,
-        fontWeight: 'bold',
-        color: '#FF6B6B',
-        marginBottom: 5,
+        fontWeight: '700',
+        color: '#FFA500',
+        marginBottom: 4,
     },
     statLabel: {
         fontSize: 12,
-        color: '#666',
+        color: '#666666',
         textAlign: 'center',
     },
     statDivider: {
         width: 1,
-        backgroundColor: '#e0e0e0',
-        marginVertical: 10,
+        backgroundColor: '#F5F5F5',
+        marginVertical: 12,
     },
     section: {
-        backgroundColor: '#fff',
-        marginTop: 15,
-        marginHorizontal: 15,
-        borderRadius: 10,
-        padding: 20,
-        elevation: 2,
-        shadowColor: '#000',
+        backgroundColor: '#FFFFFF',
+        marginTop: 16,
+        marginHorizontal: 20,
+        borderRadius: 12,
+        shadowColor: '#000000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
         marginBottom: 20,
     },
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 15,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-        paddingBottom: 10,
+        borderBottomColor: '#F5F5F5',
     },
     sectionTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
+        fontWeight: '700',
+        color: '#333333',
     },
     editButton: {
-        backgroundColor: '#FF6B6B',
-        paddingHorizontal: 12,
+        paddingHorizontal: 4,
         paddingVertical: 6,
-        borderRadius: 15,
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    editText: {
-        color: '#fff',
+    editButtonText: {
+        color: '#FFFFFF',
         fontSize: 12,
-        fontWeight: '600',
+    },
+    infoContainer: {
+        paddingHorizontal: 20,
+        paddingBottom: 20,
     },
     infoRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        paddingVertical: 12,
+        paddingVertical: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: '#F8F9FA',
     },
     infoLabel: {
         fontSize: 14,
-        color: '#666',
-        fontWeight: '500',
+        color: '#666666',
         flex: 1,
+        textAlign: 'left',
     },
     infoValue: {
         fontSize: 14,
-        color: '#333',
+        color: '#333333',
         flex: 2,
         textAlign: 'right',
     },
+    statusDot: {
+    position: 'absolute',
+    bottom: 7,
+    right: 7,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+},
+statusDotActive: {
+    backgroundColor: '#4CAF50',
+},
+statusDotInactive: {
+    backgroundColor: '#FF6B6B',
+},
+updateAvatar: {
+    position: 'absolute',
+    top: 2,
+    right: 7,
+    zIndex: 10, 
+},
 });

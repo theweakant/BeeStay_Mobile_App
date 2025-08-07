@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,25 +9,39 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
+import { useAuth } from '../../../redux/hooks/useAuth';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCancelBooking } from '../../../redux/slices/booking.slice';
 import { selectUserBooking } from '../../../redux/slices/user.slice';
-import {formatCurrency, formatDate} from '../../../utils/textUtils'
+import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
+import { formatCurrency, formatDate } from '../../../utils/textUtils';
+import AddReviewSection from '../../../components/BookingScreen/ReviewSection/AddReviewSection';
 
 export default function BookingDetailScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { user } = useAuth();
+  const accountId = user?.accountId;
   const { bookingId } = route.params;
   const bookings = useSelector(selectUserBooking);
   const booking = bookings?.find(b => b.bookingId === bookingId);
+  const { selectedHomestay: homestayData, fetchingById: homestayLoading, fetchByIdError: homestayError } = useSelector(state => state.homestay);
   const [isLoading, setIsLoading] = useState(false);
+  const [showReviewSection, setShowReviewSection] = useState(false); // Thêm state cho collapsible review
+
+  // Fetch homestayData bằng homestayId từ booking
+  useEffect(() => {
+    if (booking?.homestayId) {
+      dispatch(fetchHomestayById(booking.homestayId));
+    }
+  }, [booking, dispatch]);
 
   const handleCancelBooking = () => {
     Alert.alert(
       'Xác nhận hủy booking',
-      'Bạn có chắc chắn muốn hủy booking này không? Hành động này không thể hoàn tác.',
+      'Hành động này không thể hoàn tác.',
       [
         { 
           text: 'Không', 
@@ -35,7 +49,7 @@ export default function BookingDetailScreen() {
           onPress: () => console.log('Cancel pressed')
         },
         {
-          text: 'Có, hủy booking',
+          text: 'Xác nhận',
           style: 'destructive',
           onPress: async () => {
             setIsLoading(true);
@@ -84,10 +98,39 @@ export default function BookingDetailScreen() {
     );
   }
 
-  const InfoRow = ({ label, value }) => (
+  // Xử lý trạng thái loading hoặc lỗi khi fetch homestay
+  if (homestayLoading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.errorMessage}>Đang tải thông tin homestay...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (homestayError) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorTitle}>Không thể tải thông tin homestay</Text>
+          <Text style={styles.errorMessage}>{homestayError}</Text>
+          <TouchableOpacity 
+            style={styles.primaryButton}
+            onPress={() => dispatch(fetchHomestayById(booking.homestayId))}
+          >
+            <Text style={styles.primaryButtonText}>Thử lại</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const InfoRow = ({ label, value, valueStyle }) => (
     <View style={styles.infoRow}>
       <Text style={styles.infoLabel}>{label}:</Text>
-      <Text style={styles.infoValue}>{value}</Text>
+      <Text style={[styles.infoValue, valueStyle]}>{value}</Text>
     </View>
   );
 
@@ -96,7 +139,7 @@ export default function BookingDetailScreen() {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Homestay Information */}
         <View style={styles.homestayHeader}>
-          <Text style={styles.homestayName}></Text>
+          <Text style={styles.homestayName}>{booking.homestay}</Text>
         </View>
 
         {/* Combined Information Section */}
@@ -106,10 +149,13 @@ export default function BookingDetailScreen() {
             <Text style={styles.bookingId}>#{booking.bookingId}</Text>
           </View>
           <InfoRow
+            label="Mã homestay"
+            value={booking.homestayId}
+          />
+          <InfoRow
             label="Tên homestay"
             value={booking.homestay}
           />
-          {/* Guest Information */}
           <InfoRow
             label="Họ và tên"
             value={booking.fullName}
@@ -118,33 +164,39 @@ export default function BookingDetailScreen() {
             label="Số điện thoại"
             value={booking.phoneNumber}
           />
-      
           <InfoRow
             label="Ngày nhận phòng"
             value={formatDate(booking.checkIn)}
+            valueStyle={styles.dateValue}
           />
           <InfoRow
             label="Ngày trả phòng"
             value={formatDate(booking.checkOut)}
+            valueStyle={styles.dateValue}
           />
-          
-          {/* Payment Information */}
           <InfoRow
-            label="Phương thức thanh toán"
+            label="Thanh toán"
             value={booking.paymentMethod}
+            valueStyle={styles.paymentValue}
           />
-          
-          {/* Total Price */}
-          <View style={styles.totalPriceContainer}>
-            <Text style={styles.totalPriceLabel}>Tổng tiền</Text>
-            <Text style={styles.totalPriceValue}>
-              {formatCurrency(booking.totalPrice)}
-            </Text>
-          </View>
+          <InfoRow
+            label="Tổng tiền"
+            value={formatCurrency(booking.totalPrice)}
+            valueStyle={styles.totalPriceValue}
+          />
         </View>
 
-        {/* Cancel Button */}
-        <View style={styles.buttonContainer}>
+        {/* Action Buttons */}
+        <View style={styles.actionButtonsContainer}>
+          <TouchableOpacity
+            style={styles.addReviewButton}
+            onPress={() => setShowReviewSection(!showReviewSection)}
+          >
+            <Text style={styles.addReviewText}>
+              {showReviewSection ? 'Ẩn đánh giá' : 'Thêm đánh giá'}
+            </Text>
+          </TouchableOpacity>
+          
           <TouchableOpacity
             style={[
               styles.cancelButton,
@@ -155,12 +207,33 @@ export default function BookingDetailScreen() {
           >
             {isLoading ? (
               <ActivityIndicator color="#fff" size="small" />
-            ) : null}
-            <Text style={styles.cancelButtonText}>
-              {isLoading ? 'Đang xử lý...' : 'Hủy Booking'}
-            </Text>
+            ) : (
+              <Text style={styles.cancelButtonText}>Hủy</Text>
+            )}
           </TouchableOpacity>
         </View>
+
+        {/* Modal AddReviewSection */}
+        {showReviewSection && accountId && homestayData && (
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <TouchableOpacity 
+                style={styles.closeButton}
+                onPress={() => setShowReviewSection(false)}
+              >
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+              <AddReviewSection
+                accountId={accountId}
+                stayCationId={homestayData.id}
+                onReviewSubmitted={() => {
+                  dispatch(fetchHomestayById(homestayData.id));
+                  setShowReviewSection(false);
+                }}
+              />
+            </View>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -181,28 +254,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 15,
   },
-  
-  // Header Styles
-  header: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
-  },
-  logo: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFA500',
-    marginBottom: 8,
-  },
-  pageTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
-  },
-
-  // Homestay Header
   homestayHeader: {
     padding: 20,
     alignItems: 'center',
@@ -219,8 +270,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#FFA500',
   },
-
-  // Section Styles
   sectionCard: {
     backgroundColor: '#FFFFFF',
     marginHorizontal: 20,
@@ -238,13 +287,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F5F5F5',
   },
-sectionTitle: {
-  fontSize: 18,
-  fontWeight: '600',
-  color: '#333333',
-},
-
-  // Info Row Styles - Updated for same-line layout
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333333',
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
+  },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -260,34 +316,134 @@ sectionTitle: {
   infoValue: {
     fontSize: 16,
     color: '#333333',
-    fontWeight: '500',
+    fontWeight: '400',
     flex: 1,
     textAlign: 'right',
   },
-
-  // Total Price
-  totalPriceContainer: {
-    backgroundColor: '#F8F9FA',
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 8,
-    alignItems: 'center',
+  dateValue: {
+    color: '#28a745',
   },
-  totalPriceLabel: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
+  paymentValue: {
+    color: '#DC3545',
   },
   totalPriceValue: {
-    fontSize: 24,
+    fontSize: 18,
     color: '#FFA500',
     fontWeight: 'bold',
   },
-
-  // Buttons
-  buttonContainer: {
-    padding: 20,
-    paddingBottom: 40,
+  // New styles for action buttons
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    gap: 12,
+  },
+  addReviewButton: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    borderWidth: 1.5,
+    borderColor: '#E9ECEF',
+  },
+  addReviewIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  addReviewText: {
+    color: '#495057',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#DC3545',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    shadowColor: '#DC3545',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  cancelButtonDisabled: {
+    backgroundColor: '#CCCCCC',
+    shadowOpacity: 0.1,
+  },
+  cancelIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  cancelButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  // New style for collapsible review section
+  reviewSectionContainer: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 12,
+    backgroundColor: '#F8F9FA',
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    overflow: 'hidden',
+  },
+  // Modal styles
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContainer: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    borderRadius: 16,
+    maxHeight: '80%',
+    width: '90%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F1F3F4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#5F6368',
+    fontWeight: 'bold',
   },
   primaryButton: {
     backgroundColor: '#FFA500',
@@ -311,36 +467,6 @@ sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
   },
-  cancelButton: {
-    backgroundColor: '#DC3545',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    minHeight: 44,
-    shadowColor: '#DC3545',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  cancelButtonDisabled: {
-    backgroundColor: '#CCCCCC',
-    shadowOpacity: 0.1,
-  },
-  cancelButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-
-  // Error States
   errorTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -355,13 +481,4 @@ sectionTitle: {
     marginBottom: 24,
     lineHeight: 22,
   },
-sectionTitleRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 16,
-  paddingBottom: 8,
-  borderBottomWidth: 1,
-  borderBottomColor: '#F5F5F5',
-},  
 });

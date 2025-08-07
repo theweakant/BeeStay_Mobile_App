@@ -162,16 +162,6 @@ export default function BookingScreen() {
         {/* <BookingHostInfo host={homestayData.host} /> */}
         {/* <BookingPolicies homestayPolicies={homestayData.policies} policyData={PolicyData} /> */}
 
-        {/* {accountId && homestayData && (
-          <AddReviewSection
-            accountId={accountId}
-            stayCationId={homestayData.id}
-            onReviewSubmitted={() => {
-              dispatch(fetchHomestayById(homestayData.id)); 
-            }}
-          />
-        )} */}
-
         <ReviewListSection 
           reviews={homestayData.reviews} 
           averageRating={homestayData.averageRating}
