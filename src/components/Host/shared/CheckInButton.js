@@ -1,13 +1,12 @@
+// CheckInButton.js
 import React from 'react';
-import { View, Button, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCheckInBooking } from '../../../redux/slices/booking.slice';
 
-const CheckInButton = ({ bookingId, onSuccess }) => {
+const CheckInButton = ({ bookingId, onSuccess, style, textStyle }) => {
   const dispatch = useDispatch();
-
-  // Lấy loading và error từ slice booking (tùy reducer của bạn)
-  const { loading, error } = useSelector(state => state.booking);
+  const { loading } = useSelector((state) => state.booking);
 
   const handleCheckIn = () => {
     Alert.alert(
@@ -21,13 +20,8 @@ const CheckInButton = ({ bookingId, onSuccess }) => {
           onPress: async () => {
             try {
               const resultAction = await dispatch(fetchCheckInBooking(bookingId));
-
               if (fetchCheckInBooking.fulfilled.match(resultAction)) {
-                // Nếu có callback thành công, gọi nó
-                if (onSuccess) onSuccess(resultAction.payload);
-              } else {
-                // Có thể hiện toast error nếu muốn
-                console.log('❌ Check-in failed:', resultAction.payload);
+                onSuccess?.(resultAction.payload);
               }
             } catch (err) {
               console.error('❌ Check-in error:', err);
@@ -40,19 +34,36 @@ const CheckInButton = ({ bookingId, onSuccess }) => {
 
   return (
     <View style={styles.container}>
-      <Button
-        title={loading ? 'Đang check-in...' : 'Check-in'}
+      <TouchableOpacity
+        style={[styles.button, style, loading && styles.buttonDisabled]}
         onPress={handleCheckIn}
         disabled={loading}
-      />
-      {loading && <ActivityIndicator size="small" color="#0000ff" style={styles.loading} />}
+      >
+        <Text style={[styles.buttonText, textStyle]}>{loading ? 'Đang xử lý...' : 'CHECK-IN'}</Text>
+      </TouchableOpacity>
+      {loading && <ActivityIndicator size="small" color="#FFA500" style={styles.loading} />}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    marginVertical: 4,
+    width: '100%',
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   loading: {
     marginTop: 4,
