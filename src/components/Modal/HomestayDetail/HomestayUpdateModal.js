@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,24 +16,30 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { updateStaycationById, resetUpdateState } from '../../../redux/slices/homestay.slice';
 import { validateHomestayForm } from '../../../helper/validate';
-import UploadImage from '../../../components/UploadImage'; 
-import  UploadVideo from '../../../components/UploadVideo';
 
-export default function HomestayUpdateModal({ 
-  visible, 
-  onClose, 
+import InformationSection from '../../../components/Host/EditHomestay/InformationSection';
+import UploadSection from '../../../components/Host/EditHomestay/UploadSection';
+import PriceSection from '../../../components/Host/EditHomestay/PriceSection';
+import CapacitySection from '../../../components/Host/EditHomestay/CapacitySection';
+import LocationSection from '../../../components/Host/EditHomestay/LocationSection';
+import FeatureSection from '../../../components/Host/EditHomestay/FeatureSection';
+import StatusSection from '../../../components/Host/EditHomestay/StatusSection';
+import AmenitySection from '../../../components/Host/EditHomestay/AmenitySection';
+
+export default function HomestayUpdateModal({
+  visible,
+  onClose,
   homestay,
-  onUpdateSuccess 
+  onUpdateSuccess
 }) {
   const dispatch = useDispatch();
-  
+
   const {
     updating,
     updateError,
     updateSuccess
   } = useSelector(state => state.homestay);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     pricePerNight: '',
@@ -80,10 +86,8 @@ export default function HomestayUpdateModal({
     }
   });
 
-  // Form validation errors
   const [errors, setErrors] = useState({});
 
-  // Initialize form data when homestay prop changes
   useEffect(() => {
     if (homestay && visible) {
       setFormData({
@@ -94,7 +98,7 @@ export default function HomestayUpdateModal({
         image: homestay.image || '',
         videoTourUrl: homestay.videoTourUrl || '',
         description: homestay.description || '',
-        features: Array.isArray(homestay.features) ? homestay.features.join(', ') : 
+        features: Array.isArray(homestay.features) ? homestay.features.join(', ') :
                  Array.isArray(homestay.amenities) ? homestay.amenities.join(', ') : '',
         roomType: homestay.roomType || 'Standard',
         roomCount: homestay.roomCount?.toString() || '1',
@@ -136,53 +140,44 @@ export default function HomestayUpdateModal({
     }
   }, [homestay, visible]);
 
-  // Handle update success
   useEffect(() => {
     if (updateSuccess && visible) {
       Alert.alert(
         'Thành công',
         'Homestay đã được cập nhật thành công!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              dispatch(resetUpdateState());
-              onUpdateSuccess && onUpdateSuccess();
-              onClose();
-            }
+        [{
+          text: 'OK',
+          onPress: () => {
+            dispatch(resetUpdateState());
+            onUpdateSuccess && onUpdateSuccess();
+            onClose();
           }
-        ]
+        }]
       );
     }
   }, [updateSuccess, visible, dispatch, onUpdateSuccess, onClose]);
 
-  // Handle update error
   useEffect(() => {
     if (updateError && visible) {
       Alert.alert(
         'Lỗi',
         updateError || 'Có lỗi xảy ra khi cập nhật homestay. Vui lòng thử lại.',
-        [
-          {
-            text: 'OK',
-            onPress: () => dispatch(resetUpdateState())
-          }
-        ]
+        [{
+          text: 'OK',
+          onPress: () => dispatch(resetUpdateState())
+        }]
       );
     }
   }, [updateError, visible, dispatch]);
 
-  // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     const { errors: validationErrors, isValid } = validateHomestayForm(formData);
-    
     if (!isValid) {
       setErrors(validationErrors);
       Alert.alert('Lỗi', 'Vui lòng kiểm tra lại thông tin đã nhập');
       return;
     }
 
-    // Calculate discount percentage if not provided
     let discountPercentage = parseFloat(formData.discountPercentage) || 0;
     if (formData.originalPricePerNight && formData.pricePerNight) {
       const originalPrice = parseFloat(formData.originalPricePerNight);
@@ -192,7 +187,6 @@ export default function HomestayUpdateModal({
       }
     }
 
-    // Parse available dates
     const availableDates = formData.availableDates
       ? formData.availableDates.split(',').map(date => date.trim()).filter(date => date)
       : [];
@@ -201,11 +195,11 @@ export default function HomestayUpdateModal({
       name: formData.name,
       pricePerNight: parseInt(formData.pricePerNight),
       originalPricePerNight: parseInt(formData.originalPricePerNight) || parseInt(formData.pricePerNight),
-      discountPercentage: discountPercentage,
+      discountPercentage,
       image: formData.image,
       videoTourUrl: formData.videoTourUrl,
       description: formData.description,
-      features: formData.features 
+      features: formData.features
         ? formData.features.split(',').map(item => item.trim()).filter(item => item)
         : [],
       roomType: formData.roomType,
@@ -217,7 +211,7 @@ export default function HomestayUpdateModal({
       isAvailable: formData.isAvailable,
       isInstantBook: formData.isInstantBook,
       isRecommended: formData.isRecommended,
-      availableDates: availableDates,
+      availableDates,
       location: {
         address: formData.location.address,
         district: formData.location.district,
@@ -233,10 +227,9 @@ export default function HomestayUpdateModal({
       homeStayId: homestay.id,
       staycationData: updateData
     }));
-  };
+  }, [formData, homestay?.id, dispatch]);
 
-  // Handle input change
-  const handleInputChange = (field, value) => {
+  const handleInputChange = useCallback((field, value) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
       setFormData(prev => ({
@@ -253,40 +246,18 @@ export default function HomestayUpdateModal({
       }));
     }
 
-    // Clear error when user starts typing
-    if (errors[field] || errors[field.split('.')[1]]) {
+    if (errors[field] || (field.includes('.') && errors[field.split('.')[1]])) {
       setErrors(prev => ({
         ...prev,
         [field]: null,
         [field.split('.')[1]]: null
       }));
     }
-  };
+  }, [errors]);
 
-  // Handle close
-  const handleClose = () => {
-    if (updating) return;
-    
-    Alert.alert(
-      'Xác nhận',
-      'Bạn có thay đổi chưa được lưu. Bạn có muốn thoát không?',
-      [
-        { text: 'Ở lại', style: 'cancel' },
-        { 
-          text: 'Thoát', 
-          style: 'destructive',
-          onPress: () => {
-            dispatch(resetUpdateState());
-            onClose();
-          }
-        }
-      ]
-    );
-  };
-
-  const renderInput = (label, field, placeholder, options = {}) => {
-    const error = errors[field] || errors[field.split('.')[1]];
-    const value = field.includes('.') 
+  const renderInput = useCallback((label, field, placeholder, options = {}) => {
+    const error = errors[field] || (field.includes('.') && errors[field.split('.')[1]]);
+    const value = field.includes('.')
       ? formData[field.split('.')[0]][field.split('.')[1]]
       : formData[field];
 
@@ -302,7 +273,7 @@ export default function HomestayUpdateModal({
           value={value}
           onChangeText={(text) => handleInputChange(field, text)}
           placeholder={placeholder}
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor="#9CA3AF"
           multiline={options.multiline}
           numberOfLines={options.numberOfLines}
           keyboardType={options.keyboardType || 'default'}
@@ -311,33 +282,39 @@ export default function HomestayUpdateModal({
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
     );
-  };
+  }, [formData, errors, updating, handleInputChange]);
 
-  const renderSwitch = (label, field, description) => {
-    const value = field.includes('.') 
-      ? formData[field.split('.')[0]][field.split('.')[1]]
-      : formData[field];
+  const renderSwitch = useCallback((label, field) => (
+    <View style={styles.switchItem}>
+      <Text style={styles.switchLabel}>{label}</Text>
+      <Switch
+        value={formData[field]}
+        onValueChange={(value) => setFormData(prev => ({ ...prev, [field]: value }))}
+      />
+    </View>
+  ), [formData]);
 
-    return (
-      <View style={styles.switchContainer}>
-        <View style={styles.switchLabelContainer}>
-          <Text style={styles.switchLabel}>{label}</Text>
-          {description && <Text style={styles.switchDescription}>{description}</Text>}
-        </View>
-        <Switch
-          value={value}
-          onValueChange={(newValue) => handleInputChange(field, newValue)}
-          trackColor={{ false: '#f3f4f6', true: '#3b82f6' }}
-          thumbColor={value ? '#ffffff' : '#ffffff'}
-          disabled={updating}
-        />
-      </View>
+  const handleClose = useCallback(() => {
+    if (updating) return;
+
+    Alert.alert(
+      'Xác nhận',
+      'Bạn có thay đổi chưa được lưu. Bạn có muốn thoát không?',
+      [
+        { text: 'Ở lại', style: 'cancel' },
+        {
+          text: 'Thoát',
+          style: 'destructive',
+          onPress: () => {
+            dispatch(resetUpdateState());
+            onClose();
+          }
+        }
+      ]
     );
-  };
+  }, [updating, dispatch, onClose]);
 
-  if (!homestay) {
-    return null;
-  }
+  if (!homestay) return null;
 
   return (
     <Modal
@@ -346,175 +323,84 @@ export default function HomestayUpdateModal({
       presentationStyle="fullScreen"
       onRequestClose={handleClose}
     >
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.closeButton}
-            onPress={handleClose}
-            disabled={updating}
-          >
-            <Text style={styles.closeButtonText}>✕</Text>
+          <TouchableOpacity style={styles.backButton} onPress={handleClose} disabled={updating}>
+            <Text style={styles.backButtonText}>Quay lại</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Chỉnh sửa Homestay</Text>
-          <TouchableOpacity 
-            style={[
-              styles.saveButton,
-              updating && styles.saveButtonDisabled
-            ]}
+          <Text style={styles.headerTitle}>Cập nhật</Text>
+          <TouchableOpacity
+            style={[styles.saveButton, updating && styles.saveButtonDisabled]}
             onPress={handleSubmit}
             disabled={updating}
           >
             {updating ? (
-              <ActivityIndicator size="small" color="#ffffff" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <Text style={styles.saveButtonText}>Lưu</Text>
             )}
           </TouchableOpacity>
         </View>
 
-        {/* Content */}
-        <ScrollView 
+        <ScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Basic Information */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Thông tin cơ bản</Text>
-            
-            {renderInput('Tên homestay *', 'name', 'Nhập tên homestay')}
-            
-            {renderInput('Mô tả *', 'description', 'Nhập mô tả về homestay', {
-              multiline: true,
-              numberOfLines: 4
-            })}
-            
-            {renderInput('Loại phòng', 'roomType', 'Standard, Deluxe, Suite, ...')}
-            
-            {/* Upload Image Component */}
-            <View style={styles.uploadSection}>
-              <Text style={styles.inputLabel}>Hình ảnh homestay</Text>
-              <UploadImage homestayId={homestay.id} />
-            </View>
-            
-            
-           <View style={styles.uploadSection}>
-            <Text style={styles.inputLabel}>Video homestay</Text>
-            <UploadVideo homestayId={homestay.id} />
-          </View>
-          </View>
+          <InformationSection
+            formData={formData}
+            errors={errors}
+            renderInput={renderInput}
+            handleInputChange={handleInputChange}
+            homestay={homestay}
+          />
 
-          {/* Pricing */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Thông tin giá</Text>
-            
-            {renderInput('Giá hiện tại (VND/đêm) *', 'pricePerNight', 'Nhập giá hiện tại', {
-              keyboardType: 'numeric'
-            })}
-            
-            {renderInput('Giá gốc (VND/đêm)', 'originalPricePerNight', 'Nhập giá gốc (nếu có giảm giá)', {
-              keyboardType: 'numeric'
-            })}
-            
-            {renderInput('% Giảm giá', 'discountPercentage', 'Tự động tính nếu để trống', {
-              keyboardType: 'numeric'
-            })}
-          </View>
+          <UploadSection 
+            homestay={homestay}
+          />
 
-          {/* Capacity Information */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Thông tin sức chứa</Text>
-            
-            {renderInput('Số phòng *', 'roomCount', 'Nhập số phòng', {
-              keyboardType: 'numeric'
-            })}
-            
-            {renderInput('Số khách tối đa *', 'maxGuests', 'Nhập số khách tối đa', {
-              keyboardType: 'numeric'
-            })}
-            
-            {renderInput('Số giường *', 'bedCount', 'Nhập số giường', {
-              keyboardType: 'numeric'
-            })}
-            
-            {renderInput('Số phòng tắm *', 'bathroomCount', 'Nhập số phòng tắm', {
-              keyboardType: 'numeric'
-            })}
-          </View>
+          <PriceSection
+            formData={formData}
+            errors={errors}
+            renderInput={renderInput}
+            handleInputChange={handleInputChange}
+          />
 
-          {/* Features */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Đặc điểm</Text>
-            
-            {renderInput('Tiện ích nổi bật', 'features', 'View đẹp, Gần biển, Yên tĩnh, ... (cách nhau bằng dấu phẩy)', {
-              multiline: true,
-              numberOfLines: 3
-            })}
-            
-            {renderInput('Khoảng cách đến trung tâm (km)', 'distanceToCenter', 'Nhập khoảng cách', {
-              keyboardType: 'numeric'
-            })}
-            
-            {renderInput('Ngày có sẵn', 'availableDates', '2025-06-20, 2025-06-21, ... (định dạng YYYY-MM-DD)', {
-              multiline: true,
-              numberOfLines: 2
-            })}
-          </View>
+          <CapacitySection
+            formData={formData}
+            errors={errors}
+            renderInput={renderInput}
+            handleInputChange={handleInputChange}
+          />
 
-          {/* Location Information */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Thông tin địa chỉ</Text>
-            
-            {renderInput('Địa chỉ *', 'location.address', 'Nhập địa chỉ cụ thể')}
-            
-            {renderInput('Quận/Huyện *', 'location.district', 'Nhập quận/huyện')}
-            
-            {renderInput('Thành phố *', 'location.city', 'Nhập thành phố')}
-            
-            {renderInput('Tỉnh/Thành phố *', 'location.province', 'Nhập tỉnh/thành phố')}
-          </View>
+          <LocationSection
+            formData={formData}
+            errors={errors}
+            renderInput={renderInput}
+            handleInputChange={handleInputChange}
+          />
 
-          {/* Status Settings */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Cài đặt trạng thái</Text>
-            
-            {renderSwitch('Flash Sale', 'isFlashSale', 'Đánh dấu là sản phẩm flash sale')}
-            {renderSwitch('Có sẵn', 'isAvailable', 'Homestay có sẵn để đặt')}
-            {renderSwitch('Đặt ngay', 'isInstantBook', 'Cho phép đặt ngay không cần xác nhận')}
-            {renderSwitch('Được đề xuất', 'isRecommended', 'Hiển thị trong danh sách đề xuất')}
-          </View>
+          <FeatureSection
+            formData={formData}
+            errors={errors}
+            renderInput={renderInput}
+            handleInputChange={handleInputChange}
+          />
 
-          {/* Amenities */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Tiện nghi</Text>
-            
-            {renderSwitch('WiFi', 'amenities.wifi')}
-            {renderSwitch('Điều hòa', 'amenities.airConditioner')}
-            {renderSwitch('Bếp', 'amenities.kitchen')}
-            {renderSwitch('Phòng tắm riêng', 'amenities.privateBathroom')}
-            {renderSwitch('Hồ bơi', 'amenities.pool')}
-            {renderSwitch('Cho phép thú cưng', 'amenities.petAllowed')}
-            {renderSwitch('Bãi đậu xe', 'amenities.parking')}
-            {renderSwitch('Ban công', 'amenities.balcony')}
-            {renderSwitch('Khu vực BBQ', 'amenities.bbqArea')}
-            {renderSwitch('Dịch vụ phòng', 'amenities.roomService')}
-            {renderSwitch('Camera an ninh', 'amenities.securityCamera')}
-          </View>
+          <StatusSection
+            formData={formData}
+            renderSwitch={renderSwitch}
+            setFormData={setFormData}
+          />
 
-          {/* Policies */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Chính sách</Text>
-            
-            {renderSwitch('Cho phép thú cưng', 'policies.allowPet', 'Khách có thể mang thú cưng')}
-            {renderSwitch('Cho phép hút thuốc', 'policies.allowSmoking', 'Khách có thể hút thuốc')}
-            {renderSwitch('Có thể hoàn tiền', 'policies.refundable', 'Cho phép hủy và hoàn tiền')}
-          </View>
+          <AmenitySection
+            formData={formData}
+            setFormData={setFormData}
+          />
 
-          {/* Bottom spacing */}
           <View style={styles.bottomSpacing} />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -525,38 +411,31 @@ export default function HomestayUpdateModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    paddingTop: 60,
-    backgroundColor: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
+    borderBottomColor: '#F3F4F6',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
     elevation: 3,
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
-  closeButtonText: {
-    fontSize: 18,
-    color: '#6b7280',
+  backButtonText: {
+    fontSize: 16,
+    color: '#6B7280',
     fontWeight: '500',
   },
   headerTitle: {
@@ -568,93 +447,79 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   saveButton: {
-    backgroundColor: '#3b82f6',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    minWidth: 60,
+    backgroundColor: '#eba016ff',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
+    minWidth: 80,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#FFA500',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   saveButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: '#D1D5DB',
+    shadowOpacity: 0,
   },
   saveButtonText: {
-    color: '#ffffff',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
   content: {
     flex: 1,
-  },
-  section: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 16,
+    backgroundColor: '#F9FAFB',
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#374151',
     marginBottom: 8,
   },
   textInput: {
+    backgroundColor: '#F9FAFB',
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     fontSize: 16,
     color: '#111827',
-    backgroundColor: '#ffffff',
+    minHeight: 50,
   },
   textInputError: {
-    borderColor: '#ef4444',
+    borderColor: '#EF4444',
+    backgroundColor: '#FEF2F2',
   },
   textInputMultiline: {
-    height: 80,
+    minHeight: 100,
     textAlignVertical: 'top',
+    paddingTop: 14,
   },
   errorText: {
     fontSize: 12,
-    color: '#ef4444',
-    marginTop: 4,
+    color: '#EF4444',
+    marginTop: 6,
+    fontWeight: '500',
   },
-  uploadSection: {
-    marginBottom: 16,
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  switchLabelContainer: {
+  switchItem: {
     flex: 1,
-    marginRight: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   switchLabel: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#111827',
   },
-  switchDescription: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginTop: 2,
-  },
   bottomSpacing: {
-    height: 20,
+    height: 40,
   },
 });

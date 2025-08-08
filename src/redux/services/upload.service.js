@@ -61,3 +61,16 @@ export const uploadVideoByHomestayId = async (homestayId, videoFiles) => {
     throw error;
   }
 };
+
+
+export const deleteMediaFile = async (fileUrl) => {
+  try {
+    const response = await apiClient.delete(
+      HomestayEndpoints.deleteStayCationMedia(fileUrl)
+    );
+    return response.data;
+  } catch (error) {
+    console.error("🔴 deleteMediaFile API error:", error);
+    throw error;
+  }
+};

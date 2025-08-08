@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import ItemList from "../../../components/Host/HostHomestay/ItemList"
 import AddStaycationForm from "../../../components/AddStaycationForm/AddStaycationForm"
+import StatsCards from "../../../components/Host/HostHomestay/StatsCards"
 import { useAuth } from "../../../redux/hooks/useAuth"
 import { fetchHomestaysByHost, clearHostHomestays } from "../../../redux/slices/homestay.slice"
 import { formatCurrency } from "../../../utils/textUtils"
@@ -45,6 +46,7 @@ export default function HostHomestayScreen({ navigation }) {
       location: homestay.location,
       status: homestay.status || "inactive",
       rating: typeof homestay.rating === "number" ? homestay.rating : 0,
+      availableDates: Array.isArray(homestay.availableDates) ? homestay.availableDates : [], // Đảm bảo availableDates là array
       id: homestay.id || homestay._id || Math.random().toString(36).substr(2, 9),
     }))
   }
@@ -116,8 +118,9 @@ export default function HostHomestayScreen({ navigation }) {
 
   // Safe count calculations
   const validatedHomestays = validateHomestayData(hostHomestays || [])
-  const activeCount = validatedHomestays.filter((h) => h.status === "active").length
-  const inactiveCount = validatedHomestays.filter((h) => h.status === "inactive").length
+  // Đếm dựa trên availableDates thay vì status
+  const activeCount = validatedHomestays.filter((h) => h.availableDates && h.availableDates.length > 0).length
+  const inactiveCount = validatedHomestays.filter((h) => !h.availableDates || h.availableDates.length === 0).length
   const totalRevenue = validatedHomestays.reduce((sum, h) => sum + (h.revenue || 0), 0)
 
   // Show loading state
@@ -169,7 +172,7 @@ export default function HostHomestayScreen({ navigation }) {
               </View>
 
               <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
-                <Text style={styles.addButtonText}>ADD</Text>
+                <Text style={styles.addButtonText}>+</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -228,9 +231,6 @@ export default function HostHomestayScreen({ navigation }) {
           <View style={styles.headerGradient}>
             <View style={styles.headerContent}>
               <View style={styles.headerInfo}>
-                <View style={styles.headerIcon}>
-                  <Text style={styles.headerIconText}>🏠</Text>
-                </View>
                 <View style={styles.headerTextContainer}>
                   <Text style={styles.title}>Quản Lý Homestay</Text>
                   <Text style={styles.subtitle}>
@@ -240,36 +240,17 @@ export default function HostHomestayScreen({ navigation }) {
               </View>
 
               <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
-                <Text style={styles.addButtonText}>+ Thêm</Text>
+                <Text style={styles.addButtonText}>+</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Stats Cards */}
-            <View style={styles.statsContainer}>
-              <View style={styles.statCard}>
-                <View style={styles.statHeader}>
-                  <Text style={styles.statLabel}>Hoạt động</Text>
-                  <View style={[styles.statDot, styles.activeDot]} />
-                </View>
-                <Text style={styles.statValue}>{activeCount}</Text>
-              </View>
-
-              <View style={styles.statCard}>
-                <View style={styles.statHeader}>
-                  <Text style={styles.statLabel}>Tạm dừng</Text>
-                  <View style={[styles.statDot, styles.inactiveDot]} />
-                </View>
-                <Text style={styles.statValue}>{inactiveCount}</Text>
-              </View>
-
-              <View style={[styles.statCard, styles.revenueCard]}>
-                <View style={styles.statHeader}>
-                  <Text style={styles.revenueLabel}>Doanh thu</Text>
-                  <Text style={styles.revenueIcon}>💰</Text>
-                </View>
-                <Text style={styles.revenueValue}>{formatCurrency(totalRevenue)}</Text>
-              </View>
-            </View>
+            {/* Stats Cards - Sử dụng component con */}
+            <StatsCards
+              activeCount={activeCount}
+              inactiveCount={inactiveCount}
+              totalRevenue={totalRevenue}
+              formatCurrency={formatCurrency}
+            />
           </View>
         </View>
 
@@ -399,64 +380,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
-  },
-
-  // Stats Styles
-  statsContainer: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: "#F1F5F9",
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  revenueCard: {
-    backgroundColor: "#FEF3C7",
-    borderColor: "#F59E0B",
-  },
-  statHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: "#64748B",
-    fontWeight: "500",
-  },
-  revenueLabel: {
-    fontSize: 12,
-    color: "#92400E",
-    fontWeight: "500",
-  },
-  statDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  activeDot: {
-    backgroundColor: "#10B981",
-  },
-  inactiveDot: {
-    backgroundColor: "#EF4444",
-  },
-  revenueIcon: {
-    fontSize: 16,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  revenueValue: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#92400E",
   },
 
   // List Container

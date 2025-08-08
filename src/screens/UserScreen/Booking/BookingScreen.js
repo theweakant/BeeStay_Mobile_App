@@ -18,7 +18,6 @@ import BookingFeatures from '../../../components/BookingScreen/BookingFeatures';
 import BookingDescription from '../../../components/BookingScreen/BookingDescription';
 
 import ReviewListSection from '../../../components/BookingScreen/ReviewSection/ReviewListSection';
-import AddReviewSection from '../../../components/BookingScreen/ReviewSection/AddReviewSection';
 
 export default function BookingScreen() {
   const navigation = useNavigation();

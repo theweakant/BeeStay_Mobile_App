@@ -47,7 +47,7 @@ export const HomestayEndpoints = {
 
   addStayCationImage: (stayCationId) => `/v1/stay-cation/add-img/${stayCationId}`,
   addStayCationVideo: (stayCationId) => `/v1/stay-cation/add-video/${stayCationId}`, 
-
+  deleteStayCationMedia: (fileUrl) => `/v1/stay-cation/delete-img?url=${encodeURIComponent(fileUrl)}`,
 };
 
 export const ReviewEndpoints = {

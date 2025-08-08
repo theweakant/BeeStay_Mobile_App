@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity, 
+  TouchableOpacity,
   Image,
   StyleSheet,
-  FlatList,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,19 +17,43 @@ import {
   selectImageUploadProgress,
   selectImageUploadError,
   selectImageUploadSuccess,
-  clearImageUploadState
+  clearImageUploadState,
+  deleteHomestayMedia,
+  selectIsDeleting,
+  selectDeleteError,
+  selectUploadedImages // ← Thêm selector
 } from '../redux/slices/upload.slice';
+import { MaterialIcons } from '@expo/vector-icons';
 
-export default function UploadImage({ homestayId }) {
+export default function UploadImage({ homestayId, homestay }) {
   const dispatch = useDispatch();
+
+  // State upload
   const isUploading = useSelector(selectIsUploadingImage);
   const uploadProgress = useSelector(selectImageUploadProgress);
   const uploadError = useSelector(selectImageUploadError);
   const uploadSuccess = useSelector(selectImageUploadSuccess);
+  const isDeleting = useSelector(selectIsDeleting);
+  const deleteError = useSelector(selectDeleteError);
 
+  // Lấy danh sách ảnh đã upload từ Redux
+  const uploadedImagesFromStore = useSelector(selectUploadedImages);
+
+  // Danh sách ảnh hiện tại: kết hợp ảnh từ homestay + ảnh mới upload
+  const [allImages, setAllImages] = useState([]);
+
+  // Ảnh mới chọn để preview
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUris, setPreviewUris] = useState([]);
 
+  // Cập nhật danh sách ảnh khi có thay đổi từ props hoặc Redux
+  useEffect(() => {
+    const initialImages = Array.isArray(homestay?.imageList) ? homestay.imageList : [];
+    const combined = [...new Set([...initialImages, ...uploadedImagesFromStore])]; // loại trùng
+    setAllImages(combined);
+  }, [homestay?.imageList, uploadedImagesFromStore]);
+
+  // Yêu cầu quyền truy cập thư viện ảnh
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -39,6 +63,7 @@ export default function UploadImage({ homestayId }) {
     return true;
   };
 
+  // Chọn ảnh từ thư viện
   const pickImages = async () => {
     const granted = await requestPermission();
     if (!granted) return;
@@ -62,91 +87,173 @@ export default function UploadImage({ homestayId }) {
     }
   };
 
-  const removeFile = (index) => {
+  // Xóa ảnh đã chọn (chưa upload)
+  const removePreviewFile = (index) => {
     const newFiles = selectedFiles.filter((_, i) => i !== index);
     const newUris = previewUris.filter((_, i) => i !== index);
     setSelectedFiles(newFiles);
     setPreviewUris(newUris);
   };
 
+  // Xóa ảnh đã tồn tại (trên server)
+  const removeExistingImage = async (imageUrl) => {
+    Alert.alert(
+      'Xác nhận xóa',
+      'Bạn có chắc muốn xóa ảnh này không?',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        {
+          text: 'Xóa',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await dispatch(deleteHomestayMedia({ fileUrl: imageUrl })).unwrap();
+              // Xóa thành công → cập nhật state
+              setAllImages(prev => prev.filter(url => url !== imageUrl));
+              Alert.alert('Thành công', 'Ảnh đã được xóa khỏi server');
+            } catch (error) {
+              Alert.alert('Lỗi', error.message || 'Xóa ảnh thất bại');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  // Upload ảnh lên server
   const handleUpload = async () => {
     if (!homestayId || selectedFiles.length === 0) {
-      Alert.alert('Lỗi', 'Vui lòng chọn ảnh');
+      Alert.alert('Lỗi', 'Vui lòng chọn ảnh để tải lên');
       return;
     }
 
     try {
-      await dispatch(uploadHomestayImage({
+      const result = await dispatch(uploadHomestayImage({
         homestayId,
         imageFiles: selectedFiles
       })).unwrap();
-      
+
+      // ✅ Lấy URL từ result.data (trả về từ action.payload.data)
+      const uploadedUrls = Array.isArray(result.data) ? result.data : [result.data];
+
+      // Cập nhật danh sách ảnh
+      setAllImages(prev => [...new Set([...prev, ...uploadedUrls])]);
+
+      // Reset danh sách tạm
       setSelectedFiles([]);
       setPreviewUris([]);
+
+      Alert.alert('Thành công', 'Tải ảnh lên thành công!');
     } catch (error) {
       console.error('Upload failed:', error);
+      Alert.alert('Lỗi', error.message || 'Tải ảnh lên thất bại');
     }
   };
 
-  const handleClear = () => {
-    dispatch(clearImageUploadState());
-    setSelectedFiles([]);
-    setPreviewUris([]);
-  };
+  // Dọn dẹp khi component unmount
+  useEffect(() => {
+    return () => {
+      dispatch(clearImageUploadState());
+    };
+  }, [dispatch]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tải ảnh homestay</Text>
-      
-      {previewUris.length > 0 ? (
+      <Text style={styles.title}>Đăng ảnh</Text>
+
+      {/* Ảnh đã có (cũ + đã upload) */}
+      {allImages.length > 0 && (
         <View style={styles.imageSection}>
-          <FlatList
-            data={previewUris}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(uri, index) => index.toString()}
-            renderItem={({ item, index }) => (
-              <View style={styles.imageWrapper}>
-                <Image source={{ uri: item }} style={styles.image} />
+          <Text style={styles.sectionTitle}>Ảnh</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {allImages.map((imageUrl, index) => (
+              <View key={`existing-${index}`} style={styles.imageWrapper}>
+                <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
                 <TouchableOpacity
                   style={styles.removeButton}
-                  onPress={() => removeFile(index)}
-                  disabled={isUploading}
+                  onPress={() => removeExistingImage(imageUrl)}
+                  disabled={isUploading || isDeleting}
                 >
-                  <Text style={styles.removeText}>×</Text>
+                  <MaterialIcons name="close" size={14} color="#fff" />
                 </TouchableOpacity>
               </View>
-            )}
-          />
-          <Text style={styles.imageCount}>{previewUris.length} ảnh</Text>
-        </View>
-      ) : (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>Chưa chọn ảnh</Text>
+            ))}
+          </ScrollView>
+          <Text style={styles.imageCount}>{allImages.length} ảnh</Text>
         </View>
       )}
 
+      {/* Preview ảnh mới chọn */}
+      {previewUris.length > 0 && (
+        <View style={styles.imageSection}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {previewUris.map((uri, index) => (
+              <View key={`preview-${index}`} style={styles.imageWrapper}>
+                <Image source={{ uri }} style={styles.image} resizeMode="cover" />
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={() => removePreviewFile(index)}
+                  disabled={isUploading}
+                >
+                  <MaterialIcons name="close" size={14} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+          <Text style={styles.imageCount}>Preview {previewUris.length} ảnh</Text>
+        </View>
+      )}
+
+      {/* Trạng thái trống */}
+      {allImages.length === 0 && previewUris.length === 0 && (
+        <View style={styles.emptyState}>
+          <MaterialIcons name="image" size={48} color="#9CA3AF" />
+          <Text style={styles.emptyText}>Chưa có ảnh nào</Text>
+        </View>
+      )}
+
+      {/* Thanh tiến trình upload */}
       {isUploading && (
         <View style={styles.progressContainer}>
           <ActivityIndicator size="small" color="#007AFF" />
-          <Text style={styles.progressText}>Đang tải... {uploadProgress}%</Text>
+          <Text style={styles.progressText}>
+            Đang tải lên... {uploadProgress ? `${uploadProgress}%` : ''}
+          </Text>
         </View>
       )}
 
+      {/* Thông báo lỗi upload */}
       {uploadError && (
-        <Text style={styles.errorText}>{uploadError}</Text>
+        <View style={styles.errorContainer}>
+          <MaterialIcons name="error" size={16} color="#EF4444" />
+          <Text style={styles.errorText}>{uploadError}</Text>
+        </View>
       )}
 
+      {/* Thông báo thành công */}
       {uploadSuccess && (
-        <Text style={styles.successText}>Tải thành công</Text>
+        <View style={styles.successContainer}>
+          <MaterialIcons name="check-circle" size={16} color="#10B981" />
+          <Text style={styles.successText}>Tải ảnh thành công</Text>
+        </View>
       )}
 
+      {/* Lỗi xóa */}
+      {deleteError && (
+        <View style={styles.errorContainer}>
+          <MaterialIcons name="error" size={16} color="#EF4444" />
+          <Text style={styles.errorText}>{deleteError}</Text>
+        </View>
+      )}
+
+      {/* Nút hành động */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={pickImages}
           style={[styles.button, styles.selectButton]}
           disabled={isUploading}
         >
+          <MaterialIcons name="photo-library" size={18} color="#fff" style={styles.buttonIcon} />
           <Text style={styles.buttonText}>Chọn ảnh</Text>
         </TouchableOpacity>
 
@@ -154,26 +261,22 @@ export default function UploadImage({ homestayId }) {
           onPress={handleUpload}
           disabled={isUploading || selectedFiles.length === 0 || !homestayId}
           style={[
-            styles.button, 
+            styles.button,
             styles.uploadButton,
             (isUploading || selectedFiles.length === 0 || !homestayId) && styles.disabledButton
           ]}
         >
+          <MaterialIcons name="cloud-upload" size={18} color="#fff" style={styles.buttonIcon} />
           <Text style={styles.buttonText}>
             {isUploading ? 'Đang tải...' : 'Tải lên'}
           </Text>
         </TouchableOpacity>
       </View>
-
-      {selectedFiles.length > 0 && (
-        <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-          <Text style={styles.clearText}>Xóa tất cả</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 }
 
+// (Giữ nguyên phần StyleSheet)
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -193,6 +296,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666',
+    marginBottom: 8,
+  },
   imageSection: {
     marginBottom: 16,
   },
@@ -201,8 +310,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     borderRadius: 8,
     backgroundColor: '#f5f5f5',
   },
@@ -213,14 +322,14 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#ff4444',
+    backgroundColor: '#EF4444',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  removeText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   imageCount: {
     fontSize: 12,
@@ -229,73 +338,105 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptyState: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#F9FAFB',
     borderRadius: 8,
-    padding: 24,
+    padding: 16,
     alignItems: 'center',
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: '#E5E7EB',
     borderStyle: 'dashed',
   },
   emptyText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#6B7280',
+    marginTop: 8,
+  },
+  emptySubText: {
     fontSize: 14,
-    color: '#666',
+    color: '#9CA3AF',
+    marginTop: 4,
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    padding: 8,
+    backgroundColor: '#EBF8FF',
+    borderRadius: 8,
   },
   progressText: {
     marginLeft: 8,
     fontSize: 14,
     color: '#007AFF',
+    fontWeight: '500',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    padding: 8,
+    backgroundColor: '#FEF2F2',
+    borderRadius: 8,
   },
   errorText: {
-    color: '#ff4444',
+    color: '#EF4444',
     fontSize: 14,
-    textAlign: 'center',
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  successContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 12,
+    padding: 8,
+    backgroundColor: '#ECFDF5',
+    borderRadius: 8,
   },
   successText: {
-    color: '#00aa44',
+    color: '#10B981',
     fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 12,
+    marginLeft: 4,
+    fontWeight: '500',
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
   },
   button: {
     flex: 1,
+    flexDirection: 'row',
     paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   selectButton: {
     backgroundColor: '#007AFF',
   },
   uploadButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#10B981',
   },
   disabledButton: {
     opacity: 0.5,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  buttonIcon: {
+    marginRight: 6,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  clearButton: {
-    marginTop: 12,
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  clearText: {
-    color: '#666',
-    fontSize: 14,
+    fontSize: 12,
   },
 });
