@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
-  Animated,
   Modal,
   SafeAreaView,
   ScrollView,

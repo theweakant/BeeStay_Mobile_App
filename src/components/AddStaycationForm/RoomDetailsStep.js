@@ -2,107 +2,181 @@
 
 import React from "react"
 import { View, Text, TextInput, StyleSheet } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 
 const RoomDetailsStep = ({ formData, onChange, errors }) => {
+  const roomDetails = [
+    {
+      key: "roomCount",
+      label: "Số phòng",
+      icon: "home-outline",
+      value: formData.roomCount,
+      error: errors.roomCount
+    },
+    {
+      key: "maxGuests", 
+      label: "Số khách",
+      icon: "people-outline",
+      value: formData.maxGuests,
+      error: errors.maxGuests
+    },
+    {
+      key: "bedCount",
+      label: "Số giường", 
+      icon: "bed-outline",
+      value: formData.bedCount,
+      error: errors.bedCount
+    },
+    {
+      key: "bathroomCount",
+      label: "Phòng tắm",
+      icon: "water-outline", 
+      value: formData.bathroomCount,
+      error: errors.bathroomCount
+    }
+  ]
+
   return (
-    <View>
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-        <Text style={{ fontSize: 20, fontWeight: "700", color: "#1F2937" }}>Chi tiết phòng</Text>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>Chi tiết</Text>
       </View>
 
-      <View style={styles.roomDetailsGrid}>
-        <View style={styles.roomDetailCard}>
-          <Text style={styles.roomDetailIcon}>🏠</Text>
-          <Text style={styles.roomDetailLabel}>Số phòng</Text>
-          <TextInput
-            style={styles.roomDetailInput}
-            value={formData.roomCount.toString()}
-            onChangeText={(value) => onChange("roomCount", Number.parseInt(value) || 1)}
-            keyboardType="numeric"
-            textAlign="center"
-          />
-        </View>
-        <View style={styles.roomDetailCard}>
-          <Text style={styles.roomDetailIcon}>👥</Text>
-          <Text style={styles.roomDetailLabel}>Số khách</Text>
-          <TextInput
-            style={[styles.roomDetailInput, errors.maxGuests && styles.inputError]}
-            value={formData.maxGuests.toString()}
-            onChangeText={(value) => onChange("maxGuests", Number.parseInt(value) || 1)}
-            keyboardType="numeric"
-            textAlign="center"
-          />
-        </View>
-        <View style={styles.roomDetailCard}>
-          <Text style={styles.roomDetailIcon}>🛏️</Text>
-          <Text style={styles.roomDetailLabel}>Số giường</Text>
-          <TextInput
-            style={styles.roomDetailInput}
-            value={formData.bedCount.toString()}
-            onChangeText={(value) => onChange("bedCount", Number.parseInt(value) || 1)}
-            keyboardType="numeric"
-            textAlign="center"
-          />
-        </View>
-        <View style={styles.roomDetailCard}>
-          <Text style={styles.roomDetailIcon}>🚿</Text>
-          <Text style={styles.roomDetailLabel}>Phòng tắm</Text>
-          <TextInput
-            style={styles.roomDetailInput}
-            value={formData.bathroomCount.toString()}
-            onChangeText={(value) => onChange("bathroomCount", Number.parseInt(value) || 1)}
-            keyboardType="numeric"
-            textAlign="center"
-          />
-        </View>
+      {/* Room Details Grid */}
+      <View style={styles.gridContainer}>
+        {roomDetails.map((detail, index) => (
+          <View key={detail.key} style={styles.detailCard}>
+            <View style={styles.iconContainer}>
+              <Ionicons 
+                name={detail.icon} 
+                size={24} 
+                color="#6B7280" 
+              />
+            </View>
+            
+            <Text style={styles.label}>{detail.label}</Text>
+            
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={[
+                  styles.input,
+                  detail.error && styles.inputError
+                ]}
+                value={detail.value.toString()}
+                onChangeText={(value) => onChange(detail.key, Number.parseInt(value) || 1)}
+                keyboardType="numeric"
+                textAlign="center"
+                maxLength={2}
+              />
+            </View>
+            
+            {detail.error && (
+              <Text style={styles.errorText}>{detail.error}</Text>
+            )}
+          </View>
+        ))}
       </View>
-
-      {errors.maxGuests && <Text style={{ color: "#EF4444", fontSize: 12, marginTop: 4 }}>{errors.maxGuests}</Text>}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  roomDetailsGrid: {
+  container: {
+    flex: 1,
+  },
+  
+  headerContainer: {
+    padding: 20,
+    paddingBottom: 12,
+  },
+  
+  headerText: {
+    fontSize: 20,
+    fontWeight: "500",
+    color: "#072a74ff",
+    lineHeight: 28,
+  },
+
+  gridContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 16,
     justifyContent: "space-between",
+    gap: 16,
   },
-  roomDetailCard: {
-    backgroundColor: "#F9FAFB",
-    borderRadius: 12,
-    padding: 16,
-    alignItems: "center",
-    flex: 1,
-    minWidth: 120,
+
+  detailCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E5E7EB",
+    padding: 20,
+    alignItems: "center",
+    width: "47%", // Để có 2 cột đều nhau
+    minHeight: 140,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  roomDetailIcon: {
+
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#F3F4F6",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  icon: {
     fontSize: 24,
-    marginBottom: 8,
   },
-  roomDetailLabel: {
-    fontSize: 12,
-    color: "#6B7280",
+
+  label: {
+    fontSize: 14,
     fontWeight: "500",
-    marginBottom: 8,
+    color: "#374151",
+    marginBottom: 12,
     textAlign: "center",
   },
-  roomDetailInput: {
-    borderWidth: 1,
+
+  inputWrapper: {
+    width: 56,
+    height: 40,
+  },
+
+  input: {
+    backgroundColor: "#F9FAFB",
+    borderWidth: 1.5,
     borderColor: "#D1D5DB",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderRadius: 12,
+    padding: 8,
+    fontSize: 18,
     fontWeight: "600",
-    backgroundColor: "#FFFFFF",
+    color: "#111827",
     textAlign: "center",
+    width: "100%",
+    height: "100%",
   },
+
   inputError: {
     borderColor: "#EF4444",
     backgroundColor: "#FEF2F2",
+  },
+
+  errorText: {
+    color: "#EF4444",
+    fontSize: 11,
+    marginTop: 4,
+    textAlign: "center",
   },
 })
 

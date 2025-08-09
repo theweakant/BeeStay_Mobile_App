@@ -1,24 +1,43 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { VerificationBadge } from '../../components/HostProfileScreen/VerificationBadge';
-import { getFullLocation } from '../../utils/textUtils'; // ✅ Import hàm util
+import { getFullLocation } from '../../utils/textUtils';
 
 export const ContactInformation = ({ profileData, isEditing, editedData, setEditedData }) => {
   const contactItems = [
-    { icon: '📧', label: 'Email', key: 'email', type: 'email-address', verified: profileData?.verificationStatus?.email || false },
-    { icon: '📱', label: 'Số điện thoại', key: 'phone', type: 'phone-pad', verified: profileData?.verificationStatus?.phone || false },
-    { icon: '🏠', label: 'Địa chỉ', key: 'location', type: 'default', verified: profileData?.verificationStatus?.address || false }
+    { 
+      icon: 'mail', 
+      label: 'Email', 
+      key: 'email', 
+      type: 'email-address', 
+      verified: profileData?.verificationStatus?.email || false 
+    },
+    { 
+      icon: 'call', 
+      label: 'Số điện thoại', 
+      key: 'phone', 
+      type: 'phone-pad', 
+      verified: profileData?.verificationStatus?.phone || false 
+    },
+    { 
+      icon: 'location', 
+      label: 'Địa chỉ', 
+      key: 'location', 
+      type: 'default', 
+      verified: profileData?.verificationStatus?.address || false 
+    }
   ];
 
-  // ✅ Helper function để get giá trị hiển thị
+  // Helper function để get giá trị hiển thị
   const getDisplayValue = (key) => {
     const value = profileData?.[key];
     
-    if (!value) return 'N/A';
+    if (!value) return 'Chưa cập nhật';
     
-    // ✅ Xử lý riêng cho location
+    // Xử lý riêng cho location
     if (key === 'location') {
-      return getFullLocation(value); // Sử dụng hàm util có sẵn
+      return getFullLocation(value);
     }
     
     return value;
@@ -28,81 +47,107 @@ export const ContactInformation = ({ profileData, isEditing, editedData, setEdit
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Thông tin liên hệ</Text>
       
-      {contactItems.map((item, index) => (
-        <View key={index} style={styles.infoRow}>
-          <View style={styles.infoIconContainer}>
-            <Text style={styles.infoIcon}>{item.icon}</Text>
-          </View>
-          {isEditing ? (
-            <TextInput
-              style={styles.infoInput}
-              value={editedData?.[item.key] || ''}
-              onChangeText={(text) => setEditedData({...editedData, [item.key]: text})}
-              keyboardType={item.type}
-              placeholder={`Nhập ${item.label.toLowerCase()}`}
-            />
-          ) : (
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>{item.label}</Text>
-              {/* ✅ SỬA DUY NHẤT: Dùng getDisplayValue thay vì render trực tiếp */}
-              <Text style={styles.infoValue}>{getDisplayValue(item.key)}</Text>
+      <View style={styles.contactContainer}>
+        {contactItems.map((item, index) => (
+          <View key={index} style={styles.contactItem}>
+            <View style={styles.contactHeader}>
+              <View style={styles.iconContainer}>
+                <Ionicons 
+                  name={item.icon} 
+                  size={20} 
+                  color="#FFA500" 
+                />
+              </View>
+              <Text style={styles.contactLabel}>{item.label}</Text>
+              <VerificationBadge isVerified={item.verified} />
             </View>
-          )}
-          <VerificationBadge isVerified={item.verified} />
-        </View>
-      ))}
+            
+            {isEditing ? (
+              <TextInput
+                style={styles.contactInput}
+                value={editedData?.[item.key] || ''}
+                onChangeText={(text) => setEditedData({...editedData, [item.key]: text})}
+                keyboardType={item.type}
+                placeholder={`Nhập ${item.label.toLowerCase()}`}
+                placeholderTextColor="#999999"
+              />
+            ) : (
+              <Text style={styles.contactValue}>
+                {getDisplayValue(item.key)}
+              </Text>
+            )}
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   section: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginBottom: 15,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginBottom: 16,
+    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#212529',
-    marginBottom: 15,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333333',
+    marginBottom: 20,
   },
-  infoRow: {
+  contactContainer: {
+    gap: 16,
+  },
+  contactItem: {
+    backgroundColor: '#F8F8F8',
+    borderRadius: 12,
+    padding: 16,
+  },
+  contactHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f8f9fa',
+    marginBottom: 8,
   },
-  infoIconContainer: {
-    width: 30,
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FFF3E0',
+    justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
-  infoIcon: {
-    fontSize: 16,
-  },
-  infoContent: {
-    flex: 1,
-    marginRight: 10,
-  },
-  infoLabel: {
-    fontSize: 12,
-    color: '#6c757d',
-    marginBottom: 2,
-  },
-  infoValue: {
+  contactLabel: {
     fontSize: 14,
-    color: '#212529',
     fontWeight: '500',
-  },
-  infoInput: {
+    color: '#666666',
     flex: 1,
-    fontSize: 14,
-    color: '#212529',
-    borderBottomWidth: 1,
-    borderBottomColor: '#FF6B35',
-    paddingVertical: 4,
-    marginRight: 10,
+  },
+  contactValue: {
+    fontSize: 16,
+    color: '#333333',
+    fontWeight: '500',
+    lineHeight: 22,
+    marginLeft: 44, // Align with icon + margin
+  },
+  contactInput: {
+    fontSize: 16,
+    color: '#333333',
+    fontWeight: '500',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#FFA500',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginLeft: 44, // Align with icon + margin
   },
 });

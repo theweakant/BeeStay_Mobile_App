@@ -1,7 +1,31 @@
 import React from "react"
 import { View, Text, StyleSheet } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 
-const ProgressBar = ({ steps, currentStep }) => {
+const ProgressBar = ({ currentStep }) => {
+  const steps = [
+    { 
+      icon: "information-circle", 
+      title: "Thông tin",
+      iconSize: 20
+    },
+    { 
+      icon: "card", 
+      title: "Giá cả",
+      iconSize: 18
+    },
+    { 
+      icon: "star", 
+      title: "Đặc điểm",
+      iconSize: 18
+    },
+    { 
+      icon: "document-text", 
+      title: "Chính sách",
+      iconSize: 18
+    },
+  ]
+
   return (
     <View style={styles.progressContainer}>
       <View style={styles.progressBar}>
@@ -13,14 +37,11 @@ const ProgressBar = ({ steps, currentStep }) => {
                 index <= currentStep ? styles.progressDotActive : styles.progressDotInactive,
               ]}
             >
-              <Text
-                style={[
-                  styles.progressDotText,
-                  index <= currentStep && styles.progressDotTextActive,
-                ]}
-              >
-                {step.icon}
-              </Text>
+              <Ionicons
+                name={step.icon}
+                size={step.iconSize}
+                color={index <= currentStep ? "#FFA500" : "#999999"}
+              />
             </View>
             <Text
               style={[
@@ -40,66 +61,57 @@ const ProgressBar = ({ steps, currentStep }) => {
 const styles = StyleSheet.create({
   progressContainer: {
     backgroundColor: "#FFFFFF",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#E5E7EB",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
-    elevation: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   progressBar: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
   },
   progressStep: {
     alignItems: "center",
     flex: 1,
-    paddingHorizontal: 4,
   },
   progressDot: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 6,
-    borderWidth: 2,
+    marginBottom: 8,
   },
   progressDotActive: {
-    backgroundColor: "#3B82F6",
-    borderColor: "#3B82F6",
-    shadowColor: "#3B82F6",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    backgroundColor: "#FFF3E0",
+    borderWidth: 2,
+    borderColor: "#FFA500",
+    shadowColor: "#FFA500",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
   },
   progressDotInactive: {
-    backgroundColor: "#F9FAFB",
-    borderColor: "#E5E7EB",
-  },
-  progressDotText: {
-    fontSize: 16,
-    color: "#9CA3AF",
-  },
-  progressDotTextActive: {
-    color: "#FFFFFF",
-    fontWeight: "600",
+    backgroundColor: "#F5F5F5",
+    borderWidth: 2,
+    borderColor: "#E0E0E0",
   },
   progressLabel: {
-    fontSize: 11,
-    color: "#9CA3AF",
+    fontSize: 12,
+    color: "#666666",
     textAlign: "center",
     fontWeight: "500",
-    lineHeight: 14,
-    maxWidth: 80,
+    letterSpacing: 0.2,
   },
   progressLabelActive: {
-    color: "#3B82F6",
+    color: "#FFA500",
     fontWeight: "600",
   },
 })

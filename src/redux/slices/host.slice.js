@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getHostByAccount, getBookingByHost } from '../services/host.service';
+import { getHostByAccount, getBookingByHost, getDashboardByHost } from '../services/host.service';
 
 
 export const fetchHostByAccount = createAsyncThunk(
@@ -14,13 +14,23 @@ export const fetchHostByAccount = createAsyncThunk(
   }
 );
 
-
-
 export const fetchBookingByHost = createAsyncThunk(
   'host/fetchBookingByHost',
   async (accountId, thunkAPI) => {
     try {
       const data = await getBookingByHost(accountId);
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchDashboardByHost = createAsyncThunk(
+  'host/fetchDashboardByHost',
+  async (accountId, thunkAPI) => {
+    try {
+      const data = await getDashboardByHost(accountId);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
@@ -35,9 +45,13 @@ const hostSlice = createSlice({
     loading: false,
     error: null,
 
-    bookings: [], // Thêm state để lưu trữ booking 
-    bookingLoading: false, // Thêm state để theo dõi trạng thái loading của booking
-    bookingError: null, // Thêm state để lưu trữ lỗi khi lấy booking
+    bookings: [],
+    bookingLoading: false, 
+    bookingError: null, 
+
+    dashboard: null,
+    dashboardLoading: false,
+    dashboardError: null,
   },
   reducers: {
     clearHost: (state) => {
@@ -46,13 +60,21 @@ const hostSlice = createSlice({
       state.error = null;
     },
 
-        clearBooking: (state) => {
+    clearBooking: (state) => {
       state.bookings = [];
       state.bookingLoading = false;
       state.bookingError = null;
     },
+
+    clearDashboard: (state) => {
+      state.dashboard = null;
+      state.dashboardLoading = false;
+      state.dashboardError = null;
+    },
   },
   extraReducers: (builder) => {
+
+    //host
     builder
       .addCase(fetchHostByAccount.pending, (state) => {
         state.loading = true;
@@ -65,10 +87,9 @@ const hostSlice = createSlice({
       .addCase(fetchHostByAccount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
 
-          // Fetch Booking By Host
-    builder
+      //booking
       .addCase(fetchBookingByHost.pending, (state) => {
         state.bookingLoading = true;
         state.bookingError = null;
@@ -80,10 +101,24 @@ const hostSlice = createSlice({
       .addCase(fetchBookingByHost.rejected, (state, action) => {
         state.bookingLoading = false;
         state.bookingError = action.payload;
-      });
+      })
+
+      //dashboard
+      .addCase(fetchDashboardByHost.pending, (state) => {
+        state.dashboardLoading = true;
+        state.dashboardError = null;
+      })
+      .addCase(fetchDashboardByHost.fulfilled, (state, action) => {
+        state.dashboardLoading = false;
+        state.dashboard = action.payload;
+      })
+      .addCase(fetchDashboardByHost.rejected, (state, action) => {
+        state.dashboardLoading = false;
+        state.dashboardError = action.payload;
+      })
   },
 });
 
-export const { clearHost } = hostSlice.actions;
+export const { clearHost, clearBooking, clearDashboard } = hostSlice.actions;
 
 export default hostSlice.reducer;

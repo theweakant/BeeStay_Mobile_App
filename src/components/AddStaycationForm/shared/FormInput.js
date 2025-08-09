@@ -1,7 +1,6 @@
 // components/AddStaycationForm/shared/FormInput.js
-
-import React from "react"
-import { View, Text, TextInput } from "react-native"
+import React from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 
 const FormInput = ({
   label,
@@ -15,24 +14,21 @@ const FormInput = ({
   required = false,
   error,
   focused,
+  containerStyle  
 }) => {
   return (
-    <View style={{ marginBottom: 20 }}>
-      <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 8, color: "#374151" }}>
+    <View style={[styles.container, containerStyle]}>
+      <Text style={styles.label}>
         {label}
-        {required && <Text style={{ color: "#EF4444" }}> *</Text>}
+        {required && <Text style={styles.requiredMark}> *</Text>}
       </Text>
       <TextInput
-        style={{
-          borderWidth: 1,
-          borderColor: error ? "#EF4444" : focused ? "#3B82F6" : "#D1D5DB",
-          borderRadius: 12,
-          padding: 16,
-          fontSize: 16,
-          backgroundColor: "#FFFFFF",
-          color: "#1F2937",
-          ...(multiline && { height: numberOfLines * 20 }),
-        }}
+        style={[
+          styles.input,
+          multiline && { height: numberOfLines * 20 },
+          focused && styles.inputFocused,
+          error && styles.inputError,
+        ]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -41,9 +37,46 @@ const FormInput = ({
         numberOfLines={numberOfLines}
         placeholderTextColor="#9CA3AF"
       />
-      {error && <Text style={{ color: "#EF4444", fontSize: 12, marginTop: 4 }}>{error}</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
-  )
-}
+  );
+};
 
-export default FormInput
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 13,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#eba016ff',
+    marginBottom: 8,
+
+
+  },
+  requiredMark: {
+    color: "#eba016ff",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 12,
+    backgroundColor: "#FFFFFF",
+    color: "#1F2937",
+  },
+  inputFocused: {
+    borderColor: "#3B82F6",
+  },
+  inputError: {
+    borderColor: "#EF4444",
+  },
+  errorText: {
+    color: "#EF4444",
+    fontSize: 12,
+    marginTop: 4,
+  },
+});
+
+export default FormInput;

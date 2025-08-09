@@ -20,6 +20,7 @@ import AddStaycationForm from "../../../components/AddStaycationForm/AddStaycati
 import StatsCards from "../../../components/Host/HostHomestay/StatsCards"
 import { useAuth } from "../../../redux/hooks/useAuth"
 import { fetchHomestaysByHost, clearHostHomestays } from "../../../redux/slices/homestay.slice"
+import { fetchDashboardByHost, clearDashboard } from "../../../redux/slices/host.slice"
 import { formatCurrency } from "../../../utils/textUtils"
 
 const { width } = Dimensions.get("window")
@@ -31,6 +32,7 @@ export default function HostHomestayScreen({ navigation }) {
 
   // Redux state
   const { hostHomestays, fetchingByHost, fetchByHostError, hostHomestaysCount } = useSelector((state) => state.homestay)
+  const { dashboard, loading: dashboardLoading, error: dashboardError } = useSelector((state) => state.host)
 
   // Local state management
   const [addModalVisible, setAddModalVisible] = useState(false)
@@ -46,20 +48,22 @@ export default function HostHomestayScreen({ navigation }) {
       location: homestay.location,
       status: homestay.status || "inactive",
       rating: typeof homestay.rating === "number" ? homestay.rating : 0,
-      availableDates: Array.isArray(homestay.availableDates) ? homestay.availableDates : [], // Đảm bảo availableDates là array
+      availableDates: Array.isArray(homestay.availableDates) ? homestay.availableDates : [],
       id: homestay.id || homestay._id || Math.random().toString(36).substr(2, 9),
     }))
   }
 
-  // Fetch homestays when component mounts or accountId changes
+  // Fetch homestays and host data when component mounts or accountId changes
   useEffect(() => {
     if (accountId) {
       dispatch(fetchHomestaysByHost(accountId))
+      dispatch(fetchDashboardByHost(accountId))
     }
 
     // Cleanup when component unmounts
     return () => {
       dispatch(clearHostHomestays())
+      dispatch(clearDashboard())
     }
   }, [dispatch, accountId])
 
@@ -97,6 +101,7 @@ export default function HostHomestayScreen({ navigation }) {
     setAddModalVisible(false)
     if (accountId) {
       dispatch(fetchHomestaysByHost(accountId))
+      dispatch(fetchDashboardByHost(accountId)) 
     }
   }
 
@@ -105,6 +110,7 @@ export default function HostHomestayScreen({ navigation }) {
     setRefreshing(true)
     if (accountId) {
       dispatch(fetchHomestaysByHost(accountId))
+      // dispatch(fetchHostByAccount(accountId)) 
     }
     setTimeout(() => setRefreshing(false), 1000)
   }
@@ -113,6 +119,7 @@ export default function HostHomestayScreen({ navigation }) {
   const handleRetry = () => {
     if (accountId) {
       dispatch(fetchHomestaysByHost(accountId))
+      dispatch(fetchDashboardByHost(accountId))
     }
   }
 
@@ -121,10 +128,12 @@ export default function HostHomestayScreen({ navigation }) {
   // Đếm dựa trên availableDates thay vì status
   const activeCount = validatedHomestays.filter((h) => h.availableDates && h.availableDates.length > 0).length
   const inactiveCount = validatedHomestays.filter((h) => !h.availableDates || h.availableDates.length === 0).length
-  const totalRevenue = validatedHomestays.reduce((sum, h) => sum + (h.revenue || 0), 0)
+  
+  // Use revenue from dashboard data instead of calculating from homestays
+  const totalRevenue = dashboard?.revenue || 0
 
   // Show loading state
-  if (fetchingByHost && !hostHomestays?.length) {
+  if ((fetchingByHost || dashboardLoading) && !hostHomestays?.length) {
     return (
       <View style={styles.loadingContainer}>
         <View style={styles.loadingCard}>
@@ -136,7 +145,7 @@ export default function HostHomestayScreen({ navigation }) {
   }
 
   // Show error state
-  if (fetchByHostError && !hostHomestays?.length) {
+  if ((fetchByHostError || dashboardError) && !hostHomestays?.length) {
     return (
       <View style={styles.errorContainer}>
         <View style={styles.errorCard}>
@@ -244,7 +253,7 @@ export default function HostHomestayScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            {/* Stats Cards - Sử dụng component con */}
+            {/* Stats Cards - Sử dụng component con với revenue từ dashboard data */}
             <StatsCards
               activeCount={activeCount}
               inactiveCount={inactiveCount}
@@ -288,7 +297,7 @@ export default function HostHomestayScreen({ navigation }) {
       </Modal>
 
       {/* Error Badge */}
-      {fetchByHostError && (
+      {(fetchByHostError || dashboardError) && (
         <View style={styles.errorBadge}>
           <Text style={styles.errorBadgeText}>!</Text>
         </View>
@@ -363,23 +372,18 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   addButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "transparent",
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 12,
-    shadowColor: "#007AFF",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    borderColor: '#FFA500',
+    borderWidth: 2,
+    borderRadius: 25,
   },
   addButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+    color: "#FFA500",
+    fontSize: 20,
+    fontWeight: "500",
+    textAlign: "center",
   },
 
   // List Container
@@ -581,18 +585,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingTop: 60,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
+    fontWeight: "500",
+    color: "#333333",
   },
   closeButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#F1F5F9",
     justifyContent: "center",
     alignItems: "center",
   },

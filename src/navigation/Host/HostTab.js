@@ -40,14 +40,14 @@ export default function HostTabNavigator() {
         tabBarIcon: ({ color }) => <Search size={22} color={color} />,
       }}
     />
-    <Tab.Screen
+    {/* <Tab.Screen
       name="Earning"
       component={EarningScreen}
       options={{
         tabBarLabel: "Thu Nhập",
         tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
       }}
-    />
+    /> */}
     <Tab.Screen
       name="ManageReview"
       component={ManageReviewScreen}

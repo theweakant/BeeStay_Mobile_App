@@ -21,4 +21,11 @@ export const getBookingByHost = async (accountId) => {
   }
 };
 
-
+export const getDashboardByHost = async (accountId) => {
+  try {
+    const response = await apiClient.get(HostEndpoints.getDashboardByHost(accountId));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

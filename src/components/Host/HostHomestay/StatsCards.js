@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   statValue: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 12,
+    fontWeight: "400",
     color: "#1E293B",
   },
   revenueValue: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 12,
+    fontWeight: "400",
     color: "#92400E",
   },
 })

@@ -23,6 +23,8 @@ export const HostEndpoints = {
 
   getBookingByHost: (accountId) => `/v1/host/booking?accountId=${accountId}`,
   checkInBooking: (bookingId) => `/v1/host/booking/check-in/${bookingId}`,
+
+  getDashboardByHost: (accountId) => `/v1/host/dashboard?accountId=${accountId}`
 };
 
 export const BookingEndpoints = {
