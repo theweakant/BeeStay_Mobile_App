@@ -269,6 +269,11 @@ export default function HostProfileScreen() {
   if (loading && !host) {
     return (
       <SafeAreaView style={styles.safeArea}>
+        {/* Header Title */}
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>Hồ Sơ</Text>
+        </View>
+        
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#FFA500" />
           <Text style={styles.loadingText}>Đang tải thông tin...</Text>
@@ -281,6 +286,11 @@ export default function HostProfileScreen() {
   if (error && !host) {
     return (
       <SafeAreaView style={styles.safeArea}>
+        {/* Header Title */}
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>Hồ Sơ</Text>
+        </View>
+        
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
             {typeof error === 'string' ? error : 'Không thể tải thông tin hồ sơ'}
@@ -300,6 +310,11 @@ export default function HostProfileScreen() {
   if (!loading && !host) {
     return (
       <SafeAreaView style={styles.safeArea}>
+        {/* Header Title */}
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>Hồ Sơ</Text>
+        </View>
+        
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Không tìm thấy thông tin hồ sơ</Text>
           <TouchableOpacity 
@@ -315,6 +330,11 @@ export default function HostProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Header Title */}
+      <View style={styles.headerTitleContainer}>
+        <Text style={styles.headerTitle}>Hồ Sơ</Text>
+      </View>
+
       <KeyboardAvoidingView 
         style={styles.keyboardAvoid} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -409,6 +429,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffffff',
   },
+  headerTitleContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 12 ,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#cececeff',
+  },
+  headerTitle: {
+    fontSize: 27,
+    fontWeight: '600',
+    color: '#f97316',
+    textAlign: 'center',
+  },
   keyboardAvoid: {
     flex: 1,
   },
@@ -468,14 +502,9 @@ const styles = StyleSheet.create({
   },
   stickyButtonContainer: {
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
+    borderTopColor: '#ebe8e8ff',
   },
 });

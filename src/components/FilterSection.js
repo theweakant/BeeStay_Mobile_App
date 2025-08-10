@@ -15,7 +15,7 @@ export default function FilterSection({
     { key: 'all', label: 'Tất cả' },
     { key: 'needResponse', label: 'Cần phản hồi' },
     { key: 'pending', label: 'Chờ duyệt' },
-    { key: 'published', label: 'Đã xuất bản' },
+    { key: 'published', label: 'Đã công khai' },
   ];
 
   const ratingFilters = [
@@ -30,7 +30,7 @@ export default function FilterSection({
     <View style={styles.filterContainer}>
       <TextInput
         style={styles.searchInput}
-        placeholder="Tìm kiếm theo tên khách, homestay hoặc nội dung..."
+        placeholder="Tìm kiếm theo tên khách hoặc homestay ..."
         value={searchText}
         onChangeText={onSearchChange}
       />
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     backgroundColor: '#fff',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: '#e9ecef',
   },
@@ -62,8 +62,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#dee2e6',
     borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    padding: 10,
+    fontSize: 12,
     marginBottom: 15,
   },
 });

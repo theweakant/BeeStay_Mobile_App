@@ -199,12 +199,14 @@ export default function HostBookingScreen() {
           {/* Actions */}
           <View style={styles.actionButtons}>
             {/* Nút CHECK-IN */}
-            <CheckInButton
-              bookingId={item.bookingId}
-              onSuccess={() => dispatch(fetchBookingByHost(accountId))}
-              style={styles.checkInButton}
-              textStyle={styles.actionButtonText}
-            />
+            <View style={styles.buttonWrapper}>
+              <CheckInButton
+                bookingId={item.bookingId}
+                onSuccess={() => dispatch(fetchBookingByHost(accountId))}
+                style={styles.checkInButton}
+                textStyle={styles.actionButtonText}
+              />
+            </View>
 
             {/* Nút Hủy */}
             <TouchableOpacity
@@ -568,24 +570,33 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     marginTop: 12,
+    flexDirection: 'row', // Thay đổi từ column sang row
     width: '100%',
-    gap: 5 
+    gap: 8, 
+  },
+    buttonWrapper: {
+    flex: 1, // Chiếm 50% width
   },
   actionButton: {
-    flex: 1,
+    flex: 1, // Chiếm 50% width
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   checkInButton: {
-    backgroundColor: '#4CAF50', // Màu xanh lá
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '100%', 
   },
   discardButton: {
-    backgroundColor: '#dc3545', // Màu đỏ
+    backgroundColor: '#dc3545',
   },
+  
   actionButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   loadingContainer: {

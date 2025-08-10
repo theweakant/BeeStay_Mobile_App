@@ -41,7 +41,7 @@ export default function UserStackNavigator() {
     >
 
       <Stack.Screen
-        name="MainTabs"
+        name="MainTabs" 
         component={UserTab}
         options={{ headerShown: false }} 
       />

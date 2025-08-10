@@ -10,7 +10,7 @@ import {
   StyleSheet,
   Dimensions 
 } from 'react-native';
-import StarRating from '../Icon/StarRating';
+import { Ionicons } from '@expo/vector-icons';
 import { formatDate } from '../../utils/textUtils';
 
 const { width } = Dimensions.get('window');
@@ -33,28 +33,60 @@ export default function ReviewDetailModal({
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={styles.modalTitle}>Chi tiết đánh giá</Text>
+            {/* Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Chi tiết đánh giá</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Ionicons name="close" size={24} color="#6c757d" />
+              </TouchableOpacity>
+            </View>
             
+            {/* Guest Info */}
             <View style={styles.modalGuestInfo}>
               <Image source={{ uri: review.guestAvatar }} style={styles.modalGuestAvatar} />
-              <View>
-                <Text style={styles.modalGuestName}>{review.guestName}</Text>
+              <View style={styles.guestDetails}>
+                <View style={styles.guestNameRow}>
+                  <Text style={styles.modalGuestName}>{review.guestName}</Text>
+                  {review.verified && (
+                    <Ionicons 
+                      name="checkmark-circle" 
+                      size={16} 
+                      color="#28a745" 
+                      style={styles.verifiedIcon}
+                    />
+                  )}
+                </View>
                 <Text style={styles.modalStayDates}>
                   {formatDate(review.checkInDate)} - {formatDate(review.checkOutDate)}
                 </Text>
               </View>
             </View>
 
+            {/* Rating */}
             <View style={styles.modalRating}>
-              <StarRating rating={review.rating} size={16} />
+              <View style={styles.starsContainer}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Ionicons
+                    key={star}
+                    name={star <= review.rating ? "star" : "star-outline"}
+                    size={18}
+                    color={star <= review.rating ? "#FFD700" : "#E0E0E0"}
+                  />
+                ))}
+              </View>
               <Text style={styles.modalRatingText}>{review.rating}/5</Text>
             </View>
 
+            {/* Comment */}
             <Text style={styles.modalComment}>{review.comment}</Text>
 
+            {/* Response Section */}
             {review.hasResponse && (
               <View style={styles.responseContainer}>
-                <Text style={styles.responseTitle}>Phản hồi của bạn:</Text>
+                <View style={styles.responseHeader}>
+                  <Ionicons name="chatbubble-outline" size={16} color="#495057" />
+                  <Text style={styles.responseTitle}>Phản hồi của bạn</Text>
+                </View>
                 <Text style={styles.responseText}>{review.response}</Text>
                 <Text style={styles.responseDate}>
                   {formatDate(review.responseDate)}
@@ -62,6 +94,7 @@ export default function ReviewDetailModal({
               </View>
             )}
 
+            {/* Actions */}
             <View style={styles.modalActions}>
               <TouchableOpacity 
                 style={styles.modalButton}
@@ -70,16 +103,16 @@ export default function ReviewDetailModal({
                   onRespond(review);
                 }}
               >
-                <Text style={styles.modalButtonText}>
-                  {review.hasResponse ? 'Sửa phản hồi' : 'Trả lời'}
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.closeButton]}
-                onPress={onClose}
-              >
-                <Text style={[styles.modalButtonText, styles.closeButtonText]}>Đóng</Text>
+                <View style={styles.buttonContent}>
+                  <Ionicons 
+                    name={review.hasResponse ? "create-outline" : "chatbubble-outline"} 
+                    size={14} 
+                    color="#fff" 
+                  />
+                  <Text style={styles.modalButtonText}>
+                    {review.hasResponse ? 'Sửa phản hồi' : 'Trả lời'}
+                  </Text>
+                </View>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -104,67 +137,96 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
     width: width - 40,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#212529',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  modalGuestInfo: {
+  modalHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 20,
   },
-  modalGuestAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 15,
-  },
-  modalGuestName: {
+  modalTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#212529',
   },
-  modalStayDates: {
+  closeButton: {
+    padding: 4,
+  },
+  modalGuestInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingVertical: 8,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+  },
+  modalGuestAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  guestDetails: {
+    flex: 1,
+  },
+  guestNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modalGuestName: {
     fontSize: 14,
+    fontWeight: '500',
+    color: '#212529',
+  },
+  verifiedIcon: {
+    marginLeft: 6,
+  },
+  modalStayDates: {
+    fontSize: 12,
     color: '#6c757d',
     marginTop: 2,
   },
   modalRating: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 12,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    marginRight: 8,
   },
   modalRatingText: {
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212529',
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#6c757d',
   },
   modalComment: {
-    fontSize: 16,
-    color: '#212529',
-    lineHeight: 24,
-    marginBottom: 20,
-  },
-  responseContainer: {
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  responseTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#495057',
-    marginBottom: 8,
-  },
-  responseText: {
     fontSize: 14,
     color: '#212529',
     lineHeight: 20,
+    marginBottom: 12,
+  },
+  responseContainer: {
+    backgroundColor: '#f8f9fa',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  responseHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  responseTitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#495057',
+    marginLeft: 6,
+  },
+  responseText: {
+    fontSize: 12,
+    color: '#212529',
+    lineHeight: 18,
     marginBottom: 8,
   },
   responseDate: {
@@ -172,25 +234,22 @@ const styles = StyleSheet.create({
     color: '#6c757d',
   },
   modalActions: {
-    flexDirection: 'row',
-    gap: 10,
+    marginTop: 8,
   },
   modalButton: {
-    flex: 1,
     backgroundColor: '#FF6B35',
-    padding: 12,
+    paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   modalButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
-  },
-  closeButton: {
-    backgroundColor: '#6c757d',
-  },
-  closeButtonText: {
-    color: '#fff',
   },
 });

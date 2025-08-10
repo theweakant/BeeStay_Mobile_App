@@ -90,17 +90,10 @@ const styles = StyleSheet.create({
   // === MAIN CONTAINER ===
   profileHeader: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    shadowColor: 'rgba(0,0,0,0.08)',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    elevation: 8,
-    marginHorizontal: 15,
-    marginBottom: 15,
+    borderBottomWidth: 0.5,
+    borderColor:'#cececeff',
+    paddingVertical: 16 ,
+    paddingHorizontal: 30,
   },
   mainContainer: {
     flexDirection: 'row',
@@ -124,8 +117,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatarPlaceholder: {
-    width: 90,
-    height: 90,
+    width: 70,
+    height: 70,
     borderRadius: 45,
     backgroundColor: '#fff7ed',
     justifyContent: 'center',

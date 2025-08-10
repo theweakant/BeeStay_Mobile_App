@@ -158,19 +158,18 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#fff',
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e9ecef',
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#212529',
-    marginBottom: 20,
+    marginBottom: 12,
   },
   listContent: {
-    padding: 20,
+    padding: 16,
   },
 });

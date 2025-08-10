@@ -48,7 +48,6 @@ const CheckInButton = ({ bookingId, onSuccess, style, textStyle }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 4,
     width: '100%',
   },
   button: {

@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: 20,
     backgroundColor: '#f8f9fa',
     borderWidth: 1,
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     borderColor: '#FF6B35',
   },
   filterButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#495057',
     fontWeight: '500',
   },

@@ -1,6 +1,7 @@
 // components/ReviewCard.js
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../Icon/StarRating';
 import { formatDate } from '../../utils/textUtils';
 
@@ -13,14 +14,32 @@ export default function ReviewCard({ item, onPress, onRespond }) {
           <View style={styles.guestDetails}>
             <View style={styles.guestNameRow}>
               <Text style={styles.guestName}>{item.guestName}</Text>
-              {item.verified && <Text style={styles.verifiedBadge}>✓</Text>}
+              {item.verified && (
+                <Ionicons 
+                  name="checkmark-circle" 
+                  size={16} 
+                  color="#28a745" 
+                  style={styles.verifiedIcon}
+                />
+              )}
             </View>
             <Text style={styles.reviewDate}>{formatDate(item.date)}</Text>
           </View>
         </View>
         
         <View style={styles.ratingContainer}>
-          <StarRating rating={item.rating} showNumber />
+          <View style={styles.ratingDisplay}>
+            <View style={styles.starsContainer}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Ionicons
+                  key={star}
+                  name={star <= item.rating ? "star" : "star-outline"}
+                  size={16}
+                  color={star <= item.rating ? "#FFD700" : "#E0E0E0"}
+                />
+              ))}
+            </View>
+          </View>
         </View>
       </View>
 
@@ -58,13 +77,27 @@ export default function ReviewCard({ item, onPress, onRespond }) {
               style={styles.responseButton}
               onPress={() => onRespond(item)}
             >
-              <Text style={styles.responseButtonText}>
-                {item.hasResponse ? '✏️ Sửa phản hồi' : '💬 Trả lời'}
-              </Text>
+              <View style={styles.buttonContent}>
+                <Ionicons 
+                  name={item.hasResponse ? "create-outline" : "chatbubble-outline"} 
+                  size={14} 
+                  color="#fff" 
+                />
+                <Text style={styles.responseButtonText}>
+                  {item.hasResponse ? 'Sửa phản hồi' : 'Trả lời'}
+                </Text>
+              </View>
             </TouchableOpacity>
           ) : (
             <View style={styles.respondedIndicator}>
-              <Text style={styles.respondedText}>✅ Đã trả lời</Text>
+              <View style={styles.buttonContent}>
+                <Ionicons 
+                  name="checkmark-done-circle" 
+                  size={14} 
+                  color="#2E7D32" 
+                />
+                <Text style={styles.respondedText}>Đã trả lời</Text>
+              </View>
             </View>
           )}
         </View>
@@ -75,14 +108,11 @@ export default function ReviewCard({ item, onPress, onRespond }) {
 
 const styles = StyleSheet.create({
   reviewCard: {
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#dee2e6',
     borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: 20,
   },
   reviewHeader: {
     flexDirection: 'row',
@@ -108,14 +138,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   guestName: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '500',
     color: '#212529',
   },
-  verifiedBadge: {
+  verifiedIcon: {
     marginLeft: 6,
-    color: '#28a745',
-    fontSize: 14,
   },
   reviewDate: {
     fontSize: 12,
@@ -125,28 +153,36 @@ const styles = StyleSheet.create({
   ratingContainer: {
     alignItems: 'flex-end',
   },
+  ratingDisplay: {
+    alignItems: 'flex-end',
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    marginBottom: 2,
+  },
+
   homestayInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
     paddingVertical: 8,
     backgroundColor: '#f8f9fa',
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 2,
   },
   homestayImage: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     borderRadius: 6,
     marginRight: 10,
   },
   homestayName: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '400',
     color: '#495057',
   },
   reviewComment: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#212529',
     lineHeight: 20,
     marginBottom: 12,
@@ -189,6 +225,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   responseButtonText: {
     color: '#fff',

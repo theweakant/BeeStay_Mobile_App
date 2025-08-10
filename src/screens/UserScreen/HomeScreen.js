@@ -105,13 +105,12 @@ const HomeScreen = () => {
   };
 
   const handleNotificationPress = () => {
-    console.log('Notifications pressed');
-    // navigation.navigate('Notifications');
+    // console.log('Notifications pressed');
+    navigation.navigate('OrderBooking');
   };
 
   const handleProfilePress = () => {
-    console.log('Profile pressed');
-    // navigation.navigate('Profile');
+    navigation.navigate('Profile');
   };
 
   // Updated quick action handler

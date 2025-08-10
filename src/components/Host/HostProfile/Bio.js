@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
   section: {
     backgroundColor: '#ffffff',
     marginHorizontal: 15,
-    marginVertical: 10,
     borderRadius: 16,
     padding: 20,
     shadowColor: 'rgba(0,0,0,0.08)',

@@ -108,11 +108,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 52,
-    shadowColor: 'rgba(0,0,0,0.1)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   
   // === SAVE BUTTON (Success Green) ===
@@ -169,7 +164,7 @@ const styles = StyleSheet.create({
   // === LOGOUT BUTTON (Secondary) ===
   logoutButton: {
     backgroundColor: '#ffffff',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#f97316',
     shadowColor: 'rgba(249,115,22,0.15)',
     shadowOffset: { width: 0, height: 2 },

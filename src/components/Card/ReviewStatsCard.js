@@ -7,11 +7,11 @@ export default function ReviewStatsCard({ stats }) {
     <View style={styles.statsContainer}>
       <View style={styles.statItem}>
         <Text style={styles.statNumber}>{stats.total}</Text>
-        <Text style={styles.statLabel}>Tổng đánh giá</Text>
+        <Text style={styles.statLabel}>Đánh giá</Text>
       </View>
       <View style={styles.statItem}>
         <Text style={styles.statNumber}>{stats.average}</Text>
-        <Text style={styles.statLabel}>Điểm trung bình</Text>
+        <Text style={styles.statLabel}>Trung bình</Text>
       </View>
       <View style={styles.statItem}>
         <Text style={styles.statNumber}>{stats.pending}</Text>
