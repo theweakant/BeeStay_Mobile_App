@@ -126,7 +126,7 @@ export default function DealScreen() {
                     <View style={styles.headerContent}>
                         <Text style={styles.headerTitle}>Khuyến mãi</Text>
                     </View>
-                    <Text style={styles.headerSubtitle}>Ưu đãi homestay siêu hấp dẫn!</Text>
+                    <Text style={styles.headerSubtitle}>Ưu đãi BeeStay siêu hấp dẫn!</Text>
                 </View>
 
                 {/* Giảm giá hấp dẫn */}
