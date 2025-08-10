@@ -29,3 +29,16 @@ export const getDashboardByHost = async (accountId) => {
     throw error;
   }
 };
+
+export const updateAccountHost = async (accountId, payload) => {
+  try {
+    const response = await apiClient.put(
+      HostEndpoints.updateAccountHost(accountId),
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+

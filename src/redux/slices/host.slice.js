@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getHostByAccount, getBookingByHost, getDashboardByHost } from '../services/host.service';
+import { getHostByAccount, getBookingByHost, getDashboardByHost, updateAccountHost } from '../services/host.service';
 
 
 export const fetchHostByAccount = createAsyncThunk(
@@ -37,6 +37,19 @@ export const fetchDashboardByHost = createAsyncThunk(
     }
   }
 );
+
+export const updateHostByAccount = createAsyncThunk(
+  'host/updateHostByAccount',
+  async ({ accountId, payload }, thunkAPI) => {
+    try {
+      const data = await updateAccountHost(accountId, payload);
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 
 const hostSlice = createSlice({
   name: 'host',
@@ -116,6 +129,21 @@ const hostSlice = createSlice({
         state.dashboardLoading = false;
         state.dashboardError = action.payload;
       })
+
+
+      //update
+      .addCase(updateHostByAccount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateHostByAccount.fulfilled, (state, action) => {
+        state.loading = false;
+        state.host = action.payload; // Cập nhật lại host sau khi update thành công
+      })
+      .addCase(updateHostByAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

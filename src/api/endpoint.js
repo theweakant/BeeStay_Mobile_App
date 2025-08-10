@@ -18,7 +18,9 @@ export const UserEndpoints = {
 
 export const HostEndpoints = {
   getHostByAccount: (accountId) => `/v1/host/by-account/${accountId}`,
-  updateAccountHost: (accountId) => `/v1/host/update/${accountId}`,
+  // updateAccountHost: (accountId) => `/v1/host/update/${accountId}`,
+  updateAccountHost: (accountId) => `/v1/host/update/${accountId}?accountId=${accountId}`,
+
   updateAvatarHost: (accountId) => `/v1/host/update-avatar/${accountId}`,
 
   getBookingByHost: (accountId) => `/v1/host/booking?accountId=${accountId}`,

@@ -8,12 +8,15 @@ import {
   Platform, 
   Alert,
   Text,  
-  ActivityIndicator  
+  ActivityIndicator,
+  StyleSheet
 } from "react-native"
 import { useDispatch, useSelector } from "react-redux"
 import { createStaycation, resetCreateState } from "../../redux/slices/homestay.slice"
+
 import ProgressBar from "./shared/ProgressBar"
 import NavigationButtons from "./shared/NavigationButtons"
+
 import BasicInfoStep from "./BasicInfoStep"
 import PricingLocationStep from "./PricingLocationStep"
 import RoomDetailsStep from "./RoomDetailsStep"
@@ -92,10 +95,10 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
         description: "",
         features: [""],
         roomType: "",
-        roomCount: 1,
-        maxGuests: 1,
-        bedCount: 1,
-        bathroomCount: 1,
+        roomCount: 0,
+        maxGuests: 0,
+        bedCount: 0,
+        bathroomCount: 0,
         availableDates: [],
         location: {
           address: "",
@@ -122,7 +125,7 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
           allowSmoking: false,
           refundable: false,
         },
-        available: true,
+        available: false,
         recommended: false,
         instantBook: false,
         flashSale: false,
@@ -247,19 +250,22 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView 
+      style={styles.container} 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       {/* Messages */}
       {createError && (
-        <View style={{ backgroundColor: "#FEF2F2", padding: 16, margin: 20, borderRadius: 12 }}>
-          <Text style={{ color: "#DC2626", fontSize: 14, fontWeight: "500" }}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>
             ⚠️ {typeof createError === "string" ? createError : "Có lỗi xảy ra"}
           </Text>
         </View>
       )}
       {createSuccess && (
-        <View style={{ backgroundColor: "#F0FDF4", padding: 16, margin: 20, borderRadius: 12 }}>
-          <Text style={{ color: "#059669", fontSize: 14, fontWeight: "500" }}>
-            🎉 Tạo homestay thành công!
+        <View style={styles.successContainer}>
+          <Text style={styles.successText}>
+            Tạo homestay thành công!
           </Text>
         </View>
       )}
@@ -268,14 +274,18 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
       <ProgressBar steps={formSteps} currentStep={currentStep} />
 
       {/* Scrollable Form Content */}
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ padding: 20, paddingBottom: 100 }}>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.contentContainer}>
           {renderStepContent()}
         </View>
       </ScrollView>
 
       {/* Navigation Buttons */}
-      <View style={{ padding: 20, backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#E5E7EB" }}>
+      <View style={styles.navigationContainer}>
         <NavigationButtons
           currentStep={currentStep}
           totalSteps={formSteps.length}
@@ -288,22 +298,15 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
 
       {/* Loading Overlay */}
       {creating && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View style={{ backgroundColor: "#FFF", padding: 32, borderRadius: 20, alignItems: "center" }}>
-            <ActivityIndicator size="large" color="#007AFF" style={{ marginBottom: 16 }} />
-            <Text style={{ fontSize: 16, fontWeight: "500", color: "#1E293B" }}>
-              🏠 Đang tạo homestay...
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingModal}>
+            <ActivityIndicator 
+              size="large" 
+              color="#eba016ff" 
+              style={styles.loadingSpinner} 
+            />
+            <Text style={styles.loadingText}>
+              Đang tạo homestay...
             </Text>
           </View>
         </View>
@@ -311,5 +314,110 @@ const AddStaycationForm = ({ accountId, onSuccess }) => {
     </KeyboardAvoidingView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffffdc',
+  },
+  
+  // Message Styles
+  errorContainer: {
+    backgroundColor: '#FEF2F2',
+    padding: 16,
+    marginHorizontal: 20,
+    marginTop: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 20,
+  },
+  successContainer: {
+    backgroundColor: '#F0FDF4',
+    padding: 16,
+    marginHorizontal: 20,
+    marginTop: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+  },
+  successText: {
+    color: '#059669',
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 20,
+  },
+  
+  // Content Styles
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  contentContainer: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  
+  // Navigation Styles
+  navigationContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20, // Safe area bottom
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  
+  // Loading Overlay Styles
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingModal: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 32,
+    paddingVertical: 24,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 16,
+    minWidth: 200,
+  },
+  loadingSpinner: {
+    marginBottom: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+})
 
 export default AddStaycationForm
