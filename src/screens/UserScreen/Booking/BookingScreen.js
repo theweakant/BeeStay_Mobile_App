@@ -7,7 +7,6 @@ import { useAuth } from '../../../redux/hooks/useAuth';
 import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
 import { convertToHotelImages, getStarRating } from '../../../utils/bookingUtils';
 import { openGoogleMaps } from '../../../utils/mapUtil';
-import { PolicyData } from '../../../data/MockData';
 
 // BookingScreen components
 import BookingImages from '../../../components/BookingScreen/BookingImages';
@@ -156,11 +155,6 @@ export default function BookingScreen() {
 
         <BookingFeatures features={homestayData.features} />
 
-
-
-        {/* <BookingHostInfo host={homestayData.host} /> */}
-        {/* <BookingPolicies homestayPolicies={homestayData.policies} policyData={PolicyData} /> */}
-
         <ReviewListSection 
           reviews={homestayData.reviews} 
           averageRating={homestayData.averageRating}
@@ -169,7 +163,6 @@ export default function BookingScreen() {
         <View style={styles.bottomPadding} />
       </ScrollView>
 
-      
         <BookingPriceSection 
           homestayData={homestayData} 
           onChooseRoom={handleChooseRoom}

@@ -12,7 +12,7 @@ import {
 import { useAuth } from '../../../redux/hooks/useAuth';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCancelBooking } from '../../../redux/slices/booking.slice';
+import { fetchCancelBooking, clearSuccess, clearError } from '../../../redux/slices/booking.slice';
 import { selectUserBooking } from '../../../redux/slices/user.slice';
 import { fetchHomestayById } from '../../../redux/slices/homestay.slice';
 import { formatCurrency, formatDate } from '../../../utils/textUtils';
@@ -28,51 +28,42 @@ export default function BookingDetailScreen() {
   const bookings = useSelector(selectUserBooking);
   const booking = bookings?.find(b => b.bookingId === bookingId);
   const { selectedHomestay: homestayData, fetchingById: homestayLoading, fetchByIdError: homestayError } = useSelector(state => state.homestay);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showReviewSection, setShowReviewSection] = useState(false); // Thêm state cho collapsible review
+  const { loading: bookingLoading, success, error } = useSelector(state => state.booking);
+  const [showReviewSection, setShowReviewSection] = useState(false); 
 
-  // Fetch homestayData bằng homestayId từ booking
+  
   useEffect(() => {
     if (booking?.homestayId) {
       dispatch(fetchHomestayById(booking.homestayId));
     }
   }, [booking, dispatch]);
 
+    useEffect(() => {
+    if (success) {
+      Alert.alert(
+        'Thành công',
+        'Booking đã được hủy thành công.',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
+      dispatch(clearSuccess());
+    }
+    if (error) {
+      Alert.alert('Lỗi', error);
+      dispatch(clearError());
+    }
+  }, [success, error, dispatch, navigation]);
+
   const handleCancelBooking = () => {
     Alert.alert(
       'Xác nhận hủy booking',
       'Hành động này không thể hoàn tác.',
       [
-        { 
-          text: 'Không', 
-          style: 'cancel',
-          onPress: () => console.log('Cancel pressed')
-        },
+        { text: 'Không', style: 'cancel' },
         {
           text: 'Xác nhận',
           style: 'destructive',
-          onPress: async () => {
-            setIsLoading(true);
-            try {
-              await dispatch(fetchCancelBooking(bookingId)).unwrap();
-              Alert.alert(
-                'Thành công',
-                'Booking đã được hủy thành công.',
-                [
-                  {
-                    text: 'OK',
-                    onPress: () => navigation.goBack()
-                  }
-                ]
-              );
-            } catch (error) {
-              Alert.alert(
-                'Lỗi',
-                error?.message || 'Không thể hủy booking. Vui lòng thử lại sau.'
-              );
-            } finally {
-              setIsLoading(false);
-            }
+          onPress: () => {
+            dispatch(fetchCancelBooking(bookingId));
           },
         },
       ]
@@ -200,12 +191,12 @@ export default function BookingDetailScreen() {
           <TouchableOpacity
             style={[
               styles.cancelButton,
-              isLoading && styles.cancelButtonDisabled
+              bookingLoading && styles.cancelButtonDisabled
             ]}
             onPress={handleCancelBooking}
-            disabled={isLoading}
+            disabled={bookingLoading}
           >
-            {isLoading ? (
+            {bookingLoading ? (
               <ActivityIndicator color="#fff" size="small" />
             ) : (
               <Text style={styles.cancelButtonText}>Hủy</Text>

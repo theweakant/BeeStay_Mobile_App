@@ -131,6 +131,8 @@ const bookingSlice = createSlice({
       .addCase(fetchCancelBooking.fulfilled, (state, action) => {
         state.loading = false;
         state.booking = action.payload;
+        state.success = true;
+        state.error = null; 
         
         // Update booking status in list
         if (action.payload?.id) {

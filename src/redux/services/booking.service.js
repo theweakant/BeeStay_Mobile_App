@@ -42,7 +42,7 @@ export const checkInBooking = async (bookingId) => {
     const response = await apiClient.put(HostEndpoints.checkInBooking(bookingId));
     return response.data;
   } catch (error) {
-    console.error('❌ Check-in booking error:', error);
+    console.error('CHECK-IN booking error:', error);
     throw error;
   }
 };

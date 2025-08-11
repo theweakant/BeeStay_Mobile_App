@@ -66,9 +66,9 @@ export default function SearchScreen() {
 
     // Sorting
     if (sortOption === 'rating-asc') {
-      filtered.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+      filtered.sort((a, b) => (a.averageRating || 0) - (b.averageRating || 0));
     } else if (sortOption === 'rating-desc') {
-      filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      filtered.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
     } else if (sortOption === 'price-asc') {
       filtered.sort((a, b) => (a.pricePerNight || 0) - (b.pricePerNight || 0));
     } else if (sortOption === 'price-desc') {

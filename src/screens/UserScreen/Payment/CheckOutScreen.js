@@ -82,6 +82,30 @@ export default function CheckOutScreen() {
     return nights * pricePerNight;
   };
 
+
+  const getErrorMessage = (error) => {
+    const errorString = error?.toString?.() || error?.message || error || '';
+    
+    const errorMappings = {
+      'Can not book this homestay in this time': 'Khoảng thời gian này đã có người đặt. Vui lòng chọn ngày khác',
+      'Homestay is not available': 'Homestay không có sẵn trong thời gian này',
+      'Invalid date range': 'Khoảng thời gian không hợp lệ',
+      'Check-out date must be after check-in date': 'Ngày check-out phải sau ngày check-in',
+      'Booking failed': 'Đặt phòng thất bại. Vui lòng thử lại',
+      'Network Error': 'Lỗi kết nối. Vui lòng kiểm tra internet',
+    };
+
+    // Tìm key phù hợp trong error message
+    for (const [key, value] of Object.entries(errorMappings)) {
+      if (errorString.toLowerCase().includes(key.toLowerCase())) {
+        return value;
+      }
+    }
+    
+    // Trả về error message mặc định
+    return errorString || 'Có lỗi xảy ra. Vui lòng thử lại';
+  };
+
   const handleBooking = async () => {
     if (!accountId || !homestayId) {
       Alert.alert('Lỗi', 'Thiếu thông tin người dùng hoặc homestay.');
@@ -111,17 +135,6 @@ export default function CheckOutScreen() {
       totalPrice: calculateTotal(),
     };
 
-    // try {
-    //   await dispatch(fetchCreateBooking(bookingRequest)).unwrap();
-    //   Alert.alert('Thành công', 'Đặt phòng thành công!');
-    //   navigation.navigate('SuccessBooking');
-    // } catch (error) {
-    //   Alert.alert('Lỗi', error || 'Đặt phòng thất bại!');
-    // } finally {
-    //   setIsBooking(false);
-    // }
-
-    // Thay thế dòng 96-110 trong CheckOutScreen:
     try {
       const result = await dispatch(fetchCreateBooking(bookingRequest)).unwrap();
       
@@ -142,7 +155,8 @@ export default function CheckOutScreen() {
         }
       ]);
     } catch (error) {
-      Alert.alert('Lỗi', error || 'Đặt phòng thất bại!');
+      const customMessage = getErrorMessage(error);
+      Alert.alert('Lỗi', customMessage);
     } finally {
       setIsBooking(false);
     }
